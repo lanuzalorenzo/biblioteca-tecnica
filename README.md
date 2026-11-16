@@ -1,3 +1,5 @@
+<img src="assets/iconos/biblioteca-tecnica.svg" width="64" alt="Biblioteca técnica">
+
 # Biblioteca técnica
 
 Visor local del contenido IT que he ido estudiando y documentando. Lee los Markdown de los repositorios de cursos y genera un sitio navegable con un solo árbol de módulos, búsqueda global, filtros por materia, migas y enlaces a apuntes y guías. La composición sigue el lenguaje editorial de la web personal, adaptado a la lectura y a la navegación del visor. No guarda contenido propio: cada build lee las fuentes y `dist/` es una copia local de los recursos que se regenera.
