@@ -434,22 +434,21 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 
 /* Anterior y siguiente */
 .pasos {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  display: flex; justify-content: space-between; gap: 32px;
   margin: 64px 0 0; padding-top: 24px; border-top: 1px solid var(--line);
 }
 .pasos a {
-  display: flex; flex-direction: column; gap: 4px;
-  min-height: 44px; padding: 16px 24px;
-  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
-  transition: border-color 200ms ease, transform 200ms ease;
+  display: flex; flex-direction: column; gap: 2px;
+  min-height: 0; padding: 0; border: 0; background: transparent;
+  color: var(--ink); transition: color 200ms ease;
 }
-.pasos a:hover { border-color: var(--accent); text-decoration: none; transform: translateY(-1px); }
+.pasos a:hover { color: var(--accent-hover); text-decoration: none; }
 .pasos span {
   font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--muted);
 }
 .pasos strong { font-weight: 700; font-size: 14px; line-height: 1.4; }
-.pasos .paso-siguiente { text-align: right; }
+.pasos .paso-siguiente { margin-left: auto; text-align: right; }
 
 /* Portada */
 .portada {
@@ -946,8 +945,8 @@ body { height: 100vh; overflow: hidden; }
   .lateral.abierto { visibility: visible; transform: none; transition: transform 200ms ease; }
   .lateral .enlace, .rama > details > summary { min-height: 44px; }
   .contenido { padding: 32px 0; }
-  .pasos { grid-template-columns: 1fr; }
-  .pasos .paso-siguiente { text-align: left; }
+  .pasos { flex-direction: column; gap: 16px; }
+  .pasos .paso-siguiente { margin-left: 0; text-align: left; }
   .prosa { font-size: 16px; }
   .pie-sitio {
     display: flex; align-items: center; justify-content: space-between;

@@ -1039,7 +1039,7 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
             return f'<li class="hoja"><span class="enlace">{etiqueta}</span></li>'
         return (
             f'<li class="hoja"><a class="enlace"{marcado} '
-            f'href="{relativo(nodo.url, pagina)}">{etiqueta}</a></li>'
+            f'href="{relativo(nodo.url, pagina)}">{icono}{etiqueta}</a></li>'
         )
 
     if nodo.url:
