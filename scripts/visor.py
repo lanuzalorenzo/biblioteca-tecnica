@@ -1040,9 +1040,12 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
         titulo_rama = f'<span class="enlace-rama">{etiqueta}</span>'
     hijos = "".join(render_lateral(hijo, pagina, actual) for hijo in nodo.hijos)
     abierto = " open" if contiene_actual else ""
+    cuenta = ""
+    if nodo.clave.startswith("categoria:") or nodo.clave == "recursos":
+        cuenta = f'<span class="rama-cuenta">{len(nodo.hijos)}</span>'
     return (
         f'<li class="rama"><details{abierto} data-clave="{html.escape(nodo.clave)}">'
-        f'<summary>{icono}{titulo_rama}'
+        f'<summary>{icono}{titulo_rama}{cuenta}'
         f'</summary><ul class="hijos">{hijos}</ul></details></li>'
     )
 
@@ -1506,28 +1509,48 @@ def construir_portada(
         )
         + "</ul></nav>"
     )
+    categorias_hero = [c for c in ORDEN_CATEGORIAS if c in categorias]
+    if not categorias_hero:
+        categorias_hero = sorted(categorias)
+    nodos_hero = []
+    for indice, categoria in enumerate(categorias_hero):
+        glifo = ICONOS_CATEGORIA.get(categoria, "documento")
+        angulo = 360 / max(len(categorias_hero), 1)
+        nodos_hero.append(
+            f'<span class="hero-node" style="--a:{indice * angulo:.3f}deg">'
+            f'<img src="_sitio/iconos/{glifo}.svg" alt=""></span>'
+        )
     contenido = f"""
 <header class="portada portada-temario">
-  <p class="antetitulo">Contenido IT</p>
-  <h1>Formación</h1>
-  <p class="entradilla">Lo que he ido estudiando y documentando: {len(modulos_global)} módulos de sistemas, redes, datos, desarrollo y seguridad.</p>
-  <div class="portada-acciones">
-    <button class="boton-principal" data-abrir-busqueda>Buscar en el contenido <kbd>Ctrl</kbd><kbd>K</kbd></button>
-    <a class="boton-secundario" data-continuar href="index.html">Seguir donde lo dejé</a>
+  <div class="hero-copy">
+    <p class="antetitulo"><span class="status-dot"></span>Contenido IT</p>
+    <h1>Formación</h1>
+    <p class="hero-role">Apuntes, guías y práctica de <span>sistemas, redes y seguridad</span>.</p>
+    <p class="entradilla">Lo que he ido estudiando y documentando: {len(modulos_global)} módulos de sistemas, redes, datos, desarrollo y seguridad.</p>
+    <div class="portada-acciones">
+      <button class="boton-principal" data-abrir-busqueda>Buscar en el contenido <kbd>Ctrl</kbd><kbd>K</kbd></button>
+      <a class="boton-secundario" data-continuar href="index.html">Seguir donde lo dejé</a>
+    </div>
+    <div class="portada-progreso">
+      <span class="barra barra-ancha"><span class="barra-relleno" data-progreso="total"></span></span>
+      <span class="porcentaje" data-porcentaje="total">0 %</span>
+      <span class="nota-progreso" data-leidas="total">0 de {total} páginas leídas</span>
+    </div>
   </div>
-  <div class="portada-progreso">
-    <span class="barra barra-ancha"><span class="barra-relleno" data-progreso="total"></span></span>
-    <span class="porcentaje" data-porcentaje="total">0 %</span>
-    <span class="nota-progreso" data-leidas="total">0 de {total} páginas leídas</span>
+  <div class="hero-art" aria-hidden="true">
+    <span class="hero-ring"></span>
+    <span class="hero-core"><strong>{len(modulos_global)}</strong><span>módulos</span></span>
+    {''.join(nodos_hero)}
   </div>
 </header>
+<section class="metrics" aria-label="Resumen del contenido">
+  <div class="metric"><strong>{len(modulos_global)}</strong><span>módulos</span></div>
+  <div class="metric"><strong>{len(categorias)}</strong><span>categorías</span></div>
+  <div class="metric"><strong>{total}</strong><span>páginas</span></div>
+</section>
 <div class="chips-filtro" data-filtros aria-label="Filtrar por categoría">{''.join(filtros)}</div>
 <section class="rejilla rejilla-contenido">{''.join(tarjetas)}</section>
 {recursos_html}
-<footer class="pie-licencia">
-  <span>MIT · Lorenzo Lanuza Arellano</span>
-  <a href="_sitio/LICENSE">Licencia</a>
-</footer>
 """
     escribir(
         SALIDA / "index.html",
