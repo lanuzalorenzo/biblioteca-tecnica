@@ -37,26 +37,20 @@ SALIDA = SITIO / "dist"
 FUENTE = SITIO / "sitio"
 
 AUTOR = "Lorenzo Lanuza"
-TITULO_SITIO = f"Formación · {AUTOR}"
+TITULO_SITIO = f"Biblioteca técnica · {AUTOR}"
 MARCA_SITIO = "Lorenzo Lanuza"
 DESCRIPCION_SITIO = (
-    "Formación de Lorenzo Lanuza: módulos de sistemas, redes, datos, "
-    "desarrollo y seguridad."
+    "Biblioteca técnica de Lorenzo Lanuza: apuntes y prácticas de sistemas, "
+    "redes, datos, desarrollo, operaciones y seguridad."
 )
 
 ICONOS_CATEGORIA = {
-    "Sistemas": "servidor",
-    "Redes": "redes",
+    "Sistemas y redes": "servidor",
+    "Operaciones": "terminal",
     "Datos": "datos",
     "Desarrollo": "codigo",
-    "Hardware": "hardware",
+    "Seguridad": "escudo",
     "Empleo": "empleo",
-    "Incidentes": "alerta",
-    "Bastionado": "escudo",
-    "Producción": "paquete",
-    "Forense": "lupa",
-    "Ofensiva": "terminal",
-    "Normativa": "balanza",
 }
 ICONOS_MODULO = {
     "iso": "monitor",
@@ -780,7 +774,7 @@ def leer_plantilla() -> str:
 
 
 def migas(camino: list[Nodo], pagina: str, raiz: str) -> str:
-    piezas = [f'<a href="{relativo("index.html", pagina)}">Formación</a>']
+    piezas = [f'<a href="{relativo("index.html", pagina)}">Biblioteca técnica</a>']
     for nodo in camino[1:-1]:
         if nodo.url:
             piezas.append(f'<a href="{relativo(nodo.url, pagina)}">{html.escape(nodo.titulo)}</a>')
@@ -1250,8 +1244,8 @@ def construir_fuente(
             f'{relativo("_sitio/marca-tile.svg", pagina)}">'
         )
         icono_cabecera = (
-            f'<img src="{relativo("_sitio/marca.svg", pagina)}" '
-            'alt="" width="28" height="28">'
+            f'<img src="{relativo("_sitio/marca-tile.svg", pagina)}" '
+            'alt="" width="40" height="40">'
         )
         reemplazos = {
             "{{TITULO}}": html.escape(titulo_html),
@@ -1389,7 +1383,7 @@ def pintar_global(
         "{{RAIZ}}": ".",
         "{{V}}": version,
         "{{LATERAL}}": lateral,
-        "{{CABECERA_MIGAS}}": "",
+        "{{CABECERA_MIGAS}}": '<span class="seccion-cabecera">Biblioteca técnica</span>',
         "{{CABECERA}}": "",
         "{{CONTENIDO}}": contenido,
         "{{TOC}}": "",
@@ -1399,7 +1393,7 @@ def pintar_global(
         "{{PIE}}": "",
         "{{CURSOS}}": "index.html",
         "{{FAVICON}}": '<link rel="icon" href="_sitio/marca-tile.svg">',
-        "{{ICONO_CABECERA}}": '<img src="_sitio/marca.svg" alt="" width="28" height="28">',
+        "{{ICONO_CABECERA}}": '<img src="_sitio/marca-tile.svg" alt="" width="40" height="40">',
         "{{CLASE_CUERPO}}": "pagina-portada",
     }
     salida = plantilla
@@ -1513,16 +1507,17 @@ def construir_portada(
         glifo = ICONOS_CATEGORIA.get(categoria, "documento")
         angulo = 360 / max(len(categorias_hero), 1)
         nodos_hero.append(
-            f'<span class="hero-node" style="--a:{indice * angulo:.3f}deg">'
+            f'<span class="hero-node" style="--a:{indice * angulo:.3f}deg" '
+            f'title="{html.escape(categoria)}">'
             f'<img src="_sitio/iconos/{glifo}.svg" alt=""></span>'
         )
     contenido = f"""
 <header class="portada portada-temario">
   <div class="hero-copy">
     <p class="antetitulo"><span class="status-dot"></span>Contenido IT</p>
-    <h1>Formación</h1>
-    <p class="hero-role">Apuntes, guías y práctica de <span>sistemas, redes y seguridad</span>.</p>
-    <p class="entradilla">Lo que he ido estudiando y documentando: {len(modulos_global)} módulos de sistemas, redes, datos, desarrollo y seguridad.</p>
+    <h1>Biblioteca técnica</h1>
+    <p class="hero-role">Apuntes y práctica de sistemas, desarrollo y seguridad.</p>
+    <p class="entradilla">Material propio, ordenado por materias, para estudiar y consultar.</p>
     <div class="portada-acciones">
       <button class="boton-principal" data-abrir-busqueda>Buscar en el contenido <kbd>Ctrl</kbd><kbd>K</kbd></button>
       <a class="boton-secundario" data-continuar href="index.html">Seguir donde lo dejé</a>
@@ -1530,20 +1525,14 @@ def construir_portada(
     <div class="portada-progreso">
       <span class="barra barra-ancha"><span class="barra-relleno" data-progreso="total"></span></span>
       <span class="porcentaje" data-porcentaje="total">0 %</span>
-      <span class="nota-progreso" data-leidas="total">0 de {total} páginas leídas</span>
     </div>
   </div>
   <div class="hero-art" aria-hidden="true">
     <span class="hero-ring"></span>
-    <span class="hero-core"><strong>{len(modulos_global)}</strong><span>módulos</span></span>
+    <span class="hero-core"><strong>{len(categorias)}</strong><span>categorías</span></span>
     {''.join(nodos_hero)}
   </div>
 </header>
-<section class="metrics" aria-label="Resumen del contenido">
-  <div class="metric"><strong>{len(modulos_global)}</strong><span>módulos</span></div>
-  <div class="metric"><strong>{len(categorias)}</strong><span>categorías</span></div>
-  <div class="metric"><strong>{total}</strong><span>páginas</span></div>
-</section>
 <div class="chips-filtro" data-filtros aria-label="Filtrar por categoría">{''.join(filtros)}</div>
 <section class="rejilla rejilla-contenido">{''.join(tarjetas)}</section>
 """
@@ -1570,7 +1559,7 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
         shutil.rmtree(SALIDA)
     SALIDA.mkdir(parents=True)
 
-    raiz_global = Nodo(SITIO, "Formación", "index.html", True)
+    raiz_global = Nodo(SITIO, "Biblioteca técnica", "index.html", True)
     raiz_global.fuente_id = ""
     raiz_global.clave = "raiz"
     recursos = Nodo(SITIO, "Recursos", None, True)
@@ -1696,7 +1685,7 @@ def servir(puerto: int, vigilar: bool, abrir: bool) -> int:
             f"http://127.0.0.1:{puerto}/",
             flush=True,
         )
-        print("Para pararlo: systemctl --user stop visor-temario", flush=True)
+        print("Para pararlo: systemctl --user stop biblioteca-tecnica", flush=True)
         return 1
 
     amable = f"http://127.0.0.1:{puerto}/"

@@ -1,9 +1,9 @@
 [Unit]
-Description=Visor local de formación
+Description=Biblioteca técnica de Lorenzo Lanuza
 
 [Service]
 Type=simple
-WorkingDirectory=%h/Repositorios/trabajo/visor-temario
+WorkingDirectory=%h/Repositorios/trabajo/biblioteca-tecnica
 ExecStart=/usr/bin/python3 scripts/visor.py serve --puerto 8001 --vigilar
 Restart=on-failure
 

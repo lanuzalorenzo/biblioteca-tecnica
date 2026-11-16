@@ -1,4 +1,4 @@
-# Guía para agentes: visor-temario
+# Guía para agentes: biblioteca-tecnica
 
 Visor local del contenido IT de los cursos. Repositorio privado: no se enlaza ni se copia desde repos públicos. Sin CI: la barrera de secretos es el hook local de Gitleaks, obligatorio en cada clon.
 
@@ -38,12 +38,12 @@ python3 scripts/visor.py serve [--puerto 8001] [--vigilar] [--abrir]
 python3 scripts/verificar.py
 
 mkdir -p ~/.config/systemd/user
-cp servicio/visor-temario.service ~/.config/systemd/user/
+cp servicio/biblioteca-tecnica.service ~/.config/systemd/user/
 systemctl --user daemon-reload
-systemctl --user enable --now visor-temario
+systemctl --user enable --now biblioteca-tecnica
 ```
 
-El servicio de usuario es `visor-temario` y escucha en `127.0.0.1:8001`. El `8000` no lo usa ningún visor.
+El servicio de usuario es `biblioteca-tecnica` y escucha en `127.0.0.1:8001`. El `8000` no lo usa ningún visor.
 
 ## Verificación
 
@@ -56,7 +56,7 @@ CHECK_LINKS="$(python3 ~/Repositorios/privatenotes/scripts/repos.py campo core r
 python3 "$CHECK_LINKS" . --skip dist --skip sitio
 python3 "$CHECK_LINKS" dist
 
-~/Repositorios/privatenotes/scripts/instalar-hooks.sh --check visor-temario
+~/Repositorios/privatenotes/scripts/instalar-hooks.sh --check biblioteca-tecnica
 ```
 
 `verificar.py` exige los conteos de las fuentes, que la búsqueda encuentre un apunte y una guía de cada curso, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. `check-links` revisa los enlaces relativos del repositorio y los del HTML generado. Si falla un conteo, no cambies el número de la configuración: revisa la fuente.

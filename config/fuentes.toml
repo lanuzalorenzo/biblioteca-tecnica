@@ -2,18 +2,12 @@
 # privatenotes/scripts/repos.py; aquí no se escribe ninguna ruta de repo.
 
 orden_categorias = [
-  "Sistemas",
-  "Redes",
+  "Sistemas y redes",
+  "Operaciones",
   "Datos",
   "Desarrollo",
-  "Hardware",
+  "Seguridad",
   "Empleo",
-  "Incidentes",
-  "Bastionado",
-  "Producción",
-  "Forense",
-  "Ofensiva",
-  "Normativa",
 ]
 
 [registro]
@@ -36,20 +30,20 @@ esperados = { modulos = 6 }
 
 # Categorías de las tarjetas: agrupan por materia, no por curso.
 [categorias]
-fh = "Hardware"
-iso = "Sistemas"
-aso = "Sistemas"
-sad = "Sistemas"
-redes = "Redes"
-sri = "Redes"
+fh = "Sistemas y redes"
+iso = "Sistemas y redes"
+redes = "Sistemas y redes"
+aso = "Operaciones"
+sri = "Operaciones"
+"5023-puesta-en-produccion-segura" = "Operaciones"
 gbd = "Datos"
 asgbd = "Datos"
 lmsgi = "Desarrollo"
 iaw = "Desarrollo"
+sad = "Seguridad"
+"5021-incidentes-de-ciberseguridad" = "Seguridad"
+"5022-bastionado-de-redes-y-sistemas" = "Seguridad"
+"5024-analisis-forense-informatico" = "Seguridad"
+"5025-hacking-etico" = "Seguridad"
+"5026-normativa-de-ciberseguridad" = "Seguridad"
 fol = "Empleo"
-"5021-incidentes-de-ciberseguridad" = "Incidentes"
-"5022-bastionado-de-redes-y-sistemas" = "Bastionado"
-"5023-puesta-en-produccion-segura" = "Producción"
-"5024-analisis-forense-informatico" = "Forense"
-"5025-hacking-etico" = "Ofensiva"
-"5026-normativa-de-ciberseguridad" = "Normativa"

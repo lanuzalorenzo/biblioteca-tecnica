@@ -1,4 +1,4 @@
-# Formación
+# Biblioteca técnica
 
 Visor local del contenido IT que he ido estudiando y documentando. Lee los Markdown de los repositorios de cursos y genera un sitio navegable con un solo árbol de módulos, búsqueda global, filtros por materia, migas y enlaces a apuntes y guías. La composición sigue el lenguaje editorial de la web personal, adaptado a la lectura y a la navegación del visor. No guarda contenido propio: cada build lee las fuentes y `dist/` es una copia local de los recursos que se regenera.
 
@@ -23,7 +23,7 @@ python3 scripts/visor.py serve          # genera y sirve en http://127.0.0.1:800
 python3 scripts/visor.py serve --vigilar --abrir
 ```
 
-- El servicio de usuario `visor-temario` sirve en `http://127.0.0.1:8001/`. No hay un segundo visor: el `8000` quedó libre al retirar el antiguo.
+- El servicio de usuario `biblioteca-tecnica` sirve en `http://127.0.0.1:8001/`. No hay un segundo visor: el `8000` quedó libre al retirar el antiguo.
 - `serve --vigilar` reconstruye al detectar cambios en cualquier `.md` de las fuentes configuradas, en la plantilla, en los estilos, en el guion o en la configuración.
 - Solo usa la biblioteca estándar de Python 3.11 o posterior. Sin CDN, sin telemetría y sin red.
 - `build` termina con error si un enlace interno no resuelve.
@@ -40,7 +40,7 @@ python3 scripts/visor.py serve --vigilar --abrir
 | `sitio/app.js` | Progreso, búsqueda, filtros, navegación y plazos |
 | `sitio/marca.svg`, `sitio/marca-tile.svg` | Marca personal del visor |
 | `sitio/iconos/` | Iconos de categorías y módulos |
-| `servicio/visor-temario.service` | Unidad de usuario del servicio |
+| `servicio/biblioteca-tecnica.service` | Unidad de usuario del servicio |
 | `dist/` | Salida generada; ignorada por Git |
 
 `dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<fuente>/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`.
@@ -60,23 +60,23 @@ python3 "$CHECK_LINKS" dist
 El repositorio es privado y no tiene CI. La barrera de secretos es el hook local de Gitleaks:
 
 ```bash
-~/Repositorios/privatenotes/scripts/instalar-hooks.sh --apply visor-temario
-~/Repositorios/privatenotes/scripts/instalar-hooks.sh --check visor-temario
+~/Repositorios/privatenotes/scripts/instalar-hooks.sh --apply biblioteca-tecnica
+~/Repositorios/privatenotes/scripts/instalar-hooks.sh --check biblioteca-tecnica
 ```
 
 ## Servicio
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp servicio/visor-temario.service ~/.config/systemd/user/
+cp servicio/biblioteca-tecnica.service ~/.config/systemd/user/
 systemctl --user daemon-reload
-systemctl --user enable --now visor-temario
+systemctl --user enable --now biblioteca-tecnica
 ```
 
 ```bash
-systemctl --user status visor-temario
-systemctl --user restart visor-temario
-journalctl --user -u visor-temario -n 20
+systemctl --user status biblioteca-tecnica
+systemctl --user restart biblioteca-tecnica
+journalctl --user -u biblioteca-tecnica -n 20
 ```
 
 ## Licencia
