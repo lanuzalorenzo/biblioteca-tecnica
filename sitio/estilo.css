@@ -894,11 +894,12 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 :root { --alto-pie: 64px; }
 body { height: 100vh; overflow: hidden; }
 .cabecera {
-  position: fixed; top: 0; left: 0; right: 0;
+  position: fixed; top: 0; left: 0; right: 0; padding: 0 24px;
 }
 .marco {
   position: fixed; top: var(--alto-cabecera); bottom: var(--alto-pie);
-  left: 0; right: 0; height: auto; overflow: hidden;
+  left: 0; right: 0; height: auto; max-width: none; margin: 0;
+  padding: 0 24px; overflow: hidden;
 }
 .lateral {
   position: static; top: auto; height: 100%; overflow-y: auto;
@@ -912,7 +913,7 @@ body { height: 100vh; overflow: hidden; }
 }
 .pie-sitio {
   position: fixed; z-index: 40; left: 0; right: 0; bottom: 0;
-  height: var(--alto-pie); min-height: 0;
+  height: var(--alto-pie); min-height: 0; padding: 0 24px;
   background: color-mix(in srgb, var(--paper) 92%, transparent);
   backdrop-filter: blur(14px);
 }
