@@ -189,14 +189,15 @@
 
   function lectura() {
     const barra = $(".barra-lectura span");
-    if (barra) {
+    const caja = $("#contenido");
+    if (barra && caja) {
       const actualizar = () => {
-        const alto = document.documentElement.scrollHeight - window.innerHeight;
-        const avance = alto > 0 ? Math.min(1, window.scrollY / alto) : 0;
+        const alto = caja.scrollHeight - caja.clientHeight;
+        const avance = alto > 0 ? Math.min(1, caja.scrollTop / alto) : 0;
         barra.style.transform = `scaleX(${avance})`;
       };
       actualizar();
-      window.addEventListener("scroll", actualizar, { passive: true });
+      caja.addEventListener("scroll", actualizar, { passive: true });
       window.addEventListener("resize", actualizar);
     }
 

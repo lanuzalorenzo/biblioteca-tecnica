@@ -94,9 +94,8 @@ RECURSOS_PERMITIDOS = {
     ".conf", ".ini", ".service", ".desktop",
 }
 
-# Profundidad máxima del árbol lateral. ASIR añade el curso (primer/segundo)
-# delante del módulo, así que necesita un nivel más que el curso 50xx.
-PROFUNDIDAD_LATERAL = 4
+# El lateral muestra solo categorías y módulos; el contenido vive en la página.
+PROFUNDIDAD_LATERAL = 1
 
 
 @dataclass
@@ -1018,9 +1017,18 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     En una rama, el título es el enlace a su página y el marcador de la
     izquierda despliega; cerrar el grupo no impide navegar.
     """
-    contiene_actual = any(visitado.url == actual for visitado in aplanar(nodo, []))
+    def es_actual(candidato: Nodo) -> bool:
+        if not candidato.url:
+            return False
+        if candidato.url == actual:
+            return True
+        if candidato.es_carpeta and candidato.url.endswith("/index.html"):
+            return actual.startswith(candidato.url[: -len("index.html")])
+        return False
+
+    contiene_actual = any(es_actual(visitado) for visitado in aplanar(nodo, []))
     etiqueta = html.escape(nodo.titulo)
-    marcado = ' aria-current="page"' if nodo.url == actual else ""
+    marcado = ' aria-current="page"' if es_actual(nodo) else ""
     icono = ""
     if nodo.icono:
         icono = (
