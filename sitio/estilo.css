@@ -245,13 +245,19 @@ kbd {
 /* Contenido */
 .contenido { padding: 48px 0 96px; min-width: 0; }
 
-.doc-cabecera { margin: 0 0 32px; }
+.doc-cabecera {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px 24px;
+  margin: 0 0 32px;
+}
 .doc-cabecera h1, .portada h1 {
   margin: 0 0 16px;
   font-size: clamp(36px, 4vw, 52px);
   line-height: 1.1; letter-spacing: -0.07em; font-weight: 680;
   overflow-wrap: break-word; text-wrap: balance;
 }
+.doc-cabecera h1 { flex: 1 1 420px; min-width: 0; margin-bottom: 0; }
+.doc-cabecera .doc-meta { flex: 0 0 auto; padding-top: 6px; }
 .doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
 .chip {
