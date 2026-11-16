@@ -1,0 +1,11 @@
+[Unit]
+Description=Visor local de formación
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Repositorios/trabajo/visor-temario
+ExecStart=/usr/bin/python3 scripts/visor.py serve --puerto 8001 --vigilar
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

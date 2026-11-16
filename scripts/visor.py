@@ -36,12 +36,48 @@ CONFIG = SITIO / "config" / "fuentes.toml"
 SALIDA = SITIO / "dist"
 FUENTE = SITIO / "sitio"
 
+AUTOR = "Lorenzo Lanuza"
+TITULO_SITIO = f"Formación · {AUTOR}"
+MARCA_SITIO = 'Lorenzo <em>Lanuza</em>'
+DESCRIPCION_SITIO = (
+    "Formación de Lorenzo Lanuza: módulos de sistemas, redes, datos, "
+    "desarrollo y seguridad."
+)
+
+ICONOS_CATEGORIA = {
+    "Sistemas": "servidor",
+    "Redes": "redes",
+    "Datos": "datos",
+    "Desarrollo": "codigo",
+    "Hardware": "hardware",
+    "Empleo": "empleo",
+    "Incidentes": "alerta",
+    "Bastionado": "escudo",
+    "Producción": "paquete",
+    "Forense": "lupa",
+    "Ofensiva": "terminal",
+    "Normativa": "balanza",
+}
+ICONOS_MODULO = {
+    "iso": "monitor",
+    "redes": "redes",
+    "gbd": "datos",
+    "lmsgi": "codigo",
+    "fh": "hardware",
+    "fol": "empleo",
+    "sri": "servidor",
+    "aso": "terminal",
+    "asgbd": "datos",
+    "iaw": "web",
+}
+
 # Se reemplazan por cada fuente durante el build.
 RAIZ = SITIO
 DESTINO = SALIDA
 ACTUAL: Fuente | None = None
 AVISOS_BUILD: list[str] = []
 CATEGORIAS: dict[str, str] = {}
+ORDEN_CATEGORIAS: list[str] = []
 
 # Carpetas que no forman parte del contenido publicado en el sitio.
 VETADAS = {".git", ".github", ".opencode", "sitio", "scripts"}
@@ -70,11 +106,8 @@ class Fuente:
     id: str
     etiqueta: str
     titulo: str
-    descripcion: str
-    marca: str
     estructura: str
     raiz: Path
-    icono: str = ""
     raices: list[str] = field(default_factory=list)
     esperados: dict[str, int] = field(default_factory=dict)
 
@@ -134,11 +167,8 @@ def resolver_fuentes(config: dict) -> list[Fuente]:
                 id=item["id"],
                 etiqueta=etiqueta,
                 titulo=item.get("titulo", item["id"]),
-                descripcion=item.get("descripcion", ""),
-                marca=item.get("marca", item.get("titulo", item["id"])),
                 estructura=item.get("estructura", "curso"),
                 raiz=raiz,
-                icono=item.get("icono", ""),
                 raices=item.get("raices", []),
                 esperados=item.get("esperados", {}),
             )
@@ -184,8 +214,12 @@ def sin_markup(texto: str) -> str:
 def limpiar_titulo(texto: str) -> str:
     """Quita el prefijo numérico del curso y las referencias «del módulo 50XX»."""
     limpio = re.sub(r"^\d{4}\.\s*", "", texto)
+    limpio = re.sub(r"^[A-ZÁÉÍÓÚÜ]{2,}\.\s*", "", limpio)
     limpio = re.sub(r"\s+del\s+m[oó]dulo\s+50\d\d", "", limpio, flags=re.IGNORECASE)
     limpio = re.sub(r"\b50\d\d\b", "", limpio)
+    acronimos = r"(?:ASGBD|LMSGI|GBD|SAD|SRI|ASO|IAW|FOL|ISO|FH)"
+    limpio = re.sub(rf"\s+(?:de|del)\s+{acronimos}\s*$", "", limpio, flags=re.IGNORECASE)
+    limpio = re.sub(rf"^{acronimos}\s*[.·—:-]\s*", "", limpio, flags=re.IGNORECASE)
     limpio = re.sub(r"\s{2,}", " ", limpio).strip(" .·-—:")
     return limpio or texto
 
@@ -610,6 +644,7 @@ class Nodo:
         "codigo",
         "fuente_id",
         "clave",
+        "icono",
     )
 
     def __init__(self, ruta: Path, titulo: str, url: str | None, es_carpeta: bool) -> None:
@@ -621,6 +656,7 @@ class Nodo:
         self.codigo = re.match(r"^(50\d\d)", ruta.name)
         self.codigo = self.codigo.group(1) if self.codigo else ""
         self.fuente_id = ACTUAL.id if ACTUAL else ""
+        self.icono = ""
         try:
             self.clave = (
                 f"{ACTUAL.id}/{ruta.relative_to(RAIZ).as_posix()}"
@@ -744,7 +780,7 @@ def leer_plantilla() -> str:
 
 
 def migas(camino: list[Nodo], pagina: str, raiz: str) -> str:
-    piezas = [f'<a href="{relativo("index.html", pagina)}">Temario</a>']
+    piezas = [f'<a href="{relativo("index.html", pagina)}">Formación</a>']
     for nodo in camino[1:-1]:
         if nodo.url:
             piezas.append(f'<a href="{relativo(nodo.url, pagina)}">{html.escape(nodo.titulo)}</a>')
@@ -810,6 +846,7 @@ class Modulo:
     conteo: dict[str, int]
     categoria: str = ""
     resumen: str = ""
+    icono: str = ""
 
 
 def resumen_de(ruta: Path) -> str:
@@ -907,6 +944,14 @@ def ordenar_arbol_por_raiz(fuente: Fuente, raiz_arbol: Nodo) -> None:
             )
 
 
+def icono_modulo(fuente: Fuente, clave: str) -> str:
+    ruta = fuente.raiz / "assets" / "iconos" / f"{clave}.svg"
+    if ruta.exists():
+        return f"{fuente.id}/assets/iconos/{clave}.svg"
+    glifo = ICONOS_MODULO.get(clave.split("-")[0], "documento")
+    return f"_sitio/iconos/{glifo}.svg"
+
+
 def modulos_de(
     fuente: Fuente, raiz_arbol: Nodo, categorias: dict[str, str]
 ) -> list[Modulo]:
@@ -922,6 +967,8 @@ def modulos_de(
                 clave = hijo.ruta.name
                 nombre = limpiar_titulo(hijo.titulo)
                 hijo.titulo = nombre
+                icono = icono_modulo(fuente, clave)
+                hijo.icono = icono
                 modulos.append(
                     Modulo(
                         nodo=hijo,
@@ -932,6 +979,7 @@ def modulos_de(
                         conteo=conteo_modulo(hijo.ruta),
                         categoria=categoria(clave),
                         resumen=resumen_de(hijo.ruta),
+                        icono=icono,
                     )
                 )
         return modulos
@@ -944,17 +992,21 @@ def modulos_de(
             if not hijo.es_carpeta:
                 continue
             clave = hijo.ruta.name
-            nombre = re.sub(r"^[A-ZÁÉÍÓÚÜ]{2,}\.\s*", "", hijo.titulo)
+            nombre = limpiar_titulo(hijo.titulo)
+            hijo.titulo = nombre
+            icono = icono_modulo(fuente, clave)
+            hijo.icono = icono
             modulos.append(
                 Modulo(
                     nodo=hijo,
                     clave=clave,
-                    etiqueta=clave.split("-")[0].upper(),
+                    etiqueta="",
                     nombre=nombre,
                     grupo=grupo.titulo,
                     conteo=conteo_modulo(hijo.ruta),
                     categoria=categoria(clave),
                     resumen=resumen_de(hijo.ruta),
+                    icono=icono,
                 )
             )
     return modulos
@@ -970,10 +1022,9 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     etiqueta = html.escape(nodo.titulo)
     marcado = ' aria-current="page"' if nodo.url == actual else ""
     icono = ""
-    if nodo.codigo and nodo.fuente_id:
+    if nodo.icono:
         icono = (
-            f'<img class="icono-lateral" src="'
-            f'{relativo(f"{nodo.fuente_id}/assets/iconos/{nodo.codigo}.svg", pagina)}" alt="">'
+            f'<img class="icono-lateral" src="{relativo(nodo.icono, pagina)}" alt="">'
         )
     if not nodo.hijos:
         if not nodo.url:
@@ -1002,6 +1053,7 @@ def recortar(nodo: Nodo, nivel: int) -> Nodo:
     copia.codigo = nodo.codigo
     copia.fuente_id = nodo.fuente_id
     copia.clave = nodo.clave
+    copia.icono = nodo.icono
     if nivel < PROFUNDIDAD_LATERAL:
         copia.hijos = [recortar(hijo, nivel + 1) for hijo in nodo.hijos]
     return copia
@@ -1034,13 +1086,11 @@ def bloque_paso(anterior: Nodo | None, siguiente: Nodo | None, pagina: str) -> s
 def tarjeta_modulo(modulo: Modulo, fuente: Fuente, pagina: str) -> str:
     datos = modulo.conteo
     clave_datos = f"{fuente.id}:{modulo.clave}"
-    icono = ""
-    ruta_icono = fuente.raiz / "assets" / "iconos" / f"{modulo.clave}.svg"
-    if ruta_icono.exists():
-        icono = (
-            f'<img src="{relativo(f"{fuente.id}/assets/iconos/{modulo.clave}.svg", pagina)}" '
-            'alt="" width="32" height="32">'
-        )
+    icono = (
+        f'<img src="{relativo(modulo.icono, pagina)}" alt="" width="32" height="32">'
+        if modulo.icono
+        else ""
+    )
     url = relativo(modulo.nodo.url, pagina) if modulo.nodo.url else ""
     guias = datos["guias"]
     apuntes = datos["apuntes"]
@@ -1183,16 +1233,13 @@ def construir_fuente(
     ) -> str:
         base = posixpath.dirname(pagina) or "."
         raiz = posixpath.relpath(".", base) if base != "." else "."
-        icono_url = f"{fuente.id}/{fuente.icono}" if fuente.icono else ""
         favicon = (
-            f'<link rel="icon" href="{relativo(icono_url, pagina)}">'
-            if icono_url
-            else ""
+            f'<link rel="icon" href="'
+            f'{relativo("_sitio/marca-tile.svg", pagina)}">'
         )
         icono_cabecera = (
-            f'<img src="{relativo(icono_url, pagina)}" alt="" width="28" height="28">'
-            if icono_url
-            else ""
+            f'<img src="{relativo("_sitio/marca.svg", pagina)}" '
+            'alt="" width="28" height="28">'
         )
         reemplazos = {
             "{{TITULO}}": html.escape(titulo_html),
@@ -1204,8 +1251,8 @@ def construir_fuente(
             "{{CONTENIDO}}": cuerpo,
             "{{TOC}}": toc,
             "{{PAGINA}}": pagina,
-            "{{MARCA}}": fuente.marca,
-            "{{DESCRIPCION}}": html.escape(fuente.descripcion),
+            "{{MARCA}}": MARCA_SITIO,
+            "{{DESCRIPCION}}": html.escape(DESCRIPCION_SITIO),
             "{{PIE}}": pie(pagina),
             "{{CURSOS}}": relativo("index.html", pagina),
             "{{FAVICON}}": favicon,
@@ -1262,7 +1309,7 @@ def construir_fuente(
                 pagina,
                 f'<article class="documento"><div class="prosa">{cuerpo}</div>'
                 f"{bloque_paso(anterior, siguiente, pagina)}</article>",
-                f"{titulo} · {fuente.titulo}",
+                f"{titulo} · {TITULO_SITIO}",
                 cabecera,
                 lateral,
                 bloque_toc(md.toc),
@@ -1325,7 +1372,7 @@ def pintar_global(
     plantilla: str, version: str, lateral: str, contenido: str, descripcion: str
 ) -> str:
     reemplazos = {
-        "{{TITULO}}": "Contenido",
+        "{{TITULO}}": TITULO_SITIO,
         "{{RAIZ}}": ".",
         "{{V}}": version,
         "{{LATERAL}}": lateral,
@@ -1334,12 +1381,12 @@ def pintar_global(
         "{{CONTENIDO}}": contenido,
         "{{TOC}}": "",
         "{{PAGINA}}": "index.html",
-        "{{MARCA}}": "Contenido",
-        "{{DESCRIPCION}}": html.escape(descripcion),
+        "{{MARCA}}": MARCA_SITIO,
+        "{{DESCRIPCION}}": html.escape(DESCRIPCION_SITIO),
         "{{PIE}}": "",
         "{{CURSOS}}": "index.html",
-        "{{FAVICON}}": "",
-        "{{ICONO_CABECERA}}": "",
+        "{{FAVICON}}": '<link rel="icon" href="_sitio/marca-tile.svg">',
+        "{{ICONO_CABECERA}}": '<img src="_sitio/marca.svg" alt="" width="28" height="28">',
         "{{CLASE_CUERPO}}": "pagina-portada",
     }
     salida = plantilla
@@ -1360,7 +1407,7 @@ def construir_portada(
     ).hexdigest()[:8]
     modulos_global: list[dict] = []
     indice_global: list[dict] = []
-    tarjetas: list[str] = []
+    pares_modulos: list[tuple[Fuente, Modulo]] = []
     total = 0
     fuentes_meta: list[dict] = []
     categorias: set[str] = set()
@@ -1368,23 +1415,37 @@ def construir_portada(
         fuente = resultado["fuente"]
         fuentes_meta.append({"id": fuente.id, "titulo": fuente.titulo})
         for modulo in resultado["modulos"]:
-            modulos_global.append(
-                {
-                    "codigo": f"{fuente.id}:{modulo.clave}",
-                    "etiqueta": modulo.etiqueta,
-                    "titulo": modulo.nombre,
-                    "grupo": fuente.titulo,
-                    "url": modulo.nodo.url,
-                    "paginas": modulo.conteo["paginas"],
-                    "categoria": modulo.categoria,
-                    "resumen": modulo.resumen,
-                }
-            )
-            tarjetas.append(tarjeta_modulo(modulo, fuente, "index.html"))
+            pares_modulos.append((fuente, modulo))
             if modulo.categoria:
                 categorias.add(modulo.categoria)
         indice_global.extend(resultado["indice"])
         total += resultado["total_paginas"]
+
+    def orden_modulo(par: tuple[Fuente, Modulo]) -> tuple[int, str]:
+        categoria = par[1].categoria
+        posicion = (
+            ORDEN_CATEGORIAS.index(categoria)
+            if categoria in ORDEN_CATEGORIAS
+            else len(ORDEN_CATEGORIAS)
+        )
+        return posicion, par[1].nombre.casefold()
+
+    pares_modulos.sort(key=orden_modulo)
+    tarjetas: list[str] = []
+    for fuente, modulo in pares_modulos:
+        modulos_global.append(
+            {
+                "codigo": f"{fuente.id}:{modulo.clave}",
+                "etiqueta": modulo.etiqueta,
+                "titulo": modulo.nombre,
+                "grupo": fuente.titulo,
+                "url": modulo.nodo.url,
+                "paginas": modulo.conteo["paginas"],
+                "categoria": modulo.categoria,
+                "resumen": modulo.resumen,
+            }
+        )
+        tarjetas.append(tarjeta_modulo(modulo, fuente, "index.html"))
 
     datos = {
         "modulos": modulos_global,
@@ -1401,12 +1462,27 @@ def construir_portada(
     )
     shutil.copy2(FUENTE / "estilo.css", SALIDA / "_sitio" / "estilo.css")
     shutil.copy2(FUENTE / "app.js", SALIDA / "_sitio" / "app.js")
+    for nombre in ("marca.svg", "marca-tile.svg"):
+        shutil.copy2(FUENTE / nombre, SALIDA / "_sitio" / nombre)
+    shutil.copytree(FUENTE / "iconos", SALIDA / "_sitio" / "iconos", dirs_exist_ok=True)
 
     filtros = ['<button type="button" data-categoria="todas" aria-pressed="true">Todo</button>']
-    for categoria in sorted(categorias):
+    for categoria in sorted(
+        categorias,
+        key=lambda c: (
+            ORDEN_CATEGORIAS.index(c) if c in ORDEN_CATEGORIAS else len(ORDEN_CATEGORIAS),
+            c,
+        ),
+    ):
+        glifo = ICONOS_CATEGORIA.get(categoria)
+        icono_filtro = (
+            f'<img src="_sitio/iconos/{glifo}.svg" alt="" width="16" height="16">'
+            if glifo
+            else ""
+        )
         filtros.append(
             f'<button type="button" data-categoria="{html.escape(categoria)}" '
-            f'aria-pressed="false">{html.escape(categoria)}</button>'
+            f'aria-pressed="false">{icono_filtro}{html.escape(categoria)}</button>'
         )
     enlaces_recursos = "".join(
         f'<a class="enlace-suelto" href="{relativo(nodo.url, "index.html")}">'
@@ -1431,8 +1507,8 @@ def construir_portada(
     )
     contenido = f"""
 <header class="portada portada-temario">
-  <p class="antetitulo">Visor local</p>
-  <h1>Contenido</h1>
+  <p class="antetitulo">Contenido IT</p>
+  <h1>Formación</h1>
   <p class="entradilla">Lo que he ido estudiando y documentando: {len(modulos_global)} módulos de sistemas, redes, datos, desarrollo y seguridad.</p>
   <div class="portada-acciones">
     <button class="boton-principal" data-abrir-busqueda>Buscar en el contenido <kbd>Ctrl</kbd><kbd>K</kbd></button>
@@ -1461,21 +1537,24 @@ def construir_portada(
 
 
 def construir_todo(config: dict | None = None) -> dict[str, dict]:
-    global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS
+    global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS
     if config is None:
         config = cargar_config()
     fuentes = resolver_fuentes(config)
     CATEGORIAS = config.get("categorias", {})
+    ORDEN_CATEGORIAS = config.get("orden_categorias", [])
     if SALIDA.exists():
         shutil.rmtree(SALIDA)
     SALIDA.mkdir(parents=True)
 
-    raiz_global = Nodo(SITIO, "Contenido", "index.html", True)
+    raiz_global = Nodo(SITIO, "Formación", "index.html", True)
     raiz_global.fuente_id = ""
     raiz_global.clave = "raiz"
     recursos = Nodo(SITIO, "Recursos", None, True)
     recursos.fuente_id = ""
     recursos.clave = "recursos"
+    recursos.icono = "_sitio/iconos/documento.svg"
+    categorias_nodos: dict[str, Nodo] = {}
     datos_fuentes: list[tuple[Fuente, list[Modulo]]] = []
     for fuente in fuentes:
         ACTUAL = fuente
@@ -1486,7 +1565,16 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
         ids_modulos = {id(modulo.nodo) for modulo in modulos}
         for modulo in modulos:
             modulo.nodo.fuente_id = fuente.id
-            raiz_global.hijos.append(modulo.nodo)
+            categoria = modulo.categoria or "Otros"
+            if categoria not in categorias_nodos:
+                nodo_categoria = Nodo(SITIO, categoria, None, True)
+                nodo_categoria.fuente_id = ""
+                nodo_categoria.clave = f"categoria:{slug(categoria)}"
+                nodo_categoria.icono = (
+                    f"_sitio/iconos/{ICONOS_CATEGORIA.get(categoria, 'documento')}.svg"
+                )
+                categorias_nodos[categoria] = nodo_categoria
+            categorias_nodos[categoria].hijos.append(modulo.nodo)
         for hijo in arbol_fuente.hijos:
             if id(hijo) in ids_modulos:
                 continue
@@ -1497,6 +1585,13 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
             recursos.hijos.append(hijo)
         datos_fuentes.append((fuente, modulos))
 
+    def clave_categoria(nombre: str) -> tuple[int, str]:
+        if nombre in ORDEN_CATEGORIAS:
+            return ORDEN_CATEGORIAS.index(nombre), nombre
+        return len(ORDEN_CATEGORIAS), nombre
+
+    for nombre in sorted(categorias_nodos, key=clave_categoria):
+        raiz_global.hijos.append(categorias_nodos[nombre])
     if recursos.hijos:
         raiz_global.hijos.append(recursos)
 

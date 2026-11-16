@@ -573,8 +573,8 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 body.pagina-portada .marco { grid-template-columns: var(--ancho-lateral) minmax(0, 1fr); }
 .portada-temario { max-width: none; padding-top: 48px; }
 .portada-temario h1 {
-  font-size: clamp(72px, 8vw, 122px);
-  font-weight: 760; letter-spacing: -0.09em; line-height: 0.92;
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 720; letter-spacing: -0.06em; line-height: 1.05;
 }
 .portada-temario .entradilla { max-width: 620px; }
 .bloque-curso { margin: 64px 0 0; }
@@ -607,12 +607,14 @@ body.pagina-portada .marco { grid-template-columns: var(--ancho-lateral) minmax(
 
 .chips-filtro { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
 .chips-filtro button {
+  display: inline-flex; align-items: center; gap: 6px;
   min-height: 44px; padding: 0 16px;
   border: 1px solid var(--line-strong); border-radius: 999px;
   background: transparent; color: var(--muted);
   font: inherit; font-size: 13px; cursor: pointer;
   transition: color 200ms ease, border-color 200ms ease;
 }
+.chips-filtro button img { width: 16px; height: 16px; }
 .chips-filtro button:hover { color: var(--ink); border-color: var(--line-strong); }
 .chips-filtro button[aria-pressed="true"] {
   border-color: var(--accent); color: var(--accent-hover); font-weight: 700;

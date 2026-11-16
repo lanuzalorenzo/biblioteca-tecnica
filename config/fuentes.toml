@@ -1,6 +1,21 @@
 # Fuentes del visor. Cada fila se resuelve por etiqueta con
 # privatenotes/scripts/repos.py; aquí no se escribe ninguna ruta de repo.
 
+orden_categorias = [
+  "Sistemas",
+  "Redes",
+  "Datos",
+  "Desarrollo",
+  "Hardware",
+  "Empleo",
+  "Incidentes",
+  "Bastionado",
+  "Producción",
+  "Forense",
+  "Ofensiva",
+  "Normativa",
+]
+
 [registro]
 rutas_env = "~/Repositorios/privatenotes/workspace/rutas.env"
 
@@ -8,9 +23,6 @@ rutas_env = "~/Repositorios/privatenotes/workspace/rutas.env"
 id = "ciclo-asir"
 etiqueta = "ciclo-asir"
 titulo = "Ciclo ASIR"
-descripcion = "Ciclo ASIR: once módulos con apuntes y guías."
-marca = "Ciclo <em>ASIR</em>"
-icono = "assets/iconos/ciclo-asir.svg"
 estructura = "asir"
 raices = ["primer-curso", "segundo-curso"]
 esperados = { modulos = 11, apuntes = 43, guias = 32 }
@@ -19,9 +31,6 @@ esperados = { modulos = 11, apuntes = 43, guias = 32 }
 id = "curso-ciberseguridad"
 etiqueta = "curso-ciberseguridad"
 titulo = "Curso de Ciberseguridad"
-descripcion = "Curso de Ciberseguridad: seis módulos con apuntes, actividades y entregas."
-marca = "Curso <em>Ciberseguridad</em>"
-icono = "assets/iconos/curso.svg"
 estructura = "curso"
 esperados = { modulos = 6 }
 

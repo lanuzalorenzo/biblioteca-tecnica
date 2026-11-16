@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>documento</title>
+  <desc>Identidad visual: navy con degradado, borde cian y glifo blanco.</desc>
+  <defs>
+    <linearGradient id="bg-documento" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07131e"/>
+      <stop offset="100%" stop-color="#0e2a47"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg-documento)"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="none" stroke="#38bdf8" stroke-width="2"/>
+  <g transform="translate(10 10) scale(1.83334)" fill="#f8fafc" stroke="none">
+    <path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M6,4V20H18V10H12V4H6Z"/>
+  </g>
+</svg>

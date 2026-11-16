@@ -5,9 +5,9 @@ Visor local del contenido IT de los cursos. Repositorio privado: no se enlaza ni
 ## Propósito y límites
 
 - Lee las fuentes configuradas y genera un sitio navegable en `dist/`. No guarda contenido propio ni versiona contenido; `dist/` es una copia local de los recursos que se regenera.
-- La portada es un índice de contenido, no un catálogo de cursos: cada módulo es un item, con su categoría, sus apuntes y sus guías. El curso solo identifica la fuente.
+- La portada es un índice de contenido, no un catálogo de cursos: cada módulo es un item, con su categoría, sus apuntes y sus guías. El lateral agrupa por categorías plegables, con icono de categoría y de módulo. El curso solo identifica la fuente.
 - No publica, no sirve fuera de `127.0.0.1` y no usa red, CDN ni telemetría.
-- Este repo es el dueño del visor que vivía en `curso-ciberseguridad/sitio/` y `scripts/sitio.py`. Mientras la fase 2 no esté cerrada, el curso conserva una copia pendiente de retirar; no se mantiene como segunda fuente de verdad.
+- Este repo es el dueño del visor que vivía en `curso-ciberseguridad/sitio/` y `scripts/sitio.py`; el curso ya no conserva plantilla, estilos ni lógica del visor.
 - Quedan fuera las fuentes que no son contenido de estudio.
 
 ## Estructura
@@ -16,7 +16,8 @@ Visor local del contenido IT de los cursos. Repositorio privado: no se enlaza ni
 config/fuentes.toml     fuentes por etiqueta, presentación y categorías
 scripts/visor.py        build, servidor, vigilancia y composición
 scripts/verificar.py    verificación de módulos, búsqueda y dist/
-sitio/                  plantilla, estilos y guion del navegador
+sitio/                  plantilla, estilos, marca, iconos y guion
+servicio/               unidad de usuario de systemd
 dist/                   salida generada; no se versiona
 ```
 
@@ -35,9 +36,14 @@ Cada fuente se resuelve por etiqueta con `privatenotes/scripts/repos.py` y `work
 python3 scripts/visor.py build
 python3 scripts/visor.py serve [--puerto 8001] [--vigilar] [--abrir]
 python3 scripts/verificar.py
+
+mkdir -p ~/.config/systemd/user
+cp servicio/visor-temario.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now visor-temario
 ```
 
-El servicio de usuario es `visor-temario` y escucha en `127.0.0.1:8001`. El `8000` pertenece al visor antiguo del curso hasta que se retire.
+El servicio de usuario es `visor-temario` y escucha en `127.0.0.1:8001`. El `8000` no lo usa ningún visor.
 
 ## Verificación
 
