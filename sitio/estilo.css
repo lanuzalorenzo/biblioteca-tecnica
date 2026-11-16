@@ -215,7 +215,8 @@ kbd {
 .rama > details[open] > summary::before { transform: rotate(45deg); }
 
 .lateral .enlace {
-  display: flex; align-items: center; min-height: 44px; padding: 6px 8px;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 44px; padding: 6px 8px;
   color: var(--muted); line-height: 1.5; font-size: 13px;
   transition: color 200ms ease, background-color 200ms ease;
 }
