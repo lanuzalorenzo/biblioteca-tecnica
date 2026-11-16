@@ -223,12 +223,7 @@ kbd {
 .lateral .enlace[aria-current="page"] {
   background: var(--surface); color: var(--accent-hover); font-weight: 700;
 }
-.lateral .hoja > .enlace { padding-left: 24px; position: relative; }
-.lateral .hoja > .enlace::before {
-  content: ""; position: absolute; left: 12px; top: 14px;
-  width: 4px; height: 4px; border-radius: 50%; background: currentColor;
-  opacity: 0.6;
-}
+.lateral .hoja > .enlace { padding-left: 16px; }
 .icono-lateral { width: 18px; height: 18px; margin: 0; flex: none; }
 .rama > details > summary .icono-lateral { margin-left: 0; }
 

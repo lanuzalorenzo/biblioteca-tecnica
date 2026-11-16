@@ -1047,7 +1047,7 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     else:
         titulo_rama = f'<span class="enlace-rama">{etiqueta}</span>'
     hijos = "".join(render_lateral(hijo, pagina, actual) for hijo in nodo.hijos)
-    abierto = " open" if contiene_actual else ""
+    abierto = " open" if contiene_actual or actual == "index.html" else ""
     cuenta = ""
     if nodo.clave.startswith("categoria:") or nodo.clave == "recursos":
         cuenta = f'<span class="rama-cuenta">{len(nodo.hijos)}</span>'
