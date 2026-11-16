@@ -121,8 +121,9 @@
     const lateral = $("#lateral");
     const botonMenu = $("[data-menu]");
     const abiertos = leer(CLAVE_ABIERTOS, {});
+    const detalles = $$(".lateral details");
 
-    $$(".lateral details").forEach((detalle) => {
+    detalles.forEach((detalle) => {
       const clave =
         detalle.dataset.clave || detalle.querySelector("summary")?.textContent?.trim() || "";
       const dentro = Boolean(detalle.querySelector('[aria-current="page"]'));
@@ -135,6 +136,21 @@
         guardar(CLAVE_ABIERTOS, abiertos);
       });
     });
+
+    const botonExpandir = $("[data-arbol-expandir]");
+    const botonComprimir = $("[data-arbol-comprimir]");
+    if (botonExpandir && botonComprimir && detalles.length) {
+      botonExpandir.addEventListener("click", () => {
+        detalles.forEach((detalle) => {
+          detalle.open = true;
+        });
+      });
+      botonComprimir.addEventListener("click", () => {
+        detalles.forEach((detalle) => {
+          detalle.open = false;
+        });
+      });
+    }
 
     if (botonMenu && lateral) {
       const plegarMenu = () => {
@@ -154,21 +170,6 @@
       });
       document.addEventListener("keydown", (evento) => {
         if (evento.key === "Escape" && lateral.classList.contains("abierto")) plegarMenu();
-      });
-    }
-
-    const reiniciar = $("[data-reiniciar]");
-    if (reiniciar) {
-      reiniciar.addEventListener("click", () => {
-        if (!confirm("¿Borrar las marcas de lectura de este navegador?")) return;
-        guardar(CLAVE_LEIDAS, {});
-        guardar(CLAVE_ULTIMA, "");
-        pintarProgreso();
-        const boton = $("[data-leido]");
-        if (boton) {
-          boton.setAttribute("aria-pressed", "false");
-          boton.lastChild.textContent = "Marcar como leído";
-        }
       });
     }
 

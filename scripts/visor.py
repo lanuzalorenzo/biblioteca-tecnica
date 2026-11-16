@@ -38,7 +38,7 @@ FUENTE = SITIO / "sitio"
 
 AUTOR = "Lorenzo Lanuza"
 TITULO_SITIO = f"Formación · {AUTOR}"
-MARCA_SITIO = 'Lorenzo <em>Lanuza</em>'
+MARCA_SITIO = "Lorenzo Lanuza"
 DESCRIPCION_SITIO = (
     "Formación de Lorenzo Lanuza: módulos de sistemas, redes, datos, "
     "desarrollo y seguridad."
@@ -78,6 +78,7 @@ ACTUAL: Fuente | None = None
 AVISOS_BUILD: list[str] = []
 CATEGORIAS: dict[str, str] = {}
 ORDEN_CATEGORIAS: list[str] = []
+RECURSOS_URLS: set[str] = set()
 
 # Carpetas que no forman parte del contenido publicado en el sitio.
 VETADAS = {".git", ".github", ".opencode", "sitio", "scripts"}
@@ -1047,7 +1048,7 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     else:
         titulo_rama = f'<span class="enlace-rama">{etiqueta}</span>'
     hijos = "".join(render_lateral(hijo, pagina, actual) for hijo in nodo.hijos)
-    abierto = " open" if contiene_actual or actual == "index.html" else ""
+    abierto = " open" if contiene_actual else ""
     cuenta = ""
     if nodo.clave.startswith("categoria:") or nodo.clave == "recursos":
         cuenta = f'<span class="rama-cuenta">{len(nodo.hijos)}</span>'
@@ -1327,16 +1328,17 @@ def construir_fuente(
             ),
         )
         pagina_count += 1
-        indice_busqueda.append(
-            {
-                "t": titulo,
-                "u": pagina,
-                "m": "",
-                "x": texto_plano(texto),
-                "tipo": tipo_documento(ruta),
-                "fuente": fuente.id,
-            }
-        )
+        if pagina not in RECURSOS_URLS:
+            indice_busqueda.append(
+                {
+                    "t": titulo,
+                    "u": pagina,
+                    "m": "",
+                    "x": texto_plano(texto),
+                    "tipo": tipo_documento(ruta),
+                    "fuente": fuente.id,
+                }
+            )
 
     for nodo in orden_fuente:
         pagina = nodo.url
@@ -1409,7 +1411,6 @@ def pintar_global(
 def construir_portada(
     resultados: dict[str, dict],
     raiz_global: Nodo,
-    recursos: Nodo,
 ) -> None:
     """Portada única: todos los módulos como items, sin separar por cursos."""
     plantilla = leer_plantilla()
@@ -1496,19 +1497,6 @@ def construir_portada(
             f'<button type="button" data-categoria="{html.escape(categoria)}" '
             f'aria-pressed="false">{icono_filtro}{html.escape(categoria)}</button>'
         )
-    enlaces_recursos = "".join(
-        f'<a class="enlace-suelto" href="{relativo(nodo.url, "index.html")}">'
-        f"{html.escape(nodo.titulo)}</a>"
-        for nodo in recursos.hijos
-        if nodo.url
-    )
-    recursos_html = (
-        '<section class="panel panel-recursos"><h2>Recursos</h2>'
-        f'<div class="suelto">{enlaces_recursos}</div></section>'
-        if enlaces_recursos
-        else ""
-    )
-
     lateral = (
         '<nav class="lateral-nav" aria-label="Contenido"><ul class="nav-raiz">'
         + "".join(
@@ -1558,7 +1546,6 @@ def construir_portada(
 </section>
 <div class="chips-filtro" data-filtros aria-label="Filtrar por categoría">{''.join(filtros)}</div>
 <section class="rejilla rejilla-contenido">{''.join(tarjetas)}</section>
-{recursos_html}
 """
     escribir(
         SALIDA / "index.html",
@@ -1573,7 +1560,7 @@ def construir_portada(
 
 
 def construir_todo(config: dict | None = None) -> dict[str, dict]:
-    global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS
+    global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS, RECURSOS_URLS
     if config is None:
         config = cargar_config()
     fuentes = resolver_fuentes(config)
@@ -1640,6 +1627,7 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
             recorrer(hijo, ruta_nodo)
 
     recorrer(raiz_global, [])
+    RECURSOS_URLS = {nodo.url for nodo in aplanar(recursos, []) if nodo.url}
     if recursos.hijos:
         orden.extend(aplanar(recursos, []))
         recorrer(recursos, [raiz_global])
@@ -1650,7 +1638,7 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
             fuente, modulos, raiz_global, orden, caminos
         )
 
-    construir_portada(resultados, raiz_global, recursos)
+    construir_portada(resultados, raiz_global)
     AVISOS_BUILD = revisar_enlaces()
     if AVISOS_BUILD:
         print(f"Enlaces sin destino: {len(AVISOS_BUILD)}", flush=True)

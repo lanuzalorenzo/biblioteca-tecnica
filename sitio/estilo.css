@@ -178,7 +178,23 @@ kbd {
 }
 .lateral-cabecera {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 8px; margin: 0 0 16px;
+  gap: 8px; margin: 0 0 12px;
+}
+.arbol-acciones {
+  display: flex; gap: 6px; margin: 0 0 10px;
+}
+.boton-arbol {
+  display: inline-flex; flex: 1; align-items: center; justify-content: center;
+  min-height: 40px; padding: 0 8px;
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  color: var(--muted); font: inherit; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+  cursor: pointer; transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+}
+.boton-arbol:hover {
+  color: var(--ink); border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .lateral-inicio {
   font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
@@ -189,7 +205,7 @@ kbd {
 }
 
 .nav-raiz, .hijos { list-style: none; margin: 0; padding: 0; }
-.hijos { margin: 0 0 8px; padding-left: 16px; border-left: 1px solid var(--line); }
+.hijos { margin: 0 0 8px; padding-left: 16px; }
 .nav-raiz > li { margin-bottom: 4px; }
 
 /* Desplegables nativos: funcionan sin JavaScript */
@@ -230,8 +246,7 @@ kbd {
 
 .lateral-pie {
   display: flex; flex-wrap: wrap; gap: 8px 16px;
-  margin: 24px 0 0; padding-top: 16px;
-  border-top: 1px solid var(--line); font-size: 12px;
+  margin: 24px 0 0; font-size: 12px;
 }
 .lateral-pie a, .boton-tenue { color: var(--muted); }
 .lateral-pie a, .boton-tenue {
