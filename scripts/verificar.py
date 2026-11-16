@@ -69,25 +69,6 @@ def main() -> int:
             f"{conteos['apuntes']} apuntes, {conteos['guias']} guías"
         )
 
-        if fuente.estructura == "pdf":
-            for modulo in modulos:
-                if not modulo.nodo.url or not (visor.SALIDA / modulo.nodo.url).exists():
-                    errores.append(f"{identificador}: falta el contenido de {modulo.nombre}")
-            candidatos = [e for e in resultado["indice"] if e.get("tipo") == "pdf"]
-            if candidatos:
-                entrada = candidatos[0]
-                palabras = [p for p in entrada["t"].split() if len(p) >= 4]
-                consulta = palabras[0] if palabras else entrada["t"]
-                if not buscar(resultado["indice"], consulta):
-                    errores.append(
-                        f"{identificador}: la búsqueda no encuentra «{entrada['t']}»"
-                    )
-                else:
-                    print(f"  búsqueda contenido: «{consulta}» → {entrada['t']}")
-            if not (visor.SALIDA / identificador).is_dir():
-                errores.append(f"{identificador}: no se generó su carpeta")
-            continue
-
         for tipo in ("apunte", "guia"):
             candidatos = [e for e in resultado["indice"] if e.get("tipo") == tipo]
             if not candidatos:

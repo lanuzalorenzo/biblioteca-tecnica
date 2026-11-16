@@ -49,9 +49,6 @@ ICONOS_CATEGORIA = {
     "Redes": "redes",
     "Datos": "datos",
     "Desarrollo": "codigo",
-    "Calidad": "calidad",
-    "Herramientas": "herramientas",
-    "Cloud": "cloud",
     "Hardware": "hardware",
     "Empleo": "empleo",
     "Incidentes": "alerta",
@@ -80,7 +77,6 @@ DESTINO = SALIDA
 ACTUAL: Fuente | None = None
 AVISOS_BUILD: list[str] = []
 CATEGORIAS: dict[str, str] = {}
-CATEGORIAS_PDF: dict[str, str] = {}
 ORDEN_CATEGORIAS: list[str] = []
 
 # Carpetas que no forman parte del contenido publicado en el sitio.
@@ -112,7 +108,6 @@ class Fuente:
     titulo: str
     estructura: str
     raiz: Path
-    tipo: str = "markdown"
     raices: list[str] = field(default_factory=list)
     esperados: dict[str, int] = field(default_factory=dict)
 
@@ -135,20 +130,11 @@ def cargar_config(ruta: Path = CONFIG) -> dict:
     if not ruta.exists():
         raise SystemExit(f"No existe la configuración: {ruta}")
     with ruta.open("rb") as archivo:
-        config = tomllib.load(archivo)
-    local = Path.home() / ".config" / "privatenotes" / "visor-fuentes.toml"
-    if ruta == CONFIG and local.exists():
-        with local.open("rb") as archivo:
-            extra = tomllib.load(archivo)
-        config["fuente"] = config.get("fuente", []) + extra.get("fuente", [])
-        for tabla in ("categorias", "categorias_pdf"):
-            if tabla in extra:
-                config.setdefault(tabla, {}).update(extra[tabla])
-    return config
+        return tomllib.load(archivo)
 
 
 def resolver_fuentes(config: dict) -> list[Fuente]:
-    """Resuelve cada fuente por etiqueta o por una raíz local fuera de Git."""
+    """Resuelve cada etiqueta a su raíz con `repos.py`; no adivina rutas."""
     registro = config.get("registro", {})
     if not registro.get("rutas_env"):
         raise SystemExit("config/fuentes.toml no declara registro.rutas_env")
@@ -160,29 +146,20 @@ def resolver_fuentes(config: dict) -> list[Fuente]:
     repos_py = Path(privatenotes) / "scripts" / "repos.py"
     if not repos_py.exists():
         raise SystemExit(f"No existe la puerta del registro: {repos_py}")
-    locales = Path.home() / ".config" / "privatenotes" / "rutas-locales.env"
-    env_local = leer_env(locales) if locales.exists() else {}
 
     fuentes: list[Fuente] = []
     for item in config.get("fuente", []):
         etiqueta = item["etiqueta"]
-        clave_local = item.get("ruta_local")
-        if clave_local:
-            valor = env_local.get(clave_local)
-            if not valor:
-                raise SystemExit(f"rutas-locales.env no declara {clave_local}")
-            raiz = Path(valor).expanduser()
-        else:
-            proceso = subprocess.run(
-                [sys.executable, str(repos_py), "campo", etiqueta, "ruta"],
-                capture_output=True,
-                text=True,
+        proceso = subprocess.run(
+            [sys.executable, str(repos_py), "campo", etiqueta, "ruta"],
+            capture_output=True,
+            text=True,
+        )
+        if proceso.returncode != 0 or not proceso.stdout.strip():
+            raise SystemExit(
+                f"No se pudo resolver la fuente {etiqueta!r}: {proceso.stderr.strip()}"
             )
-            if proceso.returncode != 0 or not proceso.stdout.strip():
-                raise SystemExit(
-                    f"No se pudo resolver la fuente {etiqueta!r}: {proceso.stderr.strip()}"
-                )
-            raiz = Path(proceso.stdout.strip())
+        raiz = Path(proceso.stdout.strip())
         if not raiz.is_dir():
             raise SystemExit(f"La fuente {etiqueta!r} no es un directorio: {raiz}")
         fuentes.append(
@@ -192,7 +169,6 @@ def resolver_fuentes(config: dict) -> list[Fuente]:
                 titulo=item.get("titulo", item["id"]),
                 estructura=item.get("estructura", "curso"),
                 raiz=raiz,
-                tipo=item.get("tipo", item.get("estructura", "markdown")),
                 raices=item.get("raices", []),
                 esperados=item.get("esperados", {}),
             )
@@ -871,8 +847,6 @@ class Modulo:
     categoria: str = ""
     resumen: str = ""
     icono: str = ""
-    recurso: str = ""
-    paginas_pdf: int = 0
 
 
 def resumen_de(ruta: Path) -> str:
@@ -1038,84 +1012,6 @@ def modulos_de(
     return modulos
 
 
-def titulo_pdf(ruta: Path) -> str:
-    nombre = ruta.stem
-    nombre = re.sub(r"\s*-\s*Material.*$", "", nombre, flags=re.IGNORECASE)
-    nombre = re.sub(r"^Desarrollo de aplicaciones web con ", "", nombre, flags=re.IGNORECASE)
-    nombre = re.sub(r"^Desarrollo Web con ", "", nombre, flags=re.IGNORECASE)
-    nombre = re.sub(r"^\d{3}-", "", nombre)
-    nombre = nombre.replace("GIT", "Git")
-    nombre = nombre.replace(" - ", ": ").replace("-", " ").replace("_", " ")
-    nombre = re.sub(r"\s+", " ", nombre).strip()
-    nombre = limpiar_titulo(nombre).strip(" .-—:")
-    return nombre[:1].upper() + nombre[1:] if nombre else nombre
-
-
-def categoria_pdf(rel: str, nombre: str, categorias: dict[str, str]) -> str:
-    if rel in categorias:
-        return categorias[rel]
-    texto = f"{rel} {nombre}".casefold()
-    if any(clave in texto for clave in ("angular", "asp.net", "mvc")):
-        return "Desarrollo"
-    if any(clave in texto for clave in ("git", "docker", "podman")):
-        return "Herramientas"
-    if "azure" in texto:
-        return "Cloud"
-    if any(clave in texto for clave in ("testing", "xunit", "moq")):
-        return "Calidad"
-    return "Otros"
-
-
-def paginas_pdf(ruta: Path) -> int:
-    try:
-        proceso = subprocess.run(
-            ["pdfinfo", str(ruta)], capture_output=True, text=True, timeout=20
-        )
-        for linea in proceso.stdout.splitlines():
-            if linea.startswith("Pages:"):
-                return int(linea.split(":", 1)[1].strip())
-    except (OSError, ValueError, subprocess.SubprocessError):
-        pass
-    return 0
-
-
-def modulos_pdf(fuente: Fuente, categorias: dict[str, str]) -> list[Modulo]:
-    modulos: list[Modulo] = []
-    for ruta in sorted(fuente.raiz.rglob("*.pdf")):
-        if not ruta.is_file() or ruta.stat().st_size == 0:
-            continue
-        rel = ruta.relative_to(fuente.raiz).as_posix()
-        nombre = titulo_pdf(ruta)
-        categoria = categoria_pdf(rel, nombre, categorias)
-        icono = f"_sitio/iconos/{ICONOS_CATEGORIA.get(categoria, 'documento')}.svg"
-        nodo = Nodo(ruta, nombre, f"{fuente.id}/{rel}", False)
-        nodo.fuente_id = fuente.id
-        nodo.icono = icono
-        paginas = paginas_pdf(ruta)
-        modulos.append(
-            Modulo(
-                nodo=nodo,
-                clave=f"pdf:{rel}",
-                etiqueta="",
-                nombre=nombre,
-                grupo=fuente.titulo,
-                conteo={
-                    "paginas": 0,
-                    "teoria": 0,
-                    "apuntes": 0,
-                    "ejercicios": 0,
-                    "guias": 0,
-                },
-                categoria=categoria,
-                resumen="",
-                icono=icono,
-                recurso="PDF",
-                paginas_pdf=paginas,
-            )
-        )
-    return modulos
-
-
 def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     """Árbol de navegación con `<details>`: se despliega sin JavaScript.
 
@@ -1199,32 +1095,14 @@ def tarjeta_modulo(modulo: Modulo, fuente: Fuente, pagina: str) -> str:
         else ""
     )
     url = relativo(modulo.nodo.url, pagina) if modulo.nodo.url else ""
-    if modulo.recurso:
-        detalle = ""
-        barra = ""
-        pie = (
-            '<span class="tarjeta-pie"><span>Contenido</span>'
-            '<span class="porcentaje">Abrir →</span></span>'
-        )
+    guias = datos["guias"]
+    apuntes = datos["apuntes"]
+    detalle_apuntes = f"{apuntes} apunte" if apuntes == 1 else f"{apuntes} apuntes"
+    if guias:
+        detalle_guias = f"{guias} guía" if guias == 1 else f"{guias} guías"
+        detalle = f"{detalle_apuntes} · {detalle_guias}"
     else:
-        guias = datos["guias"]
-        apuntes = datos["apuntes"]
-        detalle_apuntes = f"{apuntes} apunte" if apuntes == 1 else f"{apuntes} apuntes"
-        if guias:
-            detalle_guias = f"{guias} guía" if guias == 1 else f"{guias} guías"
-            detalle = f"{detalle_apuntes} · {detalle_guias}"
-        else:
-            detalle = f"{detalle_apuntes} · {datos['ejercicios']} páginas de ejercicios"
-        barra = (
-            f'<span class="barra"><span class="barra-relleno" '
-            f'data-progreso="{html.escape(clave_datos)}"></span></span>'
-        )
-        pie = (
-            f'<span class="tarjeta-pie"><span data-leidas="{html.escape(clave_datos)}">'
-            f'0 de {datos["paginas"]}</span>'
-            f'<span class="porcentaje" data-porcentaje="{html.escape(clave_datos)}">'
-            "0 %</span></span>"
-        )
+        detalle = f"{detalle_apuntes} · {datos['ejercicios']} páginas de ejercicios"
     etiqueta = (
         f'<span class="tarjeta-codigo">{html.escape(modulo.etiqueta)}</span>'
         if modulo.etiqueta
@@ -1246,14 +1124,17 @@ def tarjeta_modulo(modulo: Modulo, fuente: Fuente, pagina: str) -> str:
         if modulo.resumen
         else ""
     )
-    detalle_html = f'<span class="tarjeta-datos">{detalle}</span>' if detalle else ""
     return (
         f'<a class="tarjeta tarjeta-modulo" href="{url}" '
         f'data-modulo="{html.escape(clave_datos)}" '
         f'data-categoria="{html.escape(modulo.categoria)}">'
         f'<span class="tarjeta-cabecera">{icono}{etiqueta}{categoria}</span>'
         f'<span class="tarjeta-titulo">{html.escape(modulo.nombre)}</span>'
-        f"{resumen}{detalle_html}{barra}{pie}"
+        f"{resumen}"
+        f'<span class="tarjeta-datos">{detalle}</span>'
+        f'<span class="barra"><span class="barra-relleno" data-progreso="{html.escape(clave_datos)}"></span></span>'
+        f'<span class="tarjeta-pie"><span data-leidas="{html.escape(clave_datos)}">0 de {datos["paginas"]}</span>'
+        f'<span class="porcentaje" data-porcentaje="{html.escape(clave_datos)}">0 %</span></span>'
         "</a>"
     )
 
@@ -1490,56 +1371,6 @@ def construir_fuente(
     }
 
 
-def construir_fuente_pdf(fuente: Fuente, modulos: list[Modulo]) -> dict:
-    """Copia los PDFs a `dist/` y prepara el índice; no genera páginas HTML."""
-    indice_busqueda: list[dict] = []
-    copiados = 0
-    for modulo in modulos:
-        origen = modulo.nodo.ruta
-        rel = origen.relative_to(fuente.raiz)
-        destino = SALIDA / fuente.id / rel
-        destino.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(origen, destino)
-        copiados += 1
-        indice_busqueda.append(
-            {
-                "t": modulo.nombre,
-                "u": modulo.nodo.url,
-                "m": "",
-                "x": f"{modulo.nombre} {modulo.categoria}",
-                "tipo": "pdf",
-                "fuente": fuente.id,
-            }
-        )
-    datos = {
-        "modulos": [
-            {
-                "codigo": f"{fuente.id}:{modulo.clave}",
-                "etiqueta": modulo.etiqueta,
-                "titulo": modulo.nombre,
-                "grupo": fuente.titulo,
-                "url": modulo.nodo.url,
-                "paginas": 0,
-                "categoria": modulo.categoria,
-                "resumen": modulo.resumen,
-            }
-            for modulo in modulos
-        ],
-        "total": len(modulos),
-    }
-    print(f"[{fuente.id}] PDFs: {len(modulos)}", flush=True)
-    print(f"[{fuente.id}] Recursos copiados: {copiados}", flush=True)
-    return {
-        "fuente": fuente,
-        "modulos": modulos,
-        "datos": datos,
-        "indice": indice_busqueda,
-        "paginas": len(modulos),
-        "total_paginas": len(modulos),
-        "copiados": copiados,
-    }
-
-
 def pintar_global(
     plantilla: str, version: str, lateral: str, contenido: str, descripcion: str
 ) -> str:
@@ -1734,12 +1565,11 @@ def construir_portada(
 
 
 def construir_todo(config: dict | None = None) -> dict[str, dict]:
-    global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, CATEGORIAS_PDF, ORDEN_CATEGORIAS
+    global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS
     if config is None:
         config = cargar_config()
     fuentes = resolver_fuentes(config)
     CATEGORIAS = config.get("categorias", {})
-    CATEGORIAS_PDF = config.get("categorias_pdf", {})
     ORDEN_CATEGORIAS = config.get("orden_categorias", [])
     if SALIDA.exists():
         shutil.rmtree(SALIDA)
@@ -1757,22 +1587,10 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
     for fuente in fuentes:
         ACTUAL = fuente
         RAIZ = fuente.raiz
-        if fuente.estructura == "pdf":
-            modulos = modulos_pdf(fuente, CATEGORIAS_PDF)
-            ids_modulos: set[int] = set()
-        else:
-            arbol_fuente = arbol(fuente.raiz)
-            ordenar_arbol_por_raiz(fuente, arbol_fuente)
-            modulos = modulos_de(fuente, arbol_fuente, CATEGORIAS)
-            ids_modulos = {id(modulo.nodo) for modulo in modulos}
-            for hijo in arbol_fuente.hijos:
-                if id(hijo) in ids_modulos:
-                    continue
-                if hijo.es_carpeta and hijo.ruta.name in fuente.raices:
-                    continue
-                if hijo.ruta.name == "assets":
-                    continue
-                recursos.hijos.append(hijo)
+        arbol_fuente = arbol(fuente.raiz)
+        ordenar_arbol_por_raiz(fuente, arbol_fuente)
+        modulos = modulos_de(fuente, arbol_fuente, CATEGORIAS)
+        ids_modulos = {id(modulo.nodo) for modulo in modulos}
         for modulo in modulos:
             modulo.nodo.fuente_id = fuente.id
             categoria = modulo.categoria or "Otros"
@@ -1785,6 +1603,14 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
                 )
                 categorias_nodos[categoria] = nodo_categoria
             categorias_nodos[categoria].hijos.append(modulo.nodo)
+        for hijo in arbol_fuente.hijos:
+            if id(hijo) in ids_modulos:
+                continue
+            if hijo.es_carpeta and hijo.ruta.name in fuente.raices:
+                continue
+            if hijo.ruta.name == "assets":
+                continue
+            recursos.hijos.append(hijo)
         datos_fuentes.append((fuente, modulos))
 
     def clave_categoria(nombre: str) -> tuple[int, str]:
@@ -1811,12 +1637,9 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
 
     resultados: dict[str, dict] = {}
     for fuente, modulos in datos_fuentes:
-        if fuente.estructura == "pdf":
-            resultados[fuente.id] = construir_fuente_pdf(fuente, modulos)
-        else:
-            resultados[fuente.id] = construir_fuente(
-                fuente, modulos, raiz_global, orden, caminos
-            )
+        resultados[fuente.id] = construir_fuente(
+            fuente, modulos, raiz_global, orden, caminos
+        )
 
     construir_portada(resultados, raiz_global, recursos)
     AVISOS_BUILD = revisar_enlaces()
@@ -1849,20 +1672,13 @@ class Manejador(SimpleHTTPRequestHandler):
 
 
 def archivos_vigilados(fuentes: list[Fuente]) -> list[Path]:
-    rutas = [
-        CONFIG,
-        Path.home() / ".config" / "privatenotes" / "visor-fuentes.toml",
-        Path.home() / ".config" / "privatenotes" / "rutas-locales.env",
-    ]
+    rutas = [CONFIG]
     for fuente in fuentes:
-        if fuente.estructura == "pdf":
-            rutas.extend(fuente.raiz.rglob("*.pdf"))
-        else:
-            rutas.extend(
-                ruta
-                for ruta in fuente.raiz.rglob("*.md")
-                if es_contenido_en(fuente.raiz, ruta)
-            )
+        rutas.extend(
+            ruta
+            for ruta in fuente.raiz.rglob("*.md")
+            if es_contenido_en(fuente.raiz, ruta)
+        )
     rutas.extend(
         ruta
         for ruta in FUENTE.iterdir()
