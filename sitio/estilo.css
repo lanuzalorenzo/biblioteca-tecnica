@@ -594,6 +594,14 @@ body.pagina-portada .marco { grid-template-columns: var(--ancho-lateral) minmax(
   margin: 0; font-size: 12px; color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+.pie-licencia {
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+  margin: 48px 0 0; padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px; color: var(--muted);
+}
+.pie-licencia a { color: var(--muted); }
+.pie-licencia a:hover { color: var(--accent-hover); }
 
 /* Plazos: color de estado, nunca superficie */
 .insignia {

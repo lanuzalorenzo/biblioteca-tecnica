@@ -2,7 +2,7 @@
 
 Visor local del contenido IT que he ido estudiando y documentando. Lee los Markdown de los repositorios de cursos y genera un sitio navegable con un solo árbol de módulos, búsqueda global, filtros por materia, migas y enlaces a apuntes y guías. No guarda contenido propio: cada build lee las fuentes y `dist/` es una copia local de los recursos que se regenera.
 
-**Privado.** No se publica. La salida (`dist/`) no se versiona.
+**Privado.** No se publica. La salida (`dist/`) no se versiona. **Licencia:** MIT, copyright 2026 Lorenzo Lanuza Arellano; el texto está en [`LICENSE`](LICENSE).
 
 ## Fuentes
 

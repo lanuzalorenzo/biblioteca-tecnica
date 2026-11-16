@@ -1465,6 +1465,7 @@ def construir_portada(
     for nombre in ("marca.svg", "marca-tile.svg"):
         shutil.copy2(FUENTE / nombre, SALIDA / "_sitio" / nombre)
     shutil.copytree(FUENTE / "iconos", SALIDA / "_sitio" / "iconos", dirs_exist_ok=True)
+    shutil.copy2(SITIO / "LICENSE", SALIDA / "_sitio" / "LICENSE")
 
     filtros = ['<button type="button" data-categoria="todas" aria-pressed="true">Todo</button>']
     for categoria in sorted(
@@ -1523,6 +1524,10 @@ def construir_portada(
 <div class="chips-filtro" data-filtros aria-label="Filtrar por categoría">{''.join(filtros)}</div>
 <section class="rejilla rejilla-contenido">{''.join(tarjetas)}</section>
 {recursos_html}
+<footer class="pie-licencia">
+  <span>MIT · Lorenzo Lanuza Arellano</span>
+  <a href="_sitio/LICENSE">Licencia</a>
+</footer>
 """
     escribir(
         SALIDA / "index.html",

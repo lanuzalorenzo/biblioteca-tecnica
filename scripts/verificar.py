@@ -119,6 +119,7 @@ def main() -> int:
         "_sitio/datos.js",
         "_sitio/estilo.css",
         "_sitio/app.js",
+        "_sitio/LICENSE",
     ):
         if not (visor.SALIDA / relativa).exists():
             errores.append(f"falta dist/{relativa}")
