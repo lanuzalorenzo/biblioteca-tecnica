@@ -1,0 +1,46 @@
+# Fuentes del visor. Cada fila se resuelve por etiqueta con
+# privatenotes/scripts/repos.py; aquí no se escribe ninguna ruta de repo.
+
+[registro]
+rutas_env = "~/Repositorios/privatenotes/workspace/rutas.env"
+
+[[fuente]]
+id = "ciclo-asir"
+etiqueta = "ciclo-asir"
+titulo = "Ciclo ASIR"
+descripcion = "Ciclo ASIR: once módulos con apuntes y guías."
+marca = "Ciclo <em>ASIR</em>"
+icono = "assets/iconos/ciclo-asir.svg"
+estructura = "asir"
+raices = ["primer-curso", "segundo-curso"]
+esperados = { modulos = 11, apuntes = 43, guias = 32 }
+
+[[fuente]]
+id = "curso-ciberseguridad"
+etiqueta = "curso-ciberseguridad"
+titulo = "Curso de Ciberseguridad"
+descripcion = "Curso de Ciberseguridad: seis módulos con apuntes, actividades y entregas."
+marca = "Curso <em>Ciberseguridad</em>"
+icono = "assets/iconos/curso.svg"
+estructura = "curso"
+esperados = { modulos = 6 }
+
+# Categorías de las tarjetas: agrupan por materia, no por curso.
+[categorias]
+fh = "Hardware"
+iso = "Sistemas"
+aso = "Sistemas"
+sad = "Sistemas"
+redes = "Redes"
+sri = "Redes"
+gbd = "Datos"
+asgbd = "Datos"
+lmsgi = "Desarrollo"
+iaw = "Desarrollo"
+fol = "Empleo"
+"5021-incidentes-de-ciberseguridad" = "Incidentes"
+"5022-bastionado-de-redes-y-sistemas" = "Bastionado"
+"5023-puesta-en-produccion-segura" = "Producción"
+"5024-analisis-forense-informatico" = "Forense"
+"5025-hacking-etico" = "Ofensiva"
+"5026-normativa-de-ciberseguridad" = "Normativa"

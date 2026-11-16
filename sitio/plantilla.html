@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="{{DESCRIPCION}}">
+<title>{{TITULO}}</title>
+{{FAVICON}}
+<link rel="stylesheet" href="{{RAIZ}}/_sitio/estilo.css?v={{V}}">
+</head>
+<body class="{{CLASE_CUERPO}}" data-raiz="{{RAIZ}}" data-pagina="{{PAGINA}}">
+<a class="salto" href="#contenido">Saltar al contenido</a>
+<div class="barra-lectura" aria-hidden="true"><span></span></div>
+
+<header class="cabecera">
+  <button class="boton-menu" data-menu aria-label="Abrir el temario" aria-expanded="false">
+    <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+  </button>
+  <a class="marca" href="{{RAIZ}}/index.html">
+    {{ICONO_CABECERA}}
+    <span>{{MARCA}}</span>
+  </a>
+  <nav class="migas" aria-label="Ruta">{{CABECERA_MIGAS}}</nav>
+  <div class="acciones">
+    <button class="boton-buscar" data-abrir-busqueda aria-label="Buscar en el temario">
+      <span class="lupa" aria-hidden="true"></span>
+      <span class="texto-buscar">Buscar</span>
+      <kbd>Ctrl</kbd><kbd>K</kbd>
+    </button>
+  </div>
+</header>
+
+<div class="marco">
+  <aside class="lateral" id="lateral">
+    <div class="lateral-cabecera">
+      <a class="lateral-inicio" href="{{RAIZ}}/index.html">Contenido</a>
+      <span class="lateral-progreso" data-leidas-mini>0 %</span>
+    </div>
+    {{LATERAL}}
+    <div class="lateral-pie">
+      {{PIE}}
+      <button class="boton-tenue" data-reiniciar>Reiniciar el progreso de lectura</button>
+    </div>
+  </aside>
+
+  <main class="contenido" id="contenido">
+    {{CABECERA}}
+    {{CONTENIDO}}
+  </main>
+
+  {{TOC}}
+</div>
+
+<dialog class="paleta" id="paleta" aria-label="Buscar en el temario">
+  <div class="paleta-caja">
+    <input type="search" id="paleta-campo" placeholder="Busca una unidad, un apunte o una actividad" autocomplete="off" spellcheck="false">
+    <p class="paleta-ayuda"><kbd>↑</kbd><kbd>↓</kbd> para moverte · <kbd>Enter</kbd> para abrir · <kbd>Esc</kbd> para cerrar</p>
+    <ul class="paleta-resultados" id="paleta-resultados"></ul>
+    <p class="paleta-vacio" id="paleta-vacio" hidden></p>
+  </div>
+</dialog>
+
+<script src="{{RAIZ}}/_sitio/datos.js?v={{V}}"></script>
+<script src="{{RAIZ}}/_sitio/app.js?v={{V}}"></script>
+</body>
+</html>
