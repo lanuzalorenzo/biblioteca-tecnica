@@ -899,17 +899,18 @@ body { height: 100vh; overflow: hidden; }
 .marco {
   position: fixed; top: var(--alto-cabecera); bottom: var(--alto-pie);
   left: 0; right: 0; height: auto; max-width: none; margin: 0;
-  padding: 0 24px; overflow: hidden;
+  padding: 0 24px; gap: 0; overflow: hidden;
 }
 .lateral {
   position: static; top: auto; height: 100%; overflow-y: auto;
 }
 .contenido {
-  height: 100%; overflow-y: auto; padding-top: 48px; padding-bottom: 48px;
+  height: 100%; overflow-y: auto; padding: 48px 24px 48px;
   scrollbar-gutter: stable;
 }
 .toc {
   position: static; top: auto; height: 100%; overflow-y: auto;
+  padding-left: 24px;
 }
 .pie-sitio {
   position: fixed; z-index: 40; left: 0; right: 0; bottom: 0;
@@ -943,7 +944,7 @@ body { height: 100vh; overflow: hidden; }
   }
   .lateral.abierto { visibility: visible; transform: none; transition: transform 200ms ease; }
   .lateral .enlace, .rama > details > summary { min-height: 44px; }
-  .contenido { padding-top: 32px; padding-bottom: 32px; }
+  .contenido { padding: 32px 0; }
   .pasos { grid-template-columns: 1fr; }
   .pasos .paso-siguiente { text-align: left; }
   .prosa { font-size: 16px; }

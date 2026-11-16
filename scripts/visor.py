@@ -1628,8 +1628,6 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
 
     for nombre in sorted(categorias_nodos, key=clave_categoria):
         raiz_global.hijos.append(categorias_nodos[nombre])
-    if recursos.hijos:
-        raiz_global.hijos.append(recursos)
 
     orden = aplanar(raiz_global, [])
     caminos: dict[str, list[Nodo]] = {}
@@ -1642,6 +1640,9 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
             recorrer(hijo, ruta_nodo)
 
     recorrer(raiz_global, [])
+    if recursos.hijos:
+        orden.extend(aplanar(recursos, []))
+        recorrer(recursos, [raiz_global])
 
     resultados: dict[str, dict] = {}
     for fuente, modulos in datos_fuentes:
