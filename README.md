@@ -38,14 +38,14 @@ python3 scripts/visor.py serve --vigilar --abrir
 | `scripts/visor.py` | Build, servidor, vigilancia y composición del contenido |
 | `scripts/verificar.py` | Verificación de módulos, búsqueda, enlaces y `dist/` |
 | `sitio/plantilla.html` | Esqueleto de cada página; marcadores `{{...}}` |
-| `sitio/estilo.css` | Estilos y tokens de la identidad |
+| `sitio/estilo.css` | Distribución del visor: marco fijo, lateral, contenido y TOC |
 | `sitio/app.js` | Progreso, búsqueda, filtros, navegación y plazos |
-| `sitio/marca.svg`, `sitio/marca-tile.svg` | Marca personal del visor |
+| `_identidad/` | Paquete de identidad consumido por etiqueta; no se retoca |
 | `sitio/iconos/` | Iconos de categorías y módulos |
 | `servicio/biblioteca-tecnica.service` | Unidad de usuario del servicio |
 | `dist/` | Salida generada; ignorada por Git |
 
-`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<fuente>/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`.
+`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<fuente>/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`; la cabecera, el pie, la pestaña y los tokens vienen de `dist/_identidad/`.
 
 ## Verificación
 

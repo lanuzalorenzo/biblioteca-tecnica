@@ -16,12 +16,15 @@ Visor local del contenido IT de los cursos. Repositorio privado: no se enlaza ni
 config/fuentes.toml     fuentes por etiqueta, presentación y categorías
 scripts/visor.py        build, servidor, vigilancia y composición
 scripts/verificar.py    verificación de módulos, búsqueda y dist/
-sitio/                  plantilla, estilos, marca, iconos y guion
+sitio/                  plantilla, estilos propios, iconos y guion
+_identidad/             paquete de identidad consumido; no se retoca
 servicio/               unidad de usuario de systemd
 dist/                   salida generada; no se versiona
 ```
 
 Cada fuente se resuelve por etiqueta con `privatenotes/scripts/repos.py` y `workspace/rutas.env`. No escribas una ruta de repo en el código ni en la configuración: añade o cambia la fila del registro.
+
+`_identidad/` es la copia del paquete de la web personal, traída por etiqueta y comprobada con sus huellas en `verificar.py`; se copia entera a `dist/_identidad/` porque la copia es la distribución. `identidad.css`, la cabecera, el pie y la pestaña vienen de ahí: en `sitio/estilo.css` solo queda la distribución del visor —marco fijo, lateral, contenido, TOC— y el nombre `--estado-*` como alias de los tokens del paquete. Un color nuevo no se escribe aquí: se sube al paquete. La única excepción es el bloque `@media print`, que cambia a papel con sus propios valores. El shell mantiene su margen de 24 px y su pie de móvil de 56 px sin «Volver arriba»: es distribución, no piel.
 
 ## Fuentes y estructura de los cursos
 

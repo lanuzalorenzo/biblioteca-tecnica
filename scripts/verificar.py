@@ -120,9 +120,26 @@ def main() -> int:
         "_sitio/estilo.css",
         "_sitio/app.js",
         "_sitio/LICENSE",
+        "_identidad/identidad.css",
+        "_identidad/marca-tile.svg",
     ):
         if not (visor.SALIDA / relativa).exists():
             errores.append(f"falta dist/{relativa}")
+
+    # El paquete consumido no se retoca: se comprueban sus huellas.
+    paquete = visor.SITIO / "_identidad"
+    sumas = subprocess.run(
+        ["sha256sum", "-c", "--quiet", "SHA256SUMS"],
+        cwd=paquete,
+        capture_output=True,
+        text=True,
+    )
+    if sumas.returncode != 0:
+        detalle = (sumas.stdout + sumas.stderr).strip().splitlines()
+        errores.append(
+            "el paquete _identidad/ no coincide con sus huellas: "
+            + (detalle[0] if detalle else "sin detalle")
+        )
 
     # Reproducibilidad: el segundo build debe dejar el mismo contenido.
     visor.construir_todo(config)

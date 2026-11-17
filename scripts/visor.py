@@ -37,7 +37,7 @@ SALIDA = SITIO / "dist"
 FUENTE = SITIO / "sitio"
 
 AUTOR = "Lorenzo Lanuza"
-TITULO_SITIO = f"Biblioteca técnica · {AUTOR}"
+TITULO_SITIO = f"Biblioteca técnica — {AUTOR}"
 MARCA_SITIO = "Lorenzo Lanuza"
 DESCRIPCION_SITIO = (
     "Biblioteca técnica de Lorenzo Lanuza: apuntes y prácticas de sistemas, "
@@ -1185,7 +1185,9 @@ def construir_fuente(
     ACTUAL = fuente
     plantilla = leer_plantilla()
     version = hashlib.sha1(
-        (FUENTE / "estilo.css").read_bytes() + (FUENTE / "app.js").read_bytes()
+        (FUENTE / "estilo.css").read_bytes()
+        + (FUENTE / "app.js").read_bytes()
+        + (SITIO / "_identidad" / "identidad.css").read_bytes()
     ).hexdigest()[:8]
 
     copiados = 0
@@ -1241,10 +1243,10 @@ def construir_fuente(
         raiz = posixpath.relpath(".", base) if base != "." else "."
         favicon = (
             f'<link rel="icon" href="'
-            f'{relativo("_sitio/marca-tile.svg", pagina)}">'
+            f'{relativo("_identidad/marca-tile.svg", pagina)}">'
         )
         icono_cabecera = (
-            f'<img src="{relativo("_sitio/marca-tile.svg", pagina)}" '
+            f'<img src="{relativo("_identidad/marca-tile.svg", pagina)}" '
             'alt="" width="40" height="40">'
         )
         reemplazos = {
@@ -1315,7 +1317,7 @@ def construir_fuente(
                 pagina,
                 f'<article class="documento"><div class="prosa">{cuerpo}</div>'
                 f"{bloque_paso(anterior, siguiente, pagina)}</article>",
-                f"{titulo} · {TITULO_SITIO}",
+                f"{titulo} — {AUTOR}",
                 cabecera,
                 lateral,
                 bloque_toc(md.toc),
@@ -1392,8 +1394,8 @@ def pintar_global(
         "{{DESCRIPCION}}": html.escape(DESCRIPCION_SITIO),
         "{{PIE}}": "",
         "{{CURSOS}}": "index.html",
-        "{{FAVICON}}": '<link rel="icon" href="_sitio/marca-tile.svg">',
-        "{{ICONO_CABECERA}}": '<img src="_sitio/marca-tile.svg" alt="" width="40" height="40">',
+        "{{FAVICON}}": '<link rel="icon" href="_identidad/marca-tile.svg">',
+        "{{ICONO_CABECERA}}": '<img src="_identidad/marca-tile.svg" alt="" width="40" height="40">',
         "{{CLASE_CUERPO}}": "pagina-portada",
     }
     salida = plantilla
@@ -1409,7 +1411,9 @@ def construir_portada(
     """Portada única: todos los módulos como items, sin separar por cursos."""
     plantilla = leer_plantilla()
     version = hashlib.sha1(
-        (FUENTE / "estilo.css").read_bytes() + (FUENTE / "app.js").read_bytes()
+        (FUENTE / "estilo.css").read_bytes()
+        + (FUENTE / "app.js").read_bytes()
+        + (SITIO / "_identidad" / "identidad.css").read_bytes()
     ).hexdigest()[:8]
     modulos_global: list[dict] = []
     indice_global: list[dict] = []
@@ -1468,10 +1472,9 @@ def construir_portada(
     )
     shutil.copy2(FUENTE / "estilo.css", SALIDA / "_sitio" / "estilo.css")
     shutil.copy2(FUENTE / "app.js", SALIDA / "_sitio" / "app.js")
-    for nombre in ("marca.svg", "marca-tile.svg"):
-        shutil.copy2(FUENTE / nombre, SALIDA / "_sitio" / nombre)
     shutil.copytree(FUENTE / "iconos", SALIDA / "_sitio" / "iconos", dirs_exist_ok=True)
     shutil.copy2(SITIO / "LICENSE", SALIDA / "_sitio" / "LICENSE")
+    shutil.copytree(SITIO / "_identidad", SALIDA / "_identidad", dirs_exist_ok=True)
 
     filtros = ['<button type="button" data-categoria="todas" aria-pressed="true">Todo</button>']
     for categoria in sorted(
