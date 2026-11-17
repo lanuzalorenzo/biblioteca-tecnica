@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <title>hardware</title>
+  <title>Hardware</title>
   <desc>Identidad visual: navy con degradado, borde cian y glifo blanco.</desc>
   <defs>
     <linearGradient id="bg-hardware" x1="0" y1="0" x2="1" y2="1">
@@ -10,6 +10,6 @@
   <rect width="64" height="64" rx="16" fill="url(#bg-hardware)"/>
   <rect x="1" y="1" width="62" height="62" rx="15" fill="none" stroke="#38bdf8" stroke-width="2"/>
   <g transform="translate(10 10) scale(1.83334)" fill="#f8fafc" stroke="none">
-    <path d="M6,4H18A2,2 0 0,1 20,6V18A2,2 0 0,1 18,20H6A2,2 0 0,1 4,18V6A2,2 0 0,1 6,4M6,6V18H18V6H6M8,8H11V11H8V8M13,8H16V11H13V8M8,13H11V16H8V13M13,13H16V16H13V13M2,9H4V11H2V9M2,13H4V15H2V13M20,9H22V11H20V9M20,13H22V15H20V13M9,2V4H11V2H9M13,2V4H15V2H13M9,20V22H11V20H9M13,20V22H15V20H13Z"/>
+    <path d="M17,17H7V7H17M21,11V9H19V7C19,5.89 18.1,5 17,5H15V3H13V5H11V3H9V5H7C5.89,5 5,5.89 5,7V9H3V11H5V13H3V15H5V17A2,2 0 0,0 7,19H9V21H11V19H13V21H15V19H17A2,2 0 0,0 19,17V15H21V13H19V11M13,13H11V11H13M15,9H9V15H15V9Z"/>
   </g>
 </svg>

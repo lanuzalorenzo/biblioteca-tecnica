@@ -98,13 +98,7 @@ kbd {
 .boton-buscar .texto-buscar { flex: 1; text-align: left; }
 
 .lupa {
-  width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 50%;
-  position: relative; flex: none;
-}
-.lupa::after {
-  content: ""; position: absolute; width: 2px; height: 6px;
-  background: currentColor; right: -3px; bottom: -3px;
-  transform: rotate(-45deg);
+  width: 16px; height: 16px; flex: none; fill: currentColor;
 }
 
 .boton-icono {
@@ -206,8 +200,10 @@ kbd {
   background: var(--surface); color: var(--accent-hover); font-weight: 700;
 }
 .lateral .hoja > .enlace { padding-left: 16px; }
-.icono-lateral { width: 18px; height: 18px; margin: 0; flex: none; }
-.rama > details > summary .icono-lateral { margin-left: 0; }
+.icono-lateral {
+  width: 20px; height: 20px; margin: 0; flex: none;
+  fill: currentColor;
+}
 
 .lateral-pie {
   display: flex; flex-wrap: wrap; gap: 8px 16px;
@@ -603,7 +599,7 @@ body.pagina-portada .marco { grid-template-columns: var(--ancho-lateral) minmax(
   font: inherit; font-size: 13px; cursor: pointer;
   transition: color 200ms ease, border-color 200ms ease;
 }
-.chips-filtro button img { width: 16px; height: 16px; }
+.chips-filtro button .icono-filtro { width: 15px; height: 15px; flex: none; fill: currentColor; }
 .chips-filtro button:hover { color: var(--ink); border-color: var(--line-strong); }
 .chips-filtro button[aria-pressed="true"] {
   border-color: var(--accent); color: var(--accent-hover); font-weight: 700;
@@ -775,7 +771,6 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 .chips-filtro button[aria-pressed="true"] {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
-.chips-filtro button img { width: 15px; height: 15px; }
 
 .rejilla { gap: 20px; }
 .tarjeta {
@@ -817,14 +812,13 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 .rama > details[open] > summary::before { content: "−"; transform: none; }
 .enlace-rama { font-size: 13px; font-weight: 650; letter-spacing: -0.01em; }
 .lateral .enlace { font-size: 12.5px; }
-.icono-lateral { width: 26px; height: 26px; }
 .rama-cuenta {
   margin-left: auto; padding-left: 8px;
   color: color-mix(in srgb, var(--muted) 70%, transparent);
   font-size: 11px; font-variant-numeric: tabular-nums;
 }
 
-.pie-sitio .wordmark img { width: 24px; height: 24px; }
+.pie-sitio .wordmark img { width: 40px; height: 40px; }
 
 @media (max-width: 940px) {
   .cabecera { padding: 0 20px; }

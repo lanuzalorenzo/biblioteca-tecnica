@@ -26,6 +26,7 @@ import threading
 import time
 import tomllib
 import webbrowser
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -71,6 +72,8 @@ RAIZ = SITIO
 DIST = SALIDA
 _CERROJO = threading.Lock()
 ACTUAL: Fuente | None = None
+FUENTES: list[Fuente] = []
+GLIFOS_EN_LINEA: dict[str, str] = {}
 AVISOS_BUILD: list[str] = []
 CATEGORIAS: dict[str, str] = {}
 ORDEN_CATEGORIAS: list[str] = []
@@ -173,10 +176,109 @@ def resolver_fuentes(config: dict) -> list[Fuente]:
         raise SystemExit("La configuración no declara ninguna fuente")
     return fuentes
 
-
 # --------------------------------------------------------------------------
 # Utilidades
 # --------------------------------------------------------------------------
+
+def ruta_icono(url: str) -> Path | None:
+    """Archivo del icono citado por la URL del sitio, si existe."""
+    if url.startswith("_sitio/"):
+        return FUENTE / url[len("_sitio/"):]
+    for fuente in FUENTES:
+        prefijo = f"{fuente.id}/"
+        if url.startswith(prefijo):
+            return fuente.raiz / url[len(prefijo):]
+    return None
+
+
+_NS = "{http://www.w3.org/2000/svg}"
+_DIBUJABLES = {"path", "circle", "rect", "ellipse", "polygon", "polyline"}
+_GEOMETRIA = {
+    "d", "cx", "cy", "r", "x", "y", "width", "height", "rx", "ry",
+    "points", "transform", "fill-rule", "clip-rule", "stroke-width",
+    "stroke-linecap", "stroke-linejoin", "opacity",
+}
+# Rellenos del tile que solo sirven para recortar: en una tinta pasan a hueco.
+_CORTES = {"#07131e", "#0e2a47", "#0b2034", "#1c4a72"}
+
+
+def _etiqueta(elemento: ET.Element) -> str:
+    return elemento.tag.removeprefix(_NS)
+
+
+def _es_corte(elemento: ET.Element) -> bool:
+    """Capa del tile que recorta el glifo (fondo o degradado), no dibujo."""
+    for clave in ("fill", "stroke"):
+        valor = (elemento.get(clave) or "").lower()
+        if valor in _CORTES or valor.startswith("url(#"):
+            return True
+    return False
+
+
+def _grupo_glifo(raiz: ET.Element) -> ET.Element | None:
+    for elemento in raiz.iter():
+        if _etiqueta(elemento) == "g" and "scale" in (elemento.get("transform") or ""):
+            return elemento
+    return None
+
+
+def _dibujo(ruta: Path) -> str:
+    """Glifo de un icono, sin la baldosa ni el borde, en su rejilla de 24.
+
+    Los iconos de la marca dibujan el glifo dentro de un grupo escalado; puede
+    llevar subgrupos con su propio transform y capas de recorte. Se conserva
+    todo eso, se normaliza el color a `currentColor` y las capas de recorte se
+    convierten en huecos con `fill-rule="evenodd"`, para poder pintar el mismo
+    dibujo a una tinta por debajo de 32 px.
+    """
+    try:
+        raiz = ET.parse(ruta).getroot()
+    except (ET.ParseError, OSError):
+        return ""
+    grupo = _grupo_glifo(raiz)
+    if grupo is None:
+        return ""
+    recortes = any(_es_corte(elemento) for elemento in grupo.iter())
+
+    def serializar(elemento: ET.Element) -> str:
+        etiqueta = _etiqueta(elemento)
+        if etiqueta not in _DIBUJABLES and etiqueta != "g":
+            return ""
+        if _es_corte(elemento):
+            if etiqueta == "g":
+                return "".join(serializar(hijo) for hijo in elemento)
+            return ""
+        atributos: list[str] = []
+        for clave, valor in elemento.attrib.items():
+            if clave in {"fill", "stroke"}:
+                atributos.append(f'{clave}="{"none" if valor == "none" else "currentColor"}"')
+            elif clave in _GEOMETRIA:
+                atributos.append(f'{clave}="{valor}"')
+        if etiqueta == "path" and recortes and "fill-rule" not in elemento.attrib:
+            atributos.append('fill-rule="evenodd"')
+        cuerpo = "".join(serializar(hijo) for hijo in elemento)
+        unidos = f' {" ".join(atributos)}' if atributos else ""
+        if etiqueta == "g":
+            return f"<g{unidos}>{cuerpo}</g>" if cuerpo else ""
+        return f"<{etiqueta}{unidos}/>"
+
+    return "".join(serializar(hijo) for hijo in grupo)
+
+
+def glifo_en_linea(url: str, clase: str) -> str:
+    """Glifo a una tinta, sin baldosa, para el árbol y los filtros."""
+    dibujo = GLIFOS_EN_LINEA.get(url)
+    if dibujo is None:
+        ruta = ruta_icono(url)
+        dibujo = _dibujo(ruta) if ruta and ruta.exists() else ""
+        GLIFOS_EN_LINEA[url] = dibujo
+    if not dibujo:
+        return ""
+    return (
+        f'<svg class="{clase}" viewBox="0 0 24 24" aria-hidden="true" '
+        f'focusable="false" fill="currentColor" stroke="none">{dibujo}</svg>'
+    )
+
 
 def url_de(ruta: Path) -> str:
     """Ruta del Markdown a su página, con el prefijo de la fuente."""
@@ -941,10 +1043,12 @@ def ordenar_arbol_por_raiz(fuente: Fuente, raiz_arbol: Nodo) -> None:
 
 
 def icono_modulo(fuente: Fuente, clave: str) -> str:
-    ruta = fuente.raiz / "assets" / "iconos" / f"{clave}.svg"
-    if ruta.exists():
-        return f"{fuente.id}/assets/iconos/{clave}.svg"
-    glifo = ICONOS_MODULO.get(clave.split("-")[0], "documento")
+    corta = clave.split("-")[0]
+    for candidata in (clave, corta):
+        ruta = fuente.raiz / "assets" / "iconos" / f"{candidata}.svg"
+        if ruta.exists():
+            return f"{fuente.id}/assets/iconos/{candidata}.svg"
+    glifo = ICONOS_MODULO.get(clave) or ICONOS_MODULO.get(corta, "documento")
     return f"_sitio/iconos/{glifo}.svg"
 
 
@@ -1028,9 +1132,12 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     marcado = ' aria-current="page"' if es_actual(nodo) else ""
     icono = ""
     if nodo.icono:
-        icono = (
-            f'<img class="icono-lateral" src="{relativo(nodo.icono, pagina)}" alt="">'
-        )
+        icono = glifo_en_linea(nodo.icono, "icono-lateral")
+        if not icono:
+            icono = (
+                f'<img class="icono-lateral" '
+                f'src="{relativo(nodo.icono, pagina)}" alt="">'
+            )
     if not nodo.hijos:
         if not nodo.url:
             return f'<li class="hoja"><span class="enlace">{etiqueta}</span></li>'
@@ -1267,6 +1374,7 @@ def construir_fuente(
             "{{CURSOS}}": relativo("index.html", pagina),
             "{{FAVICON}}": favicon,
             "{{ICONO_CABECERA}}": icono_cabecera,
+            "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
             "{{CLASE_CUERPO}}": "",
         }
         salida = plantilla
@@ -1398,6 +1506,7 @@ def pintar_global(
         "{{CURSOS}}": "index.html",
         "{{FAVICON}}": '<link rel="icon" href="_identidad/marca-tile.svg">',
         "{{ICONO_CABECERA}}": '<img src="_identidad/marca-tile.svg" alt="" width="40" height="40">',
+        "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
         "{{CLASE_CUERPO}}": "pagina-portada",
     }
     salida = plantilla
@@ -1474,7 +1583,12 @@ def construir_portada(
     )
     shutil.copy2(FUENTE / "estilo.css", SALIDA / "_sitio" / "estilo.css")
     shutil.copy2(FUENTE / "app.js", SALIDA / "_sitio" / "app.js")
-    shutil.copytree(FUENTE / "iconos", SALIDA / "_sitio" / "iconos", dirs_exist_ok=True)
+    shutil.copytree(
+        FUENTE / "iconos",
+        SALIDA / "_sitio" / "iconos",
+        dirs_exist_ok=True,
+        ignore=shutil.ignore_patterns("README.md"),
+    )
     shutil.copy2(SITIO / "LICENSE", SALIDA / "_sitio" / "LICENSE")
     shutil.copytree(SITIO / "_identidad", SALIDA / "_identidad", dirs_exist_ok=True)
 
@@ -1488,10 +1602,14 @@ def construir_portada(
     ):
         glifo = ICONOS_CATEGORIA.get(categoria)
         icono_filtro = (
-            f'<img src="_sitio/iconos/{glifo}.svg" alt="" width="16" height="16">'
+            glifo_en_linea(f"_sitio/iconos/{glifo}.svg", "icono-filtro")
             if glifo
             else ""
         )
+        if glifo and not icono_filtro:
+            icono_filtro = (
+                f'<img class="icono-filtro" src="_sitio/iconos/{glifo}.svg" alt="">'
+            )
         filtros.append(
             f'<button type="button" data-categoria="{html.escape(categoria)}" '
             f'aria-pressed="false">{icono_filtro}{html.escape(categoria)}</button>'
@@ -1589,14 +1707,17 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
 
 def _construir(config: dict | None = None) -> dict[str, dict]:
     global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS, RECURSOS_URLS
+    global FUENTES, GLIFOS_EN_LINEA
     if config is None:
         config = cargar_config()
     fuentes = resolver_fuentes(config)
+    FUENTES = fuentes
     CATEGORIAS = config.get("categorias", {})
     ORDEN_CATEGORIAS = config.get("orden_categorias", [])
     if SALIDA.exists():
         shutil.rmtree(SALIDA)
     SALIDA.mkdir(parents=True)
+    GLIFOS_EN_LINEA.clear()
 
     raiz_global = Nodo(SITIO, "Biblioteca técnica", "index.html", True)
     raiz_global.fuente_id = ""
