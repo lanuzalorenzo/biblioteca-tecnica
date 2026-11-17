@@ -28,6 +28,15 @@ titulo = "Curso de Ciberseguridad"
 estructura = "curso"
 esperados = { modulos = 6 }
 
+[[fuente]]
+id = "apuntes"
+etiqueta = "apuntes"
+titulo = "Apuntes de cursos"
+estructura = "apuntes"
+local = "APUNTES"
+esperados = { modulos = 8, apuntes = 57 }
+nombres = { angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", "docker-y-podman" = "Docker y Podman", git = "Git", "testing-xunit-moq" = "Testing .NET", "11-bus-de-mensajeria" = "Bus de mensajería", "12-servicios-orientados-a-eventos" = "Servicios orientados a eventos", "14-monitorizacion" = "Monitorización" }
+
 # Categorías de las tarjetas: agrupan por materia, no por curso.
 [categorias]
 fh = "Sistemas y redes"
@@ -48,3 +57,11 @@ sad = "Seguridad"
 "5026-normativa-de-ciberseguridad" = "Seguridad"
 fol = "Empleo"
 eie = "Empleo"
+angular = "Desarrollo"
+"aspnet-core-mvc" = "Desarrollo"
+git = "Desarrollo"
+"testing-xunit-moq" = "Desarrollo"
+"docker-y-podman" = "Operaciones"
+"11-bus-de-mensajeria" = "Operaciones"
+"12-servicios-orientados-a-eventos" = "Operaciones"
+"14-monitorizacion" = "Operaciones"

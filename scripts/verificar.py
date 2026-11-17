@@ -69,7 +69,12 @@ def main() -> int:
             f"{conteos['apuntes']} apuntes, {conteos['guias']} guías"
         )
 
-        for tipo in ("apunte", "guia"):
+        tipos = (
+            ("apunte", "guia")
+            if any(modulo.conteo["guias"] for modulo in modulos)
+            else ("apunte",)
+        )
+        for tipo in tipos:
             candidatos = [e for e in resultado["indice"] if e.get("tipo") == tipo]
             if not candidatos:
                 errores.append(f"{identificador}: no hay ningún {tipo} en la búsqueda")

@@ -17,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 import posixpath
 import re
 import shutil
@@ -64,7 +65,17 @@ ICONOS_MODULO = {
     "aso": "terminal",
     "asgbd": "datos",
     "iaw": "web",
+<<<<<<< HEAD
     "eie": "empleo",
+=======
+    "angular": "codigo",
+    "aspnet-core-mvc": "codigo",
+    "git": "codigo",
+    "testing-xunit-moq": "documento",
+    "docker-y-podman": "terminal",
+    "11-bus-de-mensajeria": "servidor",
+    "12-servicios-orientados-a-eventos": "redes",
+    "14-monitorizacion": "monitor",
 }
 
 # Se reemplazan por cada fuente durante el build.
@@ -110,6 +121,7 @@ class Fuente:
     raiz: Path
     raices: list[str] = field(default_factory=list)
     esperados: dict[str, int] = field(default_factory=dict)
+    nombres: dict[str, str] = field(default_factory=dict)
 
 
 def leer_env(ruta: Path) -> dict[str, str]:
@@ -133,6 +145,12 @@ def cargar_config(ruta: Path = CONFIG) -> dict:
         return tomllib.load(archivo)
 
 
+def archivo_locales() -> Path:
+    """Raíces personales fuera del contenedor; no se versionan."""
+    config_dir = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    return config_dir / "privatenotes" / "fuentes.locales"
+
+
 def resolver_fuentes(config: dict) -> list[Fuente]:
     """Resuelve cada etiqueta a su raíz con `repos.py`; no adivina rutas."""
     registro = config.get("registro", {})
@@ -146,20 +164,43 @@ def resolver_fuentes(config: dict) -> list[Fuente]:
     repos_py = Path(privatenotes) / "scripts" / "repos.py"
     if not repos_py.exists():
         raise SystemExit(f"No existe la puerta del registro: {repos_py}")
+    locales_ruta = archivo_locales()
+    locales: dict[str, str] | None = None
 
     fuentes: list[Fuente] = []
     for item in config.get("fuente", []):
         etiqueta = item["etiqueta"]
-        proceso = subprocess.run(
-            [sys.executable, str(repos_py), "campo", etiqueta, "ruta"],
-            capture_output=True,
-            text=True,
-        )
-        if proceso.returncode != 0 or not proceso.stdout.strip():
-            raise SystemExit(
-                f"No se pudo resolver la fuente {etiqueta!r}: {proceso.stderr.strip()}"
+        if clave_local := item.get("local"):
+            # Raíz personal fuera del contenedor: se lee del archivo local,
+            # nunca se escribe en la configuración.
+            if locales is None:
+                if not locales_ruta.exists():
+                    raise SystemExit(
+                        f"Falta el archivo de raíces locales {locales_ruta}: "
+                        f"crea {clave_local}=<ruta> con permisos de solo el usuario"
+                    )
+                try:
+                    locales = leer_env(locales_ruta)
+                except (OSError, UnicodeDecodeError) as error:
+                    raise SystemExit(f"No se pudo leer {locales_ruta}: {error}")
+            valor = locales.get(clave_local)
+            if not valor:
+                raise SystemExit(
+                    f"La fuente local {etiqueta!r} no está en {locales_ruta}: "
+                    f"añade {clave_local}=<ruta> con permisos de solo el usuario"
+                )
+            raiz = Path(valor).expanduser()
+        else:
+            proceso = subprocess.run(
+                [sys.executable, str(repos_py), "campo", etiqueta, "ruta"],
+                capture_output=True,
+                text=True,
             )
-        raiz = Path(proceso.stdout.strip())
+            if proceso.returncode != 0 or not proceso.stdout.strip():
+                raise SystemExit(
+                    f"No se pudo resolver la fuente {etiqueta!r}: {proceso.stderr.strip()}"
+                )
+            raiz = Path(proceso.stdout.strip())
         if not raiz.is_dir():
             raise SystemExit(f"La fuente {etiqueta!r} no es un directorio: {raiz}")
         fuentes.append(
@@ -171,6 +212,7 @@ def resolver_fuentes(config: dict) -> list[Fuente]:
                 raiz=raiz,
                 raices=item.get("raices", []),
                 esperados=item.get("esperados", {}),
+                nombres=item.get("nombres", {}),
             )
         )
     if not fuentes:
@@ -365,9 +407,26 @@ def reescribir_enlace(destino: str, base: Path | None = None) -> str:
     return ruta + ("?" + consulta if interrogacion else "") + ("#" + ancla if almohadilla else "")
 
 
+def sin_vallas(texto: str) -> str:
+    """Quita los bloques de código, también los de más de tres backticks."""
+    salida: list[str] = []
+    valla = ""
+    for linea in texto.split("\n"):
+        marca = re.match(r"^\s*(`{3,}|~{3,})", linea)
+        if marca:
+            if not valla:
+                valla = marca.group(1)
+            elif re.match(rf"^\s*{re.escape(valla[0])}{{{len(valla)},}}\s*$", linea):
+                valla = ""
+            continue
+        if not valla:
+            salida.append(linea)
+    return "\n".join(salida)
+
+
 def texto_plano(md: str, limite: int = 12000) -> str:
     """Texto del documento para el índice de búsqueda."""
-    md = re.sub(r"```.*?```", " ", md, flags=re.S)
+    md = sin_vallas(md)
     md = re.sub(r"<[^>]+>", " ", md)
     md = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", md)
     md = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", md)
@@ -392,10 +451,18 @@ def sin_comentarios(texto: str) -> str:
     texto = re.sub(r"<!--\s*interno\s*-->.*?<!--\s*/interno\s*-->", "", texto, flags=re.S)
     salida: list[str] = []
     en_valla = False
+    valla = ""
     en_comentario = False
     for linea in texto.split("\n"):
-        if linea.lstrip().startswith(("```", "~~~")):
-            en_valla = not en_valla
+        marca = re.match(r"^\s*(`{3,}|~{3,})", linea)
+        if marca:
+            cerca = marca.group(1)
+            if not en_valla:
+                en_valla = True
+                valla = cerca
+            elif re.match(rf"^\s*{re.escape(valla[0])}{{{len(valla)},}}\s*$", linea):
+                en_valla = False
+                valla = ""
             salida.append(linea)
             continue
         if en_valla:
@@ -452,13 +519,14 @@ class Markdown:
                 i += 1
                 continue
 
-            valla = re.match(r"^(\s*)(```|~~~)", linea)
+            valla = re.match(r"^(\s*)(`{3,}|~{3,})", linea)
             if valla:
                 sangria, cerca = valla.group(1), valla.group(2)
-                lenguaje = linea.lstrip()[3:].strip()
+                lenguaje = linea.lstrip()[len(cerca):].strip()
+                cierre = re.compile(rf"^\s*{re.escape(cerca[0])}{{{len(cerca)},}}\s*$")
                 i += 1
                 cuerpo = []
-                while i < len(lineas) and not lineas[i].lstrip().startswith(cerca):
+                while i < len(lineas) and not cierre.match(lineas[i]):
                     cuerpo.append(lineas[i][len(sangria):] if lineas[i].startswith(sangria) else lineas[i].lstrip())
                     i += 1
                 i += 1
@@ -898,11 +966,21 @@ def etiquetas(ruta: Path) -> list[str]:
     clave = ""
     if ACTUAL and ACTUAL.estructura == "curso":
         clave = rel[0]
+    elif ACTUAL and ACTUAL.estructura == "apuntes":
+        # La categoría sale del módulo: la carpeta más cercana con README.
+        carpeta = ruta.parent
+        while carpeta != RAIZ and not (carpeta / "README.md").exists():
+            carpeta = carpeta.parent
+        clave = carpeta.name
     elif ACTUAL and len(rel) > 1:
         clave = rel[1]
     categoria = CATEGORIAS.get(clave) or CATEGORIAS.get(clave.split("-")[0], "")
     if categoria:
         piezas.append(categoria)
+    if ACTUAL and ACTUAL.estructura == "apuntes":
+        if ruta.name != "README.md":
+            piezas.append("Apunte")
+        return piezas
     if "teoria" in rel:
         piezas.append("Teoría")
     elif "ejercicios" in rel:
@@ -928,6 +1006,8 @@ def es_guia_rel(rel: tuple[str, ...]) -> bool:
 def tipo_documento(ruta: Path) -> str:
     """Clasifica una página para el índice de búsqueda."""
     rel = ruta.relative_to(RAIZ).parts
+    if ACTUAL and ACTUAL.estructura == "apuntes":
+        return "indice" if ruta.name == "README.md" else "apunte"
     if "teoria" in rel and ruta.name != "README.md":
         return "apunte"
     if es_guia_rel(rel):
@@ -986,6 +1066,15 @@ def resumen_de(ruta: Path) -> str:
 
 
 def conteo_modulo(ruta: Path) -> dict[str, int]:
+    if ACTUAL and ACTUAL.estructura == "apuntes":
+        documentos_modulo = [p for p in ruta.rglob("*.md") if es_contenido(p)]
+        return {
+            "paginas": len(documentos_modulo),
+            "teoria": 0,
+            "apuntes": sum(1 for p in documentos_modulo if p.name != "README.md"),
+            "ejercicios": 0,
+            "guias": 0,
+        }
     documentos_modulo = [p for p in ruta.rglob("*.md") if es_contenido(p)]
     teoria = 0
     apuntes = 0
@@ -1044,13 +1133,84 @@ def ordenar_arbol_por_raiz(fuente: Fuente, raiz_arbol: Nodo) -> None:
 
 
 def icono_modulo(fuente: Fuente, clave: str) -> str:
+<<<<<<< HEAD
     corta = clave.split("-")[0]
     for candidata in (clave, corta):
         ruta = fuente.raiz / "assets" / "iconos" / f"{candidata}.svg"
         if ruta.exists():
             return f"{fuente.id}/assets/iconos/{candidata}.svg"
     glifo = ICONOS_MODULO.get(clave) or ICONOS_MODULO.get(corta, "documento")
+=======
+    ruta = fuente.raiz / "assets" / "iconos" / f"{clave}.svg"
+    if ruta.exists():
+        return f"{fuente.id}/assets/iconos/{clave}.svg"
+    glifo = ICONOS_MODULO.get(clave) or ICONOS_MODULO.get(clave.split("-")[0], "documento")
     return f"_sitio/iconos/{glifo}.svg"
+
+
+def _modulos_apuntes(
+    fuente: Fuente, raiz_arbol: Nodo, categoria
+) -> list[Modulo]:
+    """Cada carpeta con README y apuntes es un módulo; admite un nivel de curso."""
+    nodos: dict[Path, Nodo] = {}
+
+    def recorrer(nodo: Nodo) -> None:
+        nodos[nodo.ruta] = nodo
+        for hijo in nodo.hijos:
+            recorrer(hijo)
+
+    recorrer(raiz_arbol)
+    orden = orden_indice(fuente.raiz)
+
+    def posicion(ruta: Path) -> int:
+        rel = ruta.relative_to(fuente.raiz).as_posix()
+        for indice, destino in enumerate(orden):
+            limpio = posixpath.normpath(destino.rstrip("/"))
+            if limpio in (rel, rel + "/README.md") or destino.startswith(rel + "/"):
+                return indice
+        return len(orden)
+
+    modulos: list[Modulo] = []
+    carpetas_vistas: dict[str, Path] = {}
+    for ruta, nodo in nodos.items():
+        if ruta == fuente.raiz or not nodo.es_carpeta:
+            continue
+        if not (ruta / "README.md").exists():
+            continue
+        if not any(
+            p.suffix == ".md" and p.name != "README.md" for p in ruta.iterdir()
+        ):
+            continue
+        carpeta = ruta.name
+        if carpeta in carpetas_vistas:
+            raise SystemExit(
+                f"{fuente.id}: dos módulos comparten la carpeta {carpeta!r}: "
+                f"{carpetas_vistas[carpeta]} y {ruta}"
+            )
+        carpetas_vistas[carpeta] = ruta
+        nombre = fuente.nombres.get(carpeta)
+        if not nombre:
+            nombre = re.sub(r"^\d+[.\-]\s*", "", limpiar_titulo(nodo.titulo))
+        nodo.titulo = nombre
+        icono = icono_modulo(fuente, carpeta)
+        nodo.icono = icono
+        modulos.append(
+            Modulo(
+                nodo=nodo,
+                clave=ruta.relative_to(fuente.raiz).as_posix(),
+                etiqueta="",
+                nombre=nombre,
+                grupo=fuente.titulo,
+                conteo=conteo_modulo(ruta),
+                categoria=categoria(carpeta),
+                # El README de estos módulos repite la cabecera del curso; la
+                # tarjeta se queda sin resumen antes que mostrar lo mismo ocho veces.
+                resumen="",
+                icono=icono,
+            )
+        )
+    modulos.sort(key=lambda modulo: posicion(modulo.nodo.ruta))
+    return modulos
 
 
 def modulos_de(
@@ -1084,6 +1244,9 @@ def modulos_de(
                     )
                 )
         return modulos
+
+    if fuente.estructura == "apuntes":
+        return _modulos_apuntes(fuente, raiz_arbol, categoria)
 
     for nombre_grupo in fuente.raices:
         grupo = next((h for h in raiz_arbol.hijos if h.ruta.name == nombre_grupo), None)
@@ -1214,8 +1377,10 @@ def tarjeta_modulo(modulo: Modulo, fuente: Fuente, pagina: str) -> str:
     if guias:
         detalle_guias = f"{guias} guía" if guias == 1 else f"{guias} guías"
         detalle = f"{detalle_apuntes} · {detalle_guias}"
-    else:
+    elif datos["ejercicios"]:
         detalle = f"{detalle_apuntes} · {datos['ejercicios']} páginas de ejercicios"
+    else:
+        detalle = detalle_apuntes
     etiqueta = (
         f'<span class="tarjeta-codigo">{html.escape(modulo.etiqueta)}</span>'
         if modulo.etiqueta
@@ -1748,7 +1913,8 @@ def _construir(config: dict | None = None) -> dict[str, dict]:
                 )
                 categorias_nodos[categoria] = nodo_categoria
             categorias_nodos[categoria].hijos.append(modulo.nodo)
-        for hijo in arbol_fuente.hijos:
+        # Toda la fuente de apuntes son módulos: nada queda como recurso suelto.
+        for hijo in arbol_fuente.hijos if fuente.estructura != "apuntes" else []:
             if id(hijo) in ids_modulos:
                 continue
             if hijo.es_carpeta and hijo.ruta.name in fuente.raices:
@@ -1820,6 +1986,9 @@ class Manejador(SimpleHTTPRequestHandler):
 
 def archivos_vigilados(fuentes: list[Fuente]) -> list[Path]:
     rutas = [CONFIG]
+    locales = archivo_locales()
+    if locales.exists():
+        rutas.append(locales)
     for fuente in fuentes:
         rutas.extend(
             ruta

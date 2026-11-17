@@ -30,7 +30,9 @@ Cada fuente se resuelve por etiqueta con `privatenotes/scripts/repos.py` y `work
 
 - `ciclo-asir`: módulos en `primer-curso/` y `segundo-curso/`, con `teoria/` y `ejercicios/`. Se esperan 11 módulos, 43 apuntes y 32 guías.
 - `curso-ciberseguridad`: módulos `5021`–`5026` en la raíz, con `teoria/` y `ejercicios/`. Se esperan 6 módulos.
-- La configuración declara `estructura` (`curso` o `asir`), las raíces de los módulos, los conteos esperados y las categorías de las tarjetas. Un curso nuevo se añade por configuración; no se crea contenido para rellenar el visor.
+- `apuntes`: módulos por carpeta con `README.md` y los apuntes al mismo nivel; `Azure` agrupa tres módulos. Se esperan 8 módulos y 57 apuntes.
+- La configuración declara `estructura` (`curso`, `asir` o `apuntes`), las raíces de los módulos, los conteos esperados, el nombre corto de cada módulo (`nombres`) y las categorías de las tarjetas. Un curso nuevo se añade por configuración; no se crea contenido para rellenar el visor.
+- Las fuentes que no viven en el contenedor se declaran con `local` y se resuelven en `$XDG_CONFIG_HOME/privatenotes/fuentes.locales`, que no se versiona. La raíz del contenido no se escribe en la configuración y el contenido no se copia al repositorio.
 - Los prefijos numéricos de los módulos del curso son internos: no se muestran en la navegación ni en las tarjetas.
 
 ## Comandos
@@ -62,7 +64,7 @@ python3 "$CHECK_LINKS" dist
 ~/Repositorios/privatenotes/scripts/instalar-hooks.sh --check biblioteca-tecnica
 ```
 
-`verificar.py` exige los conteos de las fuentes, que la búsqueda encuentre un apunte y una guía de cada curso, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. `check-links` revisa los enlaces relativos del repositorio y los del HTML generado. Si falla un conteo, no cambies el número de la configuración: revisa la fuente.
+`verificar.py` exige los conteos de las fuentes, que la búsqueda encuentre un apunte de cada fuente y una guía donde la haya, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. `check-links` revisa los enlaces relativos del repositorio y los del HTML generado. Si falla un conteo, no cambies el número de la configuración: revisa la fuente.
 
 ## Privacidad y licencia
 

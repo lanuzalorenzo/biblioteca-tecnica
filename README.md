@@ -2,7 +2,7 @@
 
 # Biblioteca técnica
 
-Visor local del contenido IT que he ido estudiando y documentando. Lee los Markdown de los repositorios de cursos y genera un sitio navegable con un solo árbol de módulos, búsqueda global, filtros por materia, migas y enlaces a apuntes y guías. La composición sigue el lenguaje editorial de la web personal, adaptado a la lectura y a la navegación del visor. No guarda contenido propio: cada build lee las fuentes y `dist/` es una copia local de los recursos que se regenera.
+Visor local del contenido IT que he ido estudiando y documentando. Lee los Markdown de las fuentes configuradas y genera un sitio navegable con un solo árbol de módulos, búsqueda global, filtros por materia, migas y enlaces a apuntes y guías. La composición sigue el lenguaje editorial de la web personal, adaptado a la lectura y a la navegación del visor. No guarda contenido propio: cada build lee las fuentes y `dist/` es una copia local de los recursos que se regenera.
 
 **Privado.** No se publica. La salida (`dist/`) no se versiona. **Licencia:** MIT, copyright 2026 Lorenzo Lanuza Arellano; el texto está en [`LICENSE`](LICENSE).
 
@@ -12,8 +12,9 @@ Visor local del contenido IT que he ido estudiando y documentando. Lee los Markd
 |---|---|
 | `ciclo-asir` | 11 módulos, 43 apuntes y 32 guías |
 | `curso-ciberseguridad` | 6 módulos |
+| `apuntes` | 8 módulos y 57 apuntes |
 
-Las rutas no están en el código: `config/fuentes.toml` nombra cada fuente por etiqueta y el visor pide su raíz a `privatenotes/scripts/repos.py`, que lee `workspace/rutas.env`. Añadir otro curso es añadir una fila en la configuración y su etiqueta en el registro; no se inventa contenido.
+Las rutas no están en el código: `config/fuentes.toml` nombra cada fuente por etiqueta y el visor pide su raíz a `privatenotes/scripts/repos.py`, que lee `workspace/rutas.env`. Las fuentes que viven fuera del contenedor se resuelven con su clave en `$XDG_CONFIG_HOME/privatenotes/fuentes.locales`, un archivo local que no se versiona; el contenido tampoco se copia al repositorio. Añadir otro curso es añadir una fila en la configuración y su etiqueta en el registro; no se inventa contenido.
 
 La portada no separa por cursos: cada módulo es un item, con su categoría, sus apuntes y sus guías. El lateral agrupa por categorías plegables, con icono de categoría y de módulo. Quedan fuera las fuentes que no son contenido de estudio.
 
@@ -57,7 +58,7 @@ python3 "$CHECK_LINKS" . --skip dist --skip sitio
 python3 "$CHECK_LINKS" dist
 ```
 
-`verificar.py` comprueba los 11 módulos, 43 apuntes y 32 guías de ASIR, los 6 módulos del curso, que la búsqueda encuentra un apunte y una guía de cada fuente, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona.
+`verificar.py` comprueba los 11 módulos, 43 apuntes y 32 guías de ASIR, los 6 módulos del curso, los 8 módulos y 57 apuntes de la fuente local, que la búsqueda encuentra un apunte de cada fuente y una guía donde la haya, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona.
 
 El repositorio es privado y no tiene CI. La barrera de secretos es el hook local de Gitleaks:
 
