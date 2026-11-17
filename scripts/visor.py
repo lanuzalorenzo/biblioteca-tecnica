@@ -65,9 +65,7 @@ ICONOS_MODULO = {
     "aso": "terminal",
     "asgbd": "datos",
     "iaw": "web",
-<<<<<<< HEAD
     "eie": "empleo",
-=======
     "angular": "codigo",
     "aspnet-core-mvc": "codigo",
     "git": "codigo",
@@ -1133,18 +1131,12 @@ def ordenar_arbol_por_raiz(fuente: Fuente, raiz_arbol: Nodo) -> None:
 
 
 def icono_modulo(fuente: Fuente, clave: str) -> str:
-<<<<<<< HEAD
     corta = clave.split("-")[0]
     for candidata in (clave, corta):
         ruta = fuente.raiz / "assets" / "iconos" / f"{candidata}.svg"
         if ruta.exists():
             return f"{fuente.id}/assets/iconos/{candidata}.svg"
     glifo = ICONOS_MODULO.get(clave) or ICONOS_MODULO.get(corta, "documento")
-=======
-    ruta = fuente.raiz / "assets" / "iconos" / f"{clave}.svg"
-    if ruta.exists():
-        return f"{fuente.id}/assets/iconos/{clave}.svg"
-    glifo = ICONOS_MODULO.get(clave) or ICONOS_MODULO.get(clave.split("-")[0], "documento")
     return f"_sitio/iconos/{glifo}.svg"
 
 
