@@ -28,12 +28,14 @@ Cada fuente se resuelve por etiqueta con `privatenotes/scripts/repos.py` y `work
 
 ## Fuentes y estructura de los cursos
 
-- `ciclo-asir`: módulos en `primer-curso/` y `segundo-curso/`, con `teoria/` y `ejercicios/`. Se esperan 11 módulos, 43 apuntes y 32 guías.
+- `ciclo-asir`: módulos en `primer-curso/` y `segundo-curso/`, con `teoria/` y `ejercicios/`. Se esperan 12 módulos, 58 apuntes y 36 guías.
 - `curso-ciberseguridad`: módulos `5021`–`5026` en la raíz, con `teoria/` y `ejercicios/`. Se esperan 6 módulos.
-- `apuntes`: módulos por carpeta con `README.md` y los apuntes al mismo nivel; `Azure` agrupa tres módulos. Se esperan 8 módulos y 57 apuntes.
+- `apuntes`: módulos por carpeta con `README.md` y los apuntes al mismo nivel; `Azure` agrupa tres módulos. Se esperan 8 módulos y 51 apuntes.
 - La configuración declara `estructura` (`curso`, `asir` o `apuntes`), las raíces de los módulos, los conteos esperados, el nombre corto de cada módulo (`nombres`) y las categorías de las tarjetas. Un curso nuevo se añade por configuración; no se crea contenido para rellenar el visor.
 - Las fuentes que no viven en el contenedor se declaran con `local` y se resuelven en `$XDG_CONFIG_HOME/privatenotes/fuentes.locales`, que no se versiona. La raíz del contenido no se escribe en la configuración y el contenido no se copia al repositorio.
 - Los prefijos numéricos de los módulos del curso son internos: no se muestran en la navegación ni en las tarjetas.
+- El `README.md` de cada módulo es la introducción al tema y se publica como `index.html`: contenido propio, no un índice de enlaces. El índice de módulos ya está en el lateral.
+- No se reproduce material del curso: ni portada, ni logotipo, ni aviso legal, ni datos del profesorado, ni el nombre de la plataforma que lo imparte. Las figuras se incluyen solo cuando explican algo; una imagen de relleno o promocional no entra.
 
 ## Comandos
 
@@ -64,7 +66,7 @@ python3 "$CHECK_LINKS" dist
 ~/Repositorios/privatenotes/scripts/instalar-hooks.sh --check biblioteca-tecnica
 ```
 
-`verificar.py` exige los conteos de las fuentes, que la búsqueda encuentre un apunte de cada fuente y una guía donde la haya, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. `check-links` revisa los enlaces relativos del repositorio y los del HTML generado. Si falla un conteo, no cambies el número de la configuración: revisa la fuente.
+`verificar.py` exige los conteos de las fuentes, que las fuentes no citen al proveedor del curso ni conserven cabeceras de curso, que la búsqueda encuentre un apunte de cada fuente y una guía donde la haya, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. `check-links` revisa los enlaces relativos del repositorio y los del HTML generado. Si falla un conteo, no cambies el número de la configuración: revisa la fuente.
 
 ## Privacidad y licencia
 
