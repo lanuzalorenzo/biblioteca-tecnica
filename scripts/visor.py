@@ -1195,9 +1195,9 @@ def _modulos_apuntes(
                 grupo=fuente.titulo,
                 conteo=conteo_modulo(ruta),
                 categoria=categoria(carpeta),
-                # El README de estos módulos repite la cabecera del curso; la
-                # tarjeta se queda sin resumen antes que mostrar lo mismo ocho veces.
-                resumen="",
+                # El README de estos módulos es la introducción al tema; su
+                # primer párrafo sirve de resumen en la tarjeta.
+                resumen=resumen_de(ruta),
                 icono=icono,
             )
         )
@@ -1336,7 +1336,7 @@ def bloque_toc(toc: list[tuple[int, str, str]]) -> str:
     piezas = "".join(
         f'<li class="nivel-{nivel}"><a href="#{ident}">{html.escape(texto)}</a></li>'
         for nivel, ident, texto in toc
-        if nivel <= 3
+        if nivel == 2
     )
     if not piezas:
         return ""

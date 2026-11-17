@@ -69,6 +69,16 @@ def main() -> int:
             f"{conteos['apuntes']} apuntes, {conteos['guias']} guías"
         )
 
+        for md in sorted(fuente.raiz.rglob("*.md")):
+            texto = md.read_text(encoding="utf-8")
+            ruta_rel = md.relative_to(fuente.raiz)
+            if re.search(r"campus\s*mvp", texto, flags=re.I):
+                errores.append(f"{identificador}: cita al proveedor del curso en {ruta_rel}")
+            if re.search(r"^> \*\*(Curso|Fuente):\*\*", texto, flags=re.M):
+                errores.append(f"{identificador}: cabecera de curso en {ruta_rel}")
+            if re.search(r"<!--\s*pág\.", texto):
+                errores.append(f"{identificador}: marca de página del PDF en {ruta_rel}")
+
         tipos = (
             ("apunte", "guia")
             if any(modulo.conteo["guias"] for modulo in modulos)
