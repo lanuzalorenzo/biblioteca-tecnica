@@ -14,6 +14,7 @@ Uso:
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import html
 import json
@@ -1979,6 +1980,30 @@ def construir_portada(
     )
 
 
+@contextlib.contextmanager
+def _cerrojo_de_proceso():
+    """Impide que dos compilaciones se pisen el `dist` provisional.
+
+    El servicio recompila al ver un cambio y alguien puede lanzar `build` a
+    mano: sin este cerrojo, la segunda borra el directorio que la primera está
+    escribiendo y el sitio queda a medias.
+    """
+    try:
+        import fcntl
+        import tempfile
+    except ImportError:  # fuera de POSIX no hay cerrojo de fichero
+        yield
+        return
+    clave = hashlib.sha1(str(SITIO).encode("utf-8")).hexdigest()[:12]
+    ruta = Path(tempfile.gettempdir()) / f"biblioteca-tecnica-{clave}.lock"
+    with open(ruta, "w", encoding="utf-8") as mango:
+        fcntl.flock(mango, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(mango, fcntl.LOCK_UN)
+
+
 def construir_todo(config: dict | None = None) -> dict[str, dict]:
     """Construye en un directorio provisional y lo cambia al final.
 
@@ -1986,7 +2011,7 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
     visor sigue en pie con la construcción anterior.
     """
     global SALIDA
-    with _CERROJO:
+    with _CERROJO, _cerrojo_de_proceso():
         definitiva = DIST
         provisional = definitiva.with_name(definitiva.name + ".nuevo")
         respaldo = definitiva.with_name(definitiva.name + ".viejo")
