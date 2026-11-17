@@ -350,15 +350,141 @@ def sin_markup(texto: str) -> str:
     return texto.strip()
 
 
+# Siglas y nombres que se conservan al pasar un título a minúscula natural.
+SIGLAS = {
+    "API": "API", "APIS": "APIs", "HTTP": "HTTP", "HTTPS": "HTTPS", "HTML": "HTML",
+    "CSS": "CSS", "JSON": "JSON", "XML": "XML", "SQL": "SQL", "KQL": "KQL",
+    "URL": "URL", "URI": "URI", "JWT": "JWT", "MVC": "MVC", "AJAX": "AJAX",
+    "CLI": "CLI", "SDK": "SDK", "SSH": "SSH", "PDF": "PDF", "TDD": "TDD",
+    "BDD": "BDD", "GUI": "GUI", "VCS": "VCS", "IOC": "IoC", "CI": "CI", "CD": "CD",
+    "DI": "DI", "DTO": "DTO", "REST": "REST", "CRUD": "CRUD", "XSS": "XSS",
+    "CSRF": "CSRF", "CORS": "CORS", "TLS": "TLS", "WSL": "WSL", "NAT": "NAT",
+    "ORM": "ORM", "POO": "POO", "SOLID": "SOLID", "MS": "MS", "HEAD": "HEAD",
+    "YAML": "YAML", "CRLF": "CRLF", "REPL": "REPL", "RFC": "RFC", "NET": "NET",
+    "DOM": "DOM", "CORE": "Core", "COMPOSE": "Compose", "GO": "Go",
+    "KOTLIN": "Kotlin", "ACTIONS": "Actions", "MULTI-STAGE": "multi-stage",
+    "MULTI STAGE": "multi-stage", "DOCKER-IN-DOCKER": "Docker-in-Docker",
+    "EXCEL": "Excel",
+    "ANGULAR": "Angular", "DOCKER": "Docker", "PODMAN": "Podman", "GIT": "Git",
+    "AZURE": "Azure", "WINDOWS": "Windows", "LINUX": "Linux",
+    "UBUNTU": "Ubuntu", "NGINX": "nginx", "JENKINS": "Jenkins", "KAFKA": "Kafka",
+    "KUBERNETES": "Kubernetes", "GITHUB": "GitHub", "GITLAB": "GitLab",
+    "NUGET": "NuGet", "SQLITE": "SQLite", "POSTMAN": "Postman", "DEVOPS": "DevOps",
+    "VISUAL": "Visual", "STUDIO": "Studio", "CODE": "Code", "DESKTOP": "Desktop",
+    "ENGINE": "Engine", "HYPER-V": "Hyper-V", "XUNIT": "xUnit", "MOQ": "Moq",
+    "RXJS": "RxJS", "XSSI": "XSSI", "CANACTIVATE": "canActivate",
+    "CANACTIVATECHILD": "canActivateChild", "CANDEACTIVATE": "canDeactivate",
+    "NGFORM": "ngForm", "NGMODEL": "ngModel", "NGMODELGROUP": "ngModelGroup",
+    "NGIF": "ngIf", "NGFOR": "ngFor", "NGSWITCH": "ngSwitch", "NGCLASS": "ngClass",
+    "NGSTYLE": "ngStyle", "NG": "ng", "IMPORTS": "imports", "DIGEST": "digest",
+    "HTTPCLIENT": "HttpClient", "FORMGROUP": "FormGroup", "FORMBUILDER": "FormBuilder",
+    "REACTIVEFORMSMODULE": "ReactiveFormsModule", "HOSTLISTENER": "HostListener",
+    "HOSTBINDING": "HostBinding", "TYPESCRIPT": "TypeScript",
+    "JAVASCRIPT": "JavaScript",
+    "CONTENTRESULT": "ContentResult", "OKRESULT": "OkResult",
+    "NOTFOUNDRESULT": "NotFoundResult", "VIEWRESULT": "ViewResult",
+    "ACTIONRESULT": "ActionResult", "JSONRESULT": "JsonResult",
+    "VIEWDATA": "ViewData", "VIEWBAG": "ViewBag", "TEMPDATA": "TempData",
+    "STARTUP.CS": "Startup.cs", "AUTHORIZE": "Authorize",
+    "ALLOWANONYMOUS": "AllowAnonymous", "REQUIREHTTPS": "RequireHttps",
+    "ANCHORTAGHELPER": "AnchorTagHelper", "FORMTAGHELPER": "FormTagHelper",
+    "INPUTTAGHELPER": "InputTagHelper", "PARTIALTAGHELPER": "PartialTagHelper",
+    "TAGHELPER": "TagHelper", "TAGHELPERS": "TagHelpers",
+    "IVALIDATABLEOBJECT": "IValidatableObject", "REQUIRED": "Required",
+    "RANGE": "Range", "REGULAREXPRESSION": "RegularExpression",
+    "STRINGLENGTH": "StringLength", "MAXLENGTH": "MaxLength", "MINLENGTH": "MinLength",
+    "COMPARE": "Compare", "CREDITCARD": "CreditCard", "EMAILADDRESS": "EmailAddress",
+    "FILEEXTENSIONS": "FileExtensions", "PHONE": "Phone",
+    "INLINEDATA": "InlineData", "CLASSDATA": "ClassData", "MEMBERDATA": "MemberData",
+    "ICLASSFIXTURE": "IClassFixture", "ICOLLECTIONFIXTURE": "ICollectionFixture",
+    "GITFLOW": "GitFlow", "MASTER": "master", "TAGS": "tags", "PULL": "pull",
+    "PUSH": "push", "ORIGIN": "origin", "BRANCH": "branch", "BRANCHES": "branches",
+    "DOCKERHOST": "DOCKER_HOST", "MACVLAN": "macvlan", "MOUNT": "mount",
+    "HISTORY": "history", "ROOT": "root", "DOCKERFILE": "Dockerfile",
+    "RAID": "RAID", "CPU": "CPU", "RAM": "RAM", "SSD": "SSD", "USB": "USB",
+    "VLAN": "VLAN", "SIEM": "SIEM", "DNS": "DNS", "DHCP": "DHCP", "LDAP": "LDAP",
+    "NODE.JS": "Node.js", "VS": "vs", "POWERSHELL": "PowerShell",
+    "MYSQL": "MySQL", "POSTGRESQL": "PostgreSQL", "TERRAFORM": "Terraform",
+    "ANSIBLE": "Ansible", "VAGRANT": "Vagrant", "GRAFANA": "Grafana",
+    "PROMETHEUS": "Prometheus", "ELASTICSEARCH": "Elasticsearch",
+    "KIBANA": "Kibana", "LOGSTASH": "Logstash", "WIRESHARK": "Wireshark",
+}
+
+FRASES = {"HOST LISTENER": "HostListener", "HOST BINDING": "HostBinding",
+          "WEB API": "Web API"}
+
+# Palabras cortas que siempre van en minúscula dentro de un título.
+MINUSCULAS = {"Y"}
+
+
+def _minuscula_natural(segmento: str) -> str:
+    for viejo, nuevo in FRASES.items():
+        segmento = segmento.replace(viejo, nuevo)
+    m = re.match(r"^(\d+(?:\.\d+)*\.?)\s+(.*)$", segmento)
+    prefijo, resto = (m.group(1) + " ", m.group(2)) if m else ("", segmento)
+    salida: list[str] = []
+    primera = True
+    for palabra in resto.split(" "):
+        # Un enlace o un resto de marcado se deja tal cual.
+        if "[" in palabra or "]" in palabra:
+            salida.append(palabra)
+            primera = False
+            continue
+        nucleo = palabra.strip('.,;:()¿?¡!"“”[]«»$*_`')
+        if not nucleo:
+            salida.append(palabra)
+            continue
+        if nucleo in SIGLAS:
+            nueva = palabra.replace(nucleo, SIGLAS[nucleo])
+        elif not re.fullmatch(r"[A-ZÁÉÍÓÚÜÑ0-9$#.]+", nucleo) or not any(c.isalpha() for c in nucleo):
+            nueva = palabra
+        elif nucleo in MINUSCULAS:
+            nueva = palabra.replace(nucleo, nucleo.lower())
+        elif "." in nucleo or any(c.isdigit() for c in nucleo):
+            # Nombres de archivo y versiones se quedan como están.
+            nueva = palabra
+        elif len(nucleo) <= 5 and not any(c in "AEIOUÁÉÍÓÚÜ" for c in nucleo):
+            # Siglas sin vocales: DNS, DHCP, FTP, HTTP.
+            nueva = palabra
+        else:
+            nueva = palabra.replace(nucleo, nucleo.lower())
+        if primera and nucleo not in SIGLAS:
+            pos = next((i for i, c in enumerate(nueva) if c.isalpha()), None)
+            if pos is not None:
+                nueva = nueva[:pos] + nueva[pos].upper() + nueva[pos + 1:]
+        salida.append(nueva)
+        if any(c.isalpha() for c in nucleo):
+            primera = False
+    return prefijo + " ".join(salida)
+
+
+def titulo_visible(texto: str, fuente_id: str = "") -> str:
+    """Pasa a minúscula natural un título escrito en mayúsculas de diapositiva.
+
+    Solo para los apuntes: los otros orígenes ya vienen en su forma final y usan
+    siglas propias (DNS, DHCP, RAID) que no conviene tocar. Conserva lo que va
+    entre comillas invertidas y los enlaces.
+    """
+    if fuente_id != "apuntes":
+        return texto
+    prosa = "".join(texto.split("`")[0::2])
+    letras = [c for c in prosa if c.isalpha()]
+    if not letras or sum(c.isupper() for c in letras) / len(letras) < 0.7:
+        return texto
+    trozos = texto.split("`")
+    for i in range(0, len(trozos), 2):
+        trozos[i] = _minuscula_natural(trozos[i])
+    return "`".join(trozos)
+
+
 def limpiar_titulo(texto: str) -> str:
     """Quita el prefijo numérico del curso y las referencias «del módulo 50XX»."""
-    limpio = re.sub(r"^\d{4}\.\s*", "", texto)
-    limpio = re.sub(r"^[A-ZÁÉÍÓÚÜ]{2,}\.\s*", "", limpio)
-    limpio = re.sub(r"\s+del\s+m[oó]dulo\s+50\d\d", "", limpio, flags=re.IGNORECASE)
-    limpio = re.sub(r"\b50\d\d\b", "", limpio)
-    acronimos = r"(?:ASGBD|LMSGI|GBD|SAD|SRI|ASO|IAW|FOL|ISO|FH)"
-    limpio = re.sub(rf"\s+(?:de|del)\s+{acronimos}\s*$", "", limpio, flags=re.IGNORECASE)
+    # El número de módulo es interno: no se muestra en navegación, migas ni título.
+    limpio = re.sub(r"^\s*m[oó]dulo\s+\d+\s*[:.\-–—]\s*", "", texto, flags=re.IGNORECASE)
+    acronimos = r"(?:ASGBD|LMSGI|GBD|SAD|SRI|ASO|IAW|FOL|EIE|ISO|FH|REDES)"
+    limpio = re.sub(r"^\d{4}\.\s*", "", limpio)
     limpio = re.sub(rf"^{acronimos}\s*[.·—:-]\s*", "", limpio, flags=re.IGNORECASE)
+    limpio = re.sub(r"\s+del\s+m[oó]dulo\s+50\d\d", "", limpio, flags=re.IGNORECASE)
     limpio = re.sub(r"\s{2,}", " ", limpio).strip(" .·-—:")
     return limpio or texto
 
@@ -502,11 +628,26 @@ class Markdown:
         self.toc: list[tuple[int, str, str]] = []
         self.ids: dict[str, int] = {}
         self.h1: str | None = None
+        self.fuente_id = ACTUAL.id if ACTUAL else ""
 
     # -- bloque ------------------------------------------------------------
     def render(self, texto: str) -> str:
         lineas = sin_comentarios(texto.replace("\r\n", "\n")).split("\n")
-        return "\n".join(self.bloques(lineas))
+        salida = self.bloques(lineas)
+        self.filtrar_toc()
+        return "\n".join(salida)
+
+    def filtrar_toc(self) -> None:
+        """Deja fuera del índice las cabeceras que son solo un número.
+
+        Son restos de numeración del origen: la entrada no lleva a ningún título
+        legible y ensuciaba «En esta página».
+        """
+        self.toc = [
+            (nivel, ident, texto)
+            for nivel, ident, texto in self.toc
+            if re.search(r"[^\W\d_]", texto)
+        ]
 
     def bloques(self, lineas: list[str]) -> list[str]:
         salida: list[str] = []
@@ -538,16 +679,17 @@ class Markdown:
             if cabecera:
                 nivel = len(cabecera.group(1))
                 titulo = cabecera.group(2).strip()
+                visible = titulo_visible(titulo, self.fuente_id)
                 i += 1
                 if nivel == 1 and self.h1 is None:
-                    self.h1 = sin_markup(titulo)
+                    self.h1 = sin_markup(visible)
                     continue
                 ident = self.identificador(titulo)
                 if nivel >= 2:
-                    self.toc.append((nivel, ident, sin_markup(titulo)))
+                    self.toc.append((nivel, ident, sin_markup(visible)))
                 salida.append(
                     f'<h{nivel} id="{ident}">'
-                    f'<a class="ancla" href="#{ident}" aria-hidden="true">#</a>{self.inline(titulo)}</h{nivel}>'
+                    f'<a class="ancla" href="#{ident}" aria-hidden="true" tabindex="-1">#</a>{self.inline(visible)}</h{nivel}>'
                 )
                 continue
 
@@ -756,6 +898,14 @@ class Markdown:
 
         def imagen(m: re.Match) -> str:
             alt = m.group(1)
+            # «Figura» no describe nada: mejor sin texto alternativo que con ruido.
+            resto = re.sub(
+                r"^(figura|imagen|fig)\b\s*\d*\s*[:.\-–—]?\s*",
+                "",
+                alt.strip(),
+                flags=re.IGNORECASE,
+            )
+            alt = resto
             return f'<img src="{reescribir_enlace(m.group(2), self.base)}" alt="{alt}" loading="lazy">'
 
         texto = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", imagen, texto)
@@ -842,7 +992,7 @@ def titulo_de(ruta: Path) -> str:
     if ruta.is_file():
         for linea in ruta.read_text(encoding="utf-8").splitlines()[:40]:
             if m := RE_CABECERA.match(linea):
-                titulo = sin_markup(m.group(2))
+                titulo = sin_markup(titulo_visible(m.group(2), ACTUAL.id if ACTUAL else ""))
                 break
     else:
         readme = ruta / "README.md"

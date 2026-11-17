@@ -234,7 +234,8 @@ kbd {
   overflow-wrap: break-word; text-wrap: balance;
 }
 .doc-cabecera h1 { flex: 1 1 320px; min-width: 0; margin-bottom: 0; }
-.doc-cabecera .doc-meta { flex: 0 0 auto; padding-top: 6px; }
+/* Deja encoger la fila de etiquetas: si no, empuja el botón fuera en móvil. */
+.doc-cabecera .doc-meta { flex: 0 1 auto; min-width: 0; max-width: 100%; padding-top: 6px; }
 .doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
 .chip {
@@ -317,13 +318,14 @@ kbd {
   color: var(--muted); text-decoration: none; font-weight: 400;
   opacity: 0;
 }
-h2:hover .ancla, h3:hover .ancla, .ancla:focus-visible { opacity: 1; }
+h2:hover .ancla, h3:hover .ancla { opacity: 1; }
 
 .prosa :not(pre) > code {
   font: 400 0.92em/1.5 var(--mono);
   background: var(--surface);
   padding: 1px 5px; border-radius: 3px; color: var(--ink);
-  word-break: break-word;
+  /* Un comando largo sin espacios se parte antes que desbordar la columna. */
+  overflow-wrap: anywhere;
 }
 
 pre.codigo {
