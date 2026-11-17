@@ -126,6 +126,11 @@ def main() -> int:
         if not (visor.SALIDA / relativa).exists():
             errores.append(f"falta dist/{relativa}")
 
+    # La construcción es atómica: no deja restos del intercambio.
+    for resto in ("dist.nuevo", "dist.viejo"):
+        if (visor.SITIO / resto).exists():
+            errores.append(f"quedó {resto}/ tras la construcción")
+
     # El paquete consumido no se retoca: se comprueban sus huellas.
     paquete = visor.SITIO / "_identidad"
     sumas = subprocess.run(

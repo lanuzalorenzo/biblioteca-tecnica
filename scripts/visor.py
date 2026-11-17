@@ -67,7 +67,9 @@ ICONOS_MODULO = {
 
 # Se reemplazan por cada fuente durante el build.
 RAIZ = SITIO
-DESTINO = SALIDA
+# El servicio sirve siempre el destino final; el build escribe en `SALIDA`.
+DIST = SALIDA
+_CERROJO = threading.Lock()
 ACTUAL: Fuente | None = None
 AVISOS_BUILD: list[str] = []
 CATEGORIAS: dict[str, str] = {}
@@ -1552,6 +1554,40 @@ def construir_portada(
 
 
 def construir_todo(config: dict | None = None) -> dict[str, dict]:
+    """Construye en un directorio provisional y lo cambia al final.
+
+    Un fallo a mitad no toca el `dist/` que el servicio está sirviendo: el
+    visor sigue en pie con la construcción anterior.
+    """
+    global SALIDA
+    with _CERROJO:
+        definitiva = DIST
+        provisional = definitiva.with_name(definitiva.name + ".nuevo")
+        respaldo = definitiva.with_name(definitiva.name + ".viejo")
+        for ruta in (provisional, respaldo):
+            if ruta.exists():
+                shutil.rmtree(ruta)
+        SALIDA = provisional
+        try:
+            resultado = _construir(config)
+        except BaseException:
+            shutil.rmtree(provisional, ignore_errors=True)
+            raise
+        finally:
+            SALIDA = definitiva
+        if definitiva.exists():
+            definitiva.rename(respaldo)
+        try:
+            provisional.rename(definitiva)
+        except OSError:
+            if respaldo.exists():
+                respaldo.rename(definitiva)
+            raise
+        shutil.rmtree(respaldo, ignore_errors=True)
+        return resultado
+
+
+def _construir(config: dict | None = None) -> dict[str, dict]:
     global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS, RECURSOS_URLS
     if config is None:
         config = cargar_config()
@@ -1654,7 +1690,7 @@ def construir() -> int:
 
 class Manejador(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(SALIDA), **kwargs)
+        super().__init__(*args, directory=str(DIST), **kwargs)
 
     def log_message(self, formato, *args):
         return
@@ -1735,7 +1771,7 @@ def servir(puerto: int, vigilar: bool, abrir: bool) -> int:
                     print("Cambio detectado, reconstruyendo…", flush=True)
                     try:
                         construir_todo(config_actual)
-                    except Exception as error:  # el servidor sigue en pie
+                    except BaseException as error:  # el servidor sigue en pie
                         print(f"No se pudo reconstruir: {error}", flush=True)
 
         threading.Thread(target=bucle, daemon=True).start()

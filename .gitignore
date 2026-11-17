@@ -1,5 +1,7 @@
 # Salida generada: se reconstruye con scripts/visor.py.
 dist/
+dist.nuevo/
+dist.viejo/
 __pycache__/
 *.pyc
 .venv/
