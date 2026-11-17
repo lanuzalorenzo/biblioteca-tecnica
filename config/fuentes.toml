@@ -19,7 +19,7 @@ etiqueta = "ciclo-asir"
 titulo = "Ciclo ASIR"
 estructura = "asir"
 raices = ["primer-curso", "segundo-curso"]
-esperados = { modulos = 11, apuntes = 43, guias = 32 }
+esperados = { modulos = 12, apuntes = 47, guias = 33 }
 
 [[fuente]]
 id = "curso-ciberseguridad"
@@ -47,3 +47,4 @@ sad = "Seguridad"
 "5025-hacking-etico" = "Seguridad"
 "5026-normativa-de-ciberseguridad" = "Seguridad"
 fol = "Empleo"
+eie = "Empleo"

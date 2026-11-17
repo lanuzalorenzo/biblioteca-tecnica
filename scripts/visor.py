@@ -64,6 +64,7 @@ ICONOS_MODULO = {
     "aso": "terminal",
     "asgbd": "datos",
     "iaw": "web",
+    "eie": "empleo",
 }
 
 # Se reemplazan por cada fuente durante el build.
