@@ -270,10 +270,8 @@ kbd {
   transform: rotate(42deg);
 }
 
-/* Prosa: una sola medida en rem para texto y títulos; tablas y código usan la columna */
+/* Prosa: ocupa la columna entera entre el lateral y el índice */
 .prosa { font-size: 1rem; line-height: 1.8; }
-.prosa > p, .prosa > ul, .prosa > ol, .prosa > blockquote,
-.prosa > h2, .prosa > h3, .prosa > h4, .prosa > h5 { max-width: var(--medida); }
 
 .prosa h2 {
   margin: 44px 0 12px;
@@ -301,17 +299,18 @@ kbd {
 .prosa hr { border: 0; border-top: 1px solid var(--line); margin: 48px 0; }
 .prosa img {
   display: block; margin: 28px 0;
-  max-width: min(100%, var(--medida)); height: auto;
+  max-width: 100%; height: auto;
   border: 1px solid var(--line); border-radius: 4px;
 }
 .prosa img[width] { border: 0; }
-.prosa details p, .prosa details ul, .prosa details ol { max-width: var(--medida); }
+.prosa details p, .prosa details ul, .prosa details ol { max-width: none; }
 
 .prosa blockquote {
   margin: 24px 0; padding: 4px 0 4px 16px;
   border-left: 2px solid var(--accent); color: var(--muted);
 }
 .prosa blockquote p { margin: 8px 0; }
+
 
 .ancla {
   float: left; margin-left: -20px; padding-right: 4px;
@@ -410,12 +409,16 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 }
 .toc ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
 .toc li a {
-  display: block; padding: 6px 12px; color: var(--muted);
+  display: block; padding: 8px 12px; color: var(--muted);
   border-left: 2px solid transparent; margin-left: -1px; line-height: 1.5;
   transition: color 200ms ease, border-color 200ms ease;
 }
 .toc li a:hover { color: var(--ink); text-decoration: none; }
-.toc li.activo a { color: var(--accent-hover); border-left-color: var(--accent); }
+.toc li.activo a, .toc li a[aria-current="page"] { color: var(--accent-hover); border-left-color: var(--accent); }
+/* Segundo bloque del índice: separado del árbol del módulo. */
+.toc .toc-titulo + ul + .toc-titulo {
+  margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line);
+}
 .toc .nivel-3 a { padding-left: 24px; }
 
 /* Anterior y siguiente */

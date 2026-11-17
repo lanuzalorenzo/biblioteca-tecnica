@@ -1481,17 +1481,60 @@ def recortar(nodo: Nodo, nivel: int) -> Nodo:
     return copia
 
 
-def bloque_toc(toc: list[tuple[int, str, str]]) -> str:
-    if not toc:
+def bloque_toc(toc: list[tuple[int, str, str]], modulo: Nodo | None = None, pagina: str = "") -> str:
+    arbol = bloque_modulo(modulo, pagina)
+    if not toc and not arbol:
         return ""
     piezas = "".join(
         f'<li class="nivel-{nivel}"><a href="#{ident}">{html.escape(texto)}</a></li>'
         for nivel, ident, texto in toc
         if nivel == 2
     )
+    en_pagina = f'<p class="toc-titulo">En esta página</p><ul>{piezas}</ul>' if piezas else ""
+    return f'<nav class="toc" aria-label="Contenido del módulo y de la página">{arbol}{en_pagina}</nav>'
+
+
+def ruta_de(nodo: Nodo) -> Path:
+    return nodo.ruta / "README.md" if nodo.es_carpeta else nodo.ruta
+
+
+def raiz_modulo(ruta: Path) -> Path:
+    """Carpeta del módulo: la más cercana hacia arriba con README propio."""
+    raiz = ACTUAL.raiz if ACTUAL else SITIO
+    carpeta = ruta.parent
+    while carpeta != raiz and not (carpeta / "README.md").exists():
+        carpeta = carpeta.parent
+    return carpeta
+
+
+def bloque_modulo(modulo: Nodo | None, pagina: str) -> str:
+    """Árbol del módulo en la columna derecha: dónde estás y qué más hay."""
+    if not modulo:
+        return ""
+    piezas: list[str] = []
+
+    def recorrer(nodo: Nodo, nivel: int) -> None:
+        if nodo.url:
+            actual = ' aria-current="page"' if nodo.url == pagina else ""
+            piezas.append(
+                f'<li class="nivel-{min(nivel, 3)}">'
+                f'<a href="{relativo(nodo.url, pagina)}"{actual}>{html.escape(limpiar_titulo(nodo.titulo))}</a></li>'
+            )
+        for hijo in nodo.hijos:
+            recorrer(hijo, nivel + 1)
+
+    if modulo.url and modulo.url != pagina:
+        piezas.append(
+            f'<li class="nivel-1"><a href="{relativo(modulo.url, pagina)}">Introducción</a></li>'
+        )
+    for hijo in modulo.hijos:
+        recorrer(hijo, 2)
     if not piezas:
         return ""
-    return f'<nav class="toc" aria-label="En esta página"><p class="toc-titulo">En esta página</p><ul>{piezas}</ul></nav>'
+    return (
+        '<p class="toc-titulo">En este módulo</p>'
+        f'<ul>{"".join(piezas)}</ul>'
+    )
 
 
 def bloque_paso(anterior: Nodo | None, siguiente: Nodo | None, pagina: str) -> str:
@@ -1502,6 +1545,8 @@ def bloque_paso(anterior: Nodo | None, siguiente: Nodo | None, pagina: str) -> s
                 f'<a class="paso-{clase}" href="{relativo(nodo.url, pagina)}">'
                 f'<span>{rotulo}</span><strong>{html.escape(nodo.titulo)}</strong></a>'
             )
+    if not piezas:
+        return ""
     return f'<nav class="pasos" aria-label="Recorrido de estudio">{"".join(piezas)}</nav>'
 
 
@@ -1710,6 +1755,13 @@ def construir_fuente(
         )
         cuerpo = md.render(texto)
         titulo = limpiar_titulo(md.h1 or titulo_nodo)
+        camino = caminos.get(pagina, [])
+        modulo = next((n for n in reversed(camino) if n.es_carpeta and n.url), None)
+        actual = raiz_modulo(ruta)
+        if anterior and raiz_modulo(ruta_de(anterior)) != actual:
+            anterior = None
+        if siguiente and raiz_modulo(ruta_de(siguiente)) != actual:
+            siguiente = None
 
         chips = "".join(f'<span class="chip">{html.escape(c)}</span>' for c in etiquetas(ruta))
         marcar = ""
@@ -1739,7 +1791,7 @@ def construir_fuente(
                 f"{titulo} — {AUTOR}",
                 cabecera,
                 lateral,
-                bloque_toc(md.toc),
+                bloque_toc(md.toc, modulo, pagina),
             ),
         )
         pagina_count += 1
