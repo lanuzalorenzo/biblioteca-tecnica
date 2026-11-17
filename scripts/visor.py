@@ -1523,9 +1523,10 @@ def bloque_modulo(modulo: Nodo | None, pagina: str) -> str:
         for hijo in nodo.hijos:
             recorrer(hijo, nivel + 1)
 
-    if modulo.url and modulo.url != pagina:
+    if modulo.url:
+        actual = ' aria-current="page"' if modulo.url == pagina else ""
         piezas.append(
-            f'<li class="nivel-1"><a href="{relativo(modulo.url, pagina)}">Introducción</a></li>'
+            f'<li class="nivel-1"><a href="{relativo(modulo.url, pagina)}"{actual}>Introducción</a></li>'
         )
     for hijo in modulo.hijos:
         recorrer(hijo, 2)
