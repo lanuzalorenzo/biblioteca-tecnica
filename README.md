@@ -46,7 +46,7 @@ python3 scripts/visor.py serve --vigilar --abrir
 | `servicio/biblioteca-tecnica.service` | Unidad de usuario del servicio |
 | `dist/` | Salida generada; ignorada por Git |
 
-`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<fuente>/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`; la cabecera, el pie, la pestaña y los tokens vienen de `dist/_identidad/`.
+`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` —la fuente y sus carpetas de nivel no aparecen en la URL— y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`; la cabecera, el pie, la pestaña y los tokens vienen de `dist/_identidad/`. El segmento del módulo sale de su nombre visible: al renombrarlo cambia su URL y se reinician sus marcas locales de lectura.
 
 ## Verificación
 

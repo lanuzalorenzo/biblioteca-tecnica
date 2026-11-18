@@ -122,13 +122,19 @@ def main() -> int:
             else:
                 print(f"  búsqueda {tipo}: «{consulta}» → {entrada['t']}")
 
-        base = visor.SALIDA / identificador
-        if not base.is_dir():
-            errores.append(f"{identificador}: no se generó su carpeta")
+        if (visor.SALIDA / identificador).exists():
+            errores.append(f"{identificador}: la URL conserva el id de la fuente")
+        for raiz in fuente.raices:
+            if (visor.SALIDA / raiz).exists():
+                errores.append(f"{identificador}: la URL conserva la carpeta {raiz}")
         for modulo in resultado["modulos"]:
             if not modulo.nodo.url:
                 errores.append(f"{identificador}: {modulo.nombre} no tiene página")
                 continue
+            if modulo.nodo.url.split("/", 1)[0] != visor.slug_url(modulo.nombre):
+                errores.append(
+                    f"{identificador}: la URL de {modulo.nombre} no es su nombre"
+                )
             pagina = visor.SALIDA / modulo.nodo.url
             if not pagina.exists():
                 errores.append(f"{identificador}: falta la página de {modulo.nombre}")

@@ -5,9 +5,11 @@
   const cuerpo = document.body;
   const raiz = cuerpo.dataset.raiz || ".";
   const pagina = cuerpo.dataset.pagina || "index.html";
-  const CLAVE_LEIDAS = "temario.leidas";
-  const CLAVE_ABIERTOS = "temario.abiertos";
-  const CLAVE_ULTIMA = "temario.ultima";
+  // La versión del estado invalida claves guardadas con URL de esquemas antiguos.
+  const VERSION_ESTADO = "v2";
+  const CLAVE_LEIDAS = `temario.${VERSION_ESTADO}.leidas`;
+  const CLAVE_ABIERTOS = `temario.${VERSION_ESTADO}.abiertos`;
+  const CLAVE_ULTIMA = `temario.${VERSION_ESTADO}.ultima`;
 
   const $ = (selector, contexto = document) => contexto.querySelector(selector);
   const $$ = (selector, contexto = document) => [...contexto.querySelectorAll(selector)];
@@ -266,10 +268,7 @@
     if (modulo) trozos.push(modulo.etiqueta || modulo.titulo || modulo.codigo);
     else if (partes.length) {
       const primera = partes[0];
-      const fuente = (window.CURSO?.fuentes || []).find((f) => f.id === primera);
-      trozos.push(
-        fuente?.titulo || primera.charAt(0).toUpperCase() + primera.slice(1)
-      );
+      trozos.push(primera.charAt(0).toUpperCase() + primera.slice(1));
     }
     if (partes.includes("teoria")) trozos.push("Teoría");
     else if (partes.includes("ejercicios")) trozos.push("Ejercicios");

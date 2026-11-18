@@ -27,12 +27,13 @@ import sys
 import threading
 import time
 import tomllib
+import unicodedata
 import webbrowser
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 SITIO = Path(__file__).resolve().parent.parent
 CONFIG = SITIO / "config" / "fuentes.toml"
@@ -89,6 +90,14 @@ AVISOS_BUILD: list[str] = []
 CATEGORIAS: dict[str, str] = {}
 ORDEN_CATEGORIAS: list[str] = []
 RECURSOS_URLS: set[str] = set()
+# URL de cada recurso copiado, para resolver después su archivo original.
+RUTAS_URL: dict[str, Path] = {}
+# Módulos ya detectados por fuente: fijan el primer segmento de la URL.
+MODULOS_POR_FUENTE: dict[tuple[str, Path], list[Path]] = {}
+# Nombre visible de cada módulo convertido a segmento de URL.
+SLUGS_MODULOS: dict[tuple[str, Path], dict[Path, str]] = {}
+# Página que se está pintando: los enlaces se hacen relativos desde ella.
+PAGINA_ACTUAL = ""
 
 # Carpetas que no forman parte del contenido publicado en el sitio.
 VETADAS = {".git", ".github", ".opencode", "sitio", "scripts"}
@@ -226,10 +235,12 @@ def ruta_icono(url: str) -> Path | None:
     """Archivo del icono citado por la URL del sitio, si existe."""
     if url.startswith("_sitio/"):
         return FUENTE / url[len("_sitio/"):]
+    if (ruta := RUTAS_URL.get(url)) is not None:
+        return ruta
     for fuente in FUENTES:
-        prefijo = f"{fuente.id}/"
-        if url.startswith(prefijo):
-            return fuente.raiz / url[len(prefijo):]
+        candidata = fuente.raiz / url
+        if candidata.is_file():
+            return candidata
     return None
 
 
@@ -322,18 +333,119 @@ def glifo_en_linea(url: str, clase: str) -> str:
     )
 
 
-def url_de(ruta: Path) -> str:
-    """Ruta del Markdown a su página, con el prefijo de la fuente."""
-    rel = ruta.relative_to(RAIZ).as_posix()
-    if rel == "README.md":
-        # La portada del curso es el panel; el índice del repositorio va aparte.
-        rel = "indice-curso.html"
-    elif rel.endswith("/README.md"):
-        rel = rel[: -len("README.md")] + "index.html"
+def carpetas_de_modulos(fuente: Fuente) -> list[Path]:
+    """Carpetas que son módulo: fijan el primer segmento de su URL.
+
+    Se calculan del sistema de archivos, antes de construir el árbol, porque
+    la URL de cada página se decide al crear sus nodos.
+    """
+    clave = (fuente.id, fuente.raiz)
+    if clave in MODULOS_POR_FUENTE:
+        return MODULOS_POR_FUENTE[clave]
+    if fuente.estructura == "curso":
+        carpetas = [
+            ruta
+            for ruta in fuente.raiz.iterdir()
+            if ruta.is_dir() and re.match(r"^\d{4}", ruta.name)
+        ]
+    elif fuente.estructura == "apuntes":
+        carpetas = []
+        for ruta in fuente.raiz.rglob("*"):
+            if not ruta.is_dir():
+                continue
+            partes = ruta.relative_to(fuente.raiz).parts
+            if any(
+                parte.startswith(".") or parte in VETADAS or parte in PROFUNDAS
+                for parte in partes
+            ):
+                continue
+            if not (ruta / "README.md").exists():
+                continue
+            if not any(
+                p.suffix == ".md" and p.name != "README.md" for p in ruta.iterdir()
+            ):
+                continue
+            carpetas.append(ruta)
     else:
-        rel = rel[:-3] + ".html"
-    prefijo = f"{ACTUAL.id}/" if ACTUAL else ""
-    return prefijo + rel
+        carpetas = []
+        for nombre in fuente.raices:
+            grupo = fuente.raiz / nombre
+            if grupo.is_dir():
+                carpetas.extend(ruta for ruta in grupo.iterdir() if ruta.is_dir())
+    MODULOS_POR_FUENTE[clave] = carpetas
+    return carpetas
+
+
+def slug_url(texto: str) -> str:
+    """Segmento de URL legible: sin acentos, minúsculas y guiones."""
+    limpio = unicodedata.normalize("NFKD", texto)
+    limpio = "".join(c for c in limpio if not unicodedata.combining(c))
+    limpio = re.sub(r"[^a-z0-9]+", "-", limpio.lower()).strip("-")
+    return limpio or "modulo"
+
+
+def nombre_de_modulo(fuente: Fuente, carpeta: Path) -> str:
+    """Nombre visible del módulo, el mismo que muestran el árbol y las tarjetas."""
+    nombre = fuente.nombres.get(carpeta.name, "")
+    if nombre:
+        return nombre
+    nombre = titulo_de(carpeta)
+    if fuente.estructura == "apuntes":
+        nombre = re.sub(r"^\d+[.\-]\s*", "", nombre)
+    return nombre
+
+
+def slug_de_modulo(carpeta: Path) -> str:
+    """Segmento de URL del módulo, derivado de su nombre visible."""
+    if not ACTUAL:
+        return carpeta.name
+    clave = (ACTUAL.id, ACTUAL.raiz)
+    if clave not in SLUGS_MODULOS:
+        SLUGS_MODULOS[clave] = {
+            ruta: slug_url(nombre_de_modulo(ACTUAL, ruta))
+            for ruta in carpetas_de_modulos(ACTUAL)
+        }
+    return SLUGS_MODULOS[clave].get(carpeta, carpeta.name)
+
+
+def modulo_de_ruta(ruta: Path) -> Path | None:
+    """Módulo más cercano que contiene la ruta; fuera de un módulo, `None`."""
+    if not ACTUAL:
+        return None
+    candidatos = [
+        carpeta
+        for carpeta in carpetas_de_modulos(ACTUAL)
+        if ruta == carpeta or ruta.is_relative_to(carpeta)
+    ]
+    if not candidatos:
+        return None
+    return max(candidatos, key=lambda carpeta: len(carpeta.parts))
+
+
+def url_de(ruta: Path) -> str:
+    """URL de una página o recurso, con el módulo como primer segmento.
+
+    La fuente y sus carpetas de nivel (`primer-curso`, `azure`) no aparecen:
+    son organización del repositorio, no del contenido.
+    """
+    if ruta == RAIZ:
+        return "index.html"
+    modulo = modulo_de_ruta(ruta)
+    if modulo is not None:
+        rel = "" if ruta == modulo else ruta.relative_to(modulo).as_posix()
+        nombre = slug_de_modulo(modulo)
+        url = f"{nombre}/{rel}" if rel else nombre
+    else:
+        url = ruta.relative_to(RAIZ).as_posix()
+    if ruta.is_dir():
+        return f"{url}/index.html" if (ruta / "README.md").exists() else f"{url}/"
+    if url.endswith("/README.md"):
+        return url[: -len("README.md")] + "index.html"
+    if url == "README.md":
+        return "index.html"
+    if url.endswith(".md"):
+        return url[:-3] + ".html"
+    return url
 
 
 def relativo(destino: str, desde: str) -> str:
@@ -518,18 +630,18 @@ def reescribir_enlace(destino: str, base: Path | None = None) -> str:
     if not dentro or objetivo.name in VETADOS:
         return "file://" + str(objetivo)
 
-    if limpia.endswith(".md"):
-        if objetivo.is_file():
-            nombre = limpia[: -len("README.md")] + "index.html" if limpia.endswith("README.md") else limpia[:-3] + ".html"
-            ruta = nombre
-        else:
-            ruta = limpia
-    elif objetivo.is_dir():
-        ruta = limpia.rstrip("/") + "/index.html" if (objetivo / "README.md").exists() else limpia.rstrip("/") + "/"
-    elif not posixpath.splitext(limpia)[1]:
-        ruta = limpia + "/"
+    destino_url = url_de(objetivo)
+    if PAGINA_ACTUAL:
+        cola = "/" if destino_url.endswith("/") else ""
+        relativa = relativo(destino_url.rstrip("/"), PAGINA_ACTUAL) + cola
+    else:
+        relativa = destino_url
 
-    return ruta + ("?" + consulta if interrogacion else "") + ("#" + ancla if almohadilla else "")
+    return (
+        quote(relativa, safe="/")
+        + ("?" + consulta if interrogacion else "")
+        + ("#" + ancla if almohadilla else "")
+    )
 
 
 def sin_vallas(texto: str) -> str:
@@ -973,14 +1085,17 @@ class Nodo:
         self.codigo = self.codigo.group(1) if self.codigo else ""
         self.fuente_id = ACTUAL.id if ACTUAL else ""
         self.icono = ""
-        try:
-            self.clave = (
-                f"{ACTUAL.id}/{ruta.relative_to(RAIZ).as_posix()}"
-                if ACTUAL
-                else str(ruta)
+        modulo = modulo_de_ruta(ruta) if ACTUAL else None
+        if modulo is not None:
+            dentro = (
+                "" if ruta == modulo else "/" + ruta.relative_to(modulo).as_posix()
             )
-        except ValueError:
-            self.clave = f"{ACTUAL.id}/{ruta.name}" if ACTUAL else str(ruta)
+            self.clave = slug_de_modulo(modulo) + dentro
+        else:
+            try:
+                self.clave = ruta.relative_to(RAIZ).as_posix()
+            except ValueError:
+                self.clave = ruta.name
 
 
 TITULOS: dict[Path, str] = {}
@@ -1177,6 +1292,11 @@ class Modulo:
     icono: str = ""
 
 
+def codigo_modulo(modulo: Modulo) -> str:
+    """Clave estable del módulo: su segmento de URL, sin la fuente."""
+    return posixpath.dirname(modulo.nodo.url or "") or modulo.nodo.ruta.name
+
+
 def resumen_de(ruta: Path) -> str:
     """Primer párrafo útil del README del módulo, para la tarjeta."""
     readme = ruta / "README.md"
@@ -1286,7 +1406,7 @@ def icono_modulo(fuente: Fuente, clave: str) -> str:
     for candidata in (clave, corta):
         ruta = fuente.raiz / "assets" / "iconos" / f"{candidata}.svg"
         if ruta.exists():
-            return f"{fuente.id}/assets/iconos/{candidata}.svg"
+            return url_de(ruta)
     glifo = ICONOS_MODULO.get(clave) or ICONOS_MODULO.get(corta, "documento")
     return f"_sitio/iconos/{glifo}.svg"
 
@@ -1369,7 +1489,7 @@ def modulos_de(
         for hijo in raiz_arbol.hijos:
             if hijo.es_carpeta and re.match(r"^\d{4}", hijo.ruta.name):
                 clave = hijo.ruta.name
-                nombre = limpiar_titulo(hijo.titulo)
+                nombre = fuente.nombres.get(clave) or limpiar_titulo(hijo.titulo)
                 hijo.titulo = nombre
                 icono = icono_modulo(fuente, clave)
                 hijo.icono = icono
@@ -1399,7 +1519,7 @@ def modulos_de(
             if not hijo.es_carpeta:
                 continue
             clave = hijo.ruta.name
-            nombre = limpiar_titulo(hijo.titulo)
+            nombre = fuente.nombres.get(clave) or limpiar_titulo(hijo.titulo)
             hijo.titulo = nombre
             icono = icono_modulo(fuente, clave)
             hijo.icono = icono
@@ -1551,9 +1671,9 @@ def bloque_paso(anterior: Nodo | None, siguiente: Nodo | None, pagina: str) -> s
     return f'<nav class="pasos" aria-label="Recorrido de estudio">{"".join(piezas)}</nav>'
 
 
-def tarjeta_modulo(modulo: Modulo, fuente: Fuente, pagina: str) -> str:
+def tarjeta_modulo(modulo: Modulo, pagina: str) -> str:
     datos = modulo.conteo
-    clave_datos = f"{fuente.id}:{modulo.clave}"
+    clave_datos = codigo_modulo(modulo)
     icono = (
         f'<img src="{relativo(modulo.icono, pagina)}" alt="" width="32" height="32">'
         if modulo.icono
@@ -1662,7 +1782,13 @@ def construir_fuente(
             continue
         if origen.suffix.lower() not in RECURSOS_PERMITIDOS or origen.name.startswith("."):
             continue
-        destino = SALIDA / fuente.id / origen.relative_to(RAIZ)
+        url = url_de(origen)
+        if (previa := RUTAS_URL.get(url)) is not None and previa != origen:
+            raise SystemExit(
+                f"Dos recursos comparten la URL {url!r}: {previa} y {origen}"
+            )
+        RUTAS_URL[url] = origen
+        destino = SALIDA / url
         destino.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(origen, destino)
         copiados += 1
@@ -1670,7 +1796,7 @@ def construir_fuente(
     indice_busqueda: list[dict] = []
     total_fuente = sum(modulo.conteo["paginas"] for modulo in modulos)
     orden_fuente = [
-        nodo for nodo in orden if nodo.url and nodo.url.startswith(f"{fuente.id}/")
+        nodo for nodo in orden if nodo.url and nodo.fuente_id == fuente.id
     ]
     posiciones = {nodo.url: posicion for posicion, nodo in enumerate(orden_fuente)}
 
@@ -1687,11 +1813,11 @@ def construir_fuente(
         enlaces: list[str] = []
         if (RAIZ / "entregas.md").exists():
             enlaces.append(
-                f'<a href="{relativo(f"{fuente.id}/entregas.html", pagina)}">Entregas</a>'
+                f'<a href="{relativo(url_de(RAIZ / "entregas.md"), pagina)}">Entregas</a>'
             )
         if (RAIZ / "campusvdi.md").exists():
             enlaces.append(
-                f'<a href="{relativo(f"{fuente.id}/campusvdi.html", pagina)}">Laboratorio</a>'
+                f'<a href="{relativo(url_de(RAIZ / "campusvdi.md"), pagina)}">Laboratorio</a>'
             )
         return "".join(enlaces)
 
@@ -1747,6 +1873,8 @@ def construir_fuente(
         siguiente: Nodo | None,
     ) -> None:
         nonlocal pagina_count
+        global PAGINA_ACTUAL
+        PAGINA_ACTUAL = pagina
         md = Markdown(ruta.parent)
         texto = ruta.read_text(encoding="utf-8")
         texto = re.sub(
@@ -1804,7 +1932,6 @@ def construir_fuente(
                     "m": "",
                     "x": texto_plano(texto),
                     "tipo": tipo_documento(ruta),
-                    "fuente": fuente.id,
                 }
             )
 
@@ -1823,7 +1950,7 @@ def construir_fuente(
     datos = {
         "modulos": [
             {
-                "codigo": f"{fuente.id}:{modulo.clave}",
+                "codigo": codigo_modulo(modulo),
                 "etiqueta": modulo.etiqueta,
                 "titulo": modulo.nombre,
                 "grupo": fuente.titulo,
@@ -1892,11 +2019,9 @@ def construir_portada(
     indice_global: list[dict] = []
     pares_modulos: list[tuple[Fuente, Modulo]] = []
     total = 0
-    fuentes_meta: list[dict] = []
     categorias: set[str] = set()
     for resultado in resultados.values():
         fuente = resultado["fuente"]
-        fuentes_meta.append({"id": fuente.id, "titulo": fuente.titulo})
         for modulo in resultado["modulos"]:
             pares_modulos.append((fuente, modulo))
             if modulo.categoria:
@@ -1918,7 +2043,7 @@ def construir_portada(
     for fuente, modulo in pares_modulos:
         modulos_global.append(
             {
-                "codigo": f"{fuente.id}:{modulo.clave}",
+                "codigo": codigo_modulo(modulo),
                 "etiqueta": modulo.etiqueta,
                 "titulo": modulo.nombre,
                 "grupo": fuente.titulo,
@@ -1928,12 +2053,11 @@ def construir_portada(
                 "resumen": modulo.resumen,
             }
         )
-        tarjetas.append(tarjeta_modulo(modulo, fuente, "index.html"))
+        tarjetas.append(tarjeta_modulo(modulo, "index.html"))
 
     datos = {
         "modulos": modulos_global,
         "total": total,
-        "fuentes": fuentes_meta,
     }
     escribir(
         SALIDA / "_sitio" / "datos.js",
@@ -2093,7 +2217,8 @@ def construir_todo(config: dict | None = None) -> dict[str, dict]:
 
 def _construir(config: dict | None = None) -> dict[str, dict]:
     global ACTUAL, RAIZ, AVISOS_BUILD, CATEGORIAS, ORDEN_CATEGORIAS, RECURSOS_URLS
-    global FUENTES, GLIFOS_EN_LINEA
+    global FUENTES, GLIFOS_EN_LINEA, RUTAS_URL, MODULOS_POR_FUENTE, PAGINA_ACTUAL
+    global SLUGS_MODULOS, TITULOS
     if config is None:
         config = cargar_config()
     fuentes = resolver_fuentes(config)
@@ -2104,6 +2229,11 @@ def _construir(config: dict | None = None) -> dict[str, dict]:
         shutil.rmtree(SALIDA)
     SALIDA.mkdir(parents=True)
     GLIFOS_EN_LINEA.clear()
+    RUTAS_URL.clear()
+    MODULOS_POR_FUENTE.clear()
+    SLUGS_MODULOS.clear()
+    TITULOS.clear()
+    PAGINA_ACTUAL = ""
 
     raiz_global = Nodo(SITIO, "Biblioteca técnica", "index.html", True)
     raiz_global.fuente_id = ""
@@ -2114,6 +2244,37 @@ def _construir(config: dict | None = None) -> dict[str, dict]:
     recursos.icono = "_sitio/iconos/documento.svg"
     categorias_nodos: dict[str, Nodo] = {}
     datos_fuentes: list[tuple[Fuente, list[Modulo]]] = []
+    segmentos: dict[str, Path] = {
+        "_sitio": SITIO / "_sitio",
+        "_identidad": SITIO / "_identidad",
+        "assets": SITIO / "assets",
+        "index.html": SITIO / "index.html",
+    }
+
+    def registrar_segmento(nombre: str, ruta: Path) -> None:
+        previa = segmentos.get(nombre)
+        if previa is not None and previa != ruta:
+            raise SystemExit(
+                f"Dos elementos comparten el primer segmento de URL {nombre!r}: "
+                f"{previa} y {ruta}"
+            )
+        segmentos[nombre] = ruta
+
+    for fuente in fuentes:
+        ACTUAL = fuente
+        RAIZ = fuente.raiz
+        # Todo lo que puede ocupar el primer segmento de una URL de esta fuente:
+        # carpetas de nivel, restos y recursos sueltos. `assets` es compartido.
+        for ruta in fuente.raiz.iterdir():
+            if ruta.name.startswith(".") or ruta.name in VETADAS or ruta.name in PROFUNDAS:
+                continue
+            if ruta.is_dir():
+                if ruta.name != "assets":
+                    registrar_segmento(ruta.name, ruta)
+            elif ruta.name not in VETADOS and ruta.name != "README.md":
+                registrar_segmento(url_de(ruta).split("/", 1)[0], ruta)
+        for carpeta in carpetas_de_modulos(fuente):
+            registrar_segmento(slug_de_modulo(carpeta), carpeta)
     for fuente in fuentes:
         ACTUAL = fuente
         RAIZ = fuente.raiz
@@ -2134,14 +2295,17 @@ def _construir(config: dict | None = None) -> dict[str, dict]:
                 categorias_nodos[categoria] = nodo_categoria
             categorias_nodos[categoria].hijos.append(modulo.nodo)
         # Toda la fuente de apuntes son módulos: nada queda como recurso suelto.
-        for hijo in arbol_fuente.hijos if fuente.estructura != "apuntes" else []:
+        for hijo in arbol_fuente.hijos:
             if id(hijo) in ids_modulos:
                 continue
             if hijo.es_carpeta and hijo.ruta.name in fuente.raices:
                 continue
             if hijo.ruta.name == "assets":
                 continue
-            recursos.hijos.append(hijo)
+            if hijo.url:
+                registrar_segmento(hijo.url.split("/", 1)[0], hijo.ruta)
+            if fuente.estructura != "apuntes":
+                recursos.hijos.append(hijo)
         datos_fuentes.append((fuente, modulos))
 
     def clave_categoria(nombre: str) -> tuple[int, str]:
