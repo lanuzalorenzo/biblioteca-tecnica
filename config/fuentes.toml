@@ -7,6 +7,7 @@ orden_categorias = [
   "Datos",
   "Desarrollo",
   "Seguridad",
+  "Azure",
   "Empleo",
 ]
 
@@ -35,7 +36,7 @@ titulo = "Apuntes de cursos"
 estructura = "apuntes"
 local = "APUNTES"
 esperados = { modulos = 14, apuntes = 57 }
-nombres = { angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", "docker-y-podman" = "Docker y Podman", git = "Git", "testing-xunit-moq" = "Testing .NET", "01-fundamentos" = "Azure: fundamentos", "02-red" = "Azure: red", "03-identidad" = "Azure: identidad", "04-computo" = "Azure: cómputo", "05-datos" = "Azure: datos", "06-bus-de-mensajeria" = "Azure: bus de mensajería", "07-servicios-orientados-a-eventos" = "Azure: servicios orientados a eventos", "08-monitorizacion" = "Azure: monitorización", "09-seguridad-y-gobierno" = "Azure: seguridad y gobierno" }
+nombres = { angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", "docker-y-podman" = "Docker y Podman", git = "Git", "testing-xunit-moq" = "Testing .NET", "01-fundamentos" = "Fundamentos", "02-red" = "Red", "03-identidad" = "Identidad", "04-computo" = "Cómputo", "05-datos" = "Datos y almacenamiento", "06-bus-de-mensajeria" = "Bus de mensajería", "07-servicios-orientados-a-eventos" = "Servicios orientados a eventos", "08-monitorizacion" = "Monitorización", "09-seguridad-y-gobierno" = "Seguridad y gobierno" }
 
 # Categorías de las tarjetas: agrupan por materia, no por curso.
 [categorias]
@@ -62,12 +63,12 @@ angular = "Desarrollo"
 git = "Desarrollo"
 "testing-xunit-moq" = "Desarrollo"
 "docker-y-podman" = "Operaciones"
-"01-fundamentos" = "Operaciones"
-"02-red" = "Sistemas y redes"
-"03-identidad" = "Seguridad"
-"04-computo" = "Desarrollo"
-"05-datos" = "Datos"
-"06-bus-de-mensajeria" = "Desarrollo"
-"07-servicios-orientados-a-eventos" = "Desarrollo"
-"08-monitorizacion" = "Operaciones"
-"09-seguridad-y-gobierno" = "Seguridad"
+"01-fundamentos" = "Azure"
+"02-red" = "Azure"
+"03-identidad" = "Azure"
+"04-computo" = "Azure"
+"05-datos" = "Azure"
+"06-bus-de-mensajeria" = "Azure"
+"07-servicios-orientados-a-eventos" = "Azure"
+"08-monitorizacion" = "Azure"
+"09-seguridad-y-gobierno" = "Azure"
