@@ -73,9 +73,15 @@ ICONOS_MODULO = {
     "git": "git",
     "testing-xunit-moq": "pruebas",
     "docker-y-podman": "docker",
-    "11-bus-de-mensajeria": "mensajes",
-    "12-servicios-orientados-a-eventos": "eventos",
-    "14-monitorizacion": "metricas",
+    "01-fundamentos": "jerarquia",
+    "02-red": "red",
+    "03-identidad": "identidad",
+    "04-computo": "servidor",
+    "05-datos": "datos",
+    "06-bus-de-mensajeria": "mensajes",
+    "07-servicios-orientados-a-eventos": "eventos",
+    "08-monitorizacion": "metricas",
+    "09-seguridad-y-gobierno": "escudo",
 }
 
 # Se reemplazan por cada fuente durante el build.
