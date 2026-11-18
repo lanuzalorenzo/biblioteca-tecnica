@@ -54,6 +54,7 @@ ICONOS_CATEGORIA = {
     "Datos": "datos",
     "Desarrollo": "codigo",
     "Seguridad": "escudo",
+    "Azure": "nube",
     "Empleo": "empleo",
 }
 ICONOS_MODULO = {
