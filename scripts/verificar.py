@@ -33,6 +33,28 @@ def huella_dist() -> str:
     return resumen.hexdigest()
 
 
+def revisar_iconos() -> list[str]:
+    """Cada valor de las tablas de iconos existe y ningún dibujo se repite."""
+    errores: list[str] = []
+    for nombre, mapa in (
+        ("categoría", visor.ICONOS_CATEGORIA),
+        ("módulo", visor.ICONOS_MODULO),
+    ):
+        vistos: dict[str, str] = {}
+        for clave, icono in mapa.items():
+            if not (visor.SITIO / "sitio" / "iconos" / f"{icono}.svg").is_file():
+                errores.append(
+                    f"icono de {nombre} «{clave}»: falta sitio/iconos/{icono}.svg"
+                )
+            if icono in vistos:
+                errores.append(
+                    f"icono de {nombre} «{icono}» repetido en "
+                    f"«{vistos[icono]}» y «{clave}»"
+                )
+            vistos[icono] = clave
+    return errores
+
+
 def buscar(indice: list[dict], consulta: str) -> list[dict]:
     terminos = [t for t in normalizar(consulta).split() if t]
     encontrados = []
@@ -49,6 +71,7 @@ def main() -> int:
     errores: list[str] = []
     if visor.AVISOS_BUILD:
         errores.extend(visor.AVISOS_BUILD)
+    errores.extend(revisar_iconos())
     primera_huella = huella_dist()
 
     for identificador, resultado in resumen.items():
