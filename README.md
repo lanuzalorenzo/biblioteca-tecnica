@@ -31,6 +31,17 @@ python3 scripts/visor.py serve --vigilar --abrir
 - Solo usa la biblioteca estándar de Python 3.11 o posterior. Sin CDN, sin telemetría y sin red.
 - `build` termina con error si un enlace interno no resuelve.
 
+### Abrir el visor
+
+El servicio de usuario sirve en `http://127.0.0.1:8001/`. Para abrirlo desde una terminal:
+
+```bash
+systemctl --user start biblioteca-tecnica
+curl -fsS -o /dev/null http://127.0.0.1:8001/ && xdg-open http://127.0.0.1:8001/
+```
+
+El lanzador «Formación» del escritorio abre la misma URL. Si `curl` falla, `journalctl --user -u biblioteca-tecnica -n 20` dice por qué: no se cambia el puerto ni se matan procesos.
+
 ## Estructura
 
 | Ruta | Para qué |
