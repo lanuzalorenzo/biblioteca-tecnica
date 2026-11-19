@@ -260,6 +260,26 @@ _GEOMETRIA = {
 }
 # Rellenos del tile que solo sirven para recortar: en una tinta pasan a hueco.
 _CORTES = {"#07131e", "#0e2a47", "#0b2034", "#1c4a72"}
+# Pintura que se hereda del grupo al extraer el glifo para el árbol y los filtros.
+_PINTURA = {"fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin"}
+# Atributos de trazo: solo cuentan cuando hay trazo.
+_TRAZO = {"stroke-width", "stroke-linecap", "stroke-linejoin"}
+
+
+def _atributo(clave: str, valor: str) -> str:
+    """Un color heredado pasa a `currentColor`; el resto, tal cual."""
+    if clave in {"fill", "stroke"}:
+        return f'{clave}="{"none" if valor == "none" else "currentColor"}"'
+    return f'{clave}="{valor}"'
+
+
+def _pintura(elemento: ET.Element, heredado: dict[str, str]) -> dict[str, str]:
+    """Pintura del elemento sobre la que hereda de sus grupos."""
+    valores = dict(heredado)
+    valores.update(
+        {clave: valor for clave, valor in elemento.attrib.items() if clave in _PINTURA}
+    )
+    return valores
 
 
 def _etiqueta(elemento: ET.Element) -> str:
@@ -289,7 +309,9 @@ def _dibujo(ruta: Path) -> str:
     llevar subgrupos con su propio transform y capas de recorte. Se conserva
     todo eso, se normaliza el color a `currentColor` y las capas de recorte se
     convierten en huecos con `fill-rule="evenodd"`, para poder pintar el mismo
-    dibujo a una tinta por debajo de 32 px.
+    dibujo a una tinta por debajo de 32 px. Al descartar los grupos, el dibujo
+    hereda su pintura: si no, un glifo a línea pierde el trazo en la versión
+    pequeña.
     """
     try:
         raiz = ET.parse(ruta).getroot()
@@ -300,29 +322,44 @@ def _dibujo(ruta: Path) -> str:
         return ""
     recortes = any(_es_corte(elemento) for elemento in grupo.iter())
 
-    def serializar(elemento: ET.Element) -> str:
+    def serializar(elemento: ET.Element, heredado: dict[str, str]) -> str:
         etiqueta = _etiqueta(elemento)
         if etiqueta not in _DIBUJABLES and etiqueta != "g":
             return ""
         if _es_corte(elemento):
             if etiqueta == "g":
-                return "".join(serializar(hijo) for hijo in elemento)
+                return "".join(serializar(hijo, heredado) for hijo in elemento)
             return ""
         atributos: list[str] = []
+        propio = _pintura(elemento, heredado)
         for clave, valor in elemento.attrib.items():
-            if clave in {"fill", "stroke"}:
-                atributos.append(f'{clave}="{"none" if valor == "none" else "currentColor"}"')
+            if clave in _PINTURA:
+                atributos.append(_atributo(clave, valor))
             elif clave in _GEOMETRIA:
                 atributos.append(f'{clave}="{valor}"')
+        for clave, valor in propio.items():
+            if clave in elemento.attrib:
+                continue
+            # El `svg` que envuelve el glifo ya pinta `currentColor` y no traza:
+            # solo se escribe lo que se aparta de esa pintura.
+            if clave == "fill" and valor != "none":
+                continue
+            if clave == "stroke" and valor == "none":
+                continue
+            if clave in _TRAZO and propio.get("stroke", "none") == "none":
+                continue
+            atributos.append(_atributo(clave, valor))
         if etiqueta == "path" and recortes and "fill-rule" not in elemento.attrib:
             atributos.append('fill-rule="evenodd"')
-        cuerpo = "".join(serializar(hijo) for hijo in elemento)
+        cuerpo = "".join(
+            serializar(hijo, propio) for hijo in elemento
+        )
         unidos = f' {" ".join(atributos)}' if atributos else ""
         if etiqueta == "g":
             return f"<g{unidos}>{cuerpo}</g>" if cuerpo else ""
         return f"<{etiqueta}{unidos}/>"
 
-    return "".join(serializar(hijo) for hijo in grupo)
+    return "".join(serializar(hijo, _pintura(grupo, {})) for hijo in grupo)
 
 
 def glifo_en_linea(url: str, clase: str) -> str:

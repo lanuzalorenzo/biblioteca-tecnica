@@ -16,6 +16,9 @@ sys.path.insert(0, str(AQUI))
 
 import visor  # noqa: E402
 
+# Glifos del visor que no salen de las tablas: el de reserva y el de la lupa.
+_ICONOS_FIJOS = {"documento", "lupa"}
+
 
 def normalizar(texto: str) -> str:
     texto = unicodedata.normalize("NFD", texto or "")
@@ -34,24 +37,38 @@ def huella_dist() -> str:
 
 
 def revisar_iconos() -> list[str]:
-    """Cada valor de las tablas de iconos existe y ningún dibujo se repite."""
+    """Cada icono existe, no se repite, se usa y suelta glifo para el árbol."""
     errores: list[str] = []
+    claves: dict[str, list[str]] = {}
     for nombre, mapa in (
         ("categoría", visor.ICONOS_CATEGORIA),
         ("módulo", visor.ICONOS_MODULO),
     ):
         vistos: dict[str, str] = {}
         for clave, icono in mapa.items():
-            if not (visor.SITIO / "sitio" / "iconos" / f"{icono}.svg").is_file():
-                errores.append(
-                    f"icono de {nombre} «{clave}»: falta sitio/iconos/{icono}.svg"
-                )
+            articulo = "la" if nombre == "categoría" else "el"
+            claves.setdefault(icono, []).append(f"{articulo} {nombre} «{clave}»")
             if icono in vistos:
                 errores.append(
                     f"icono de {nombre} «{icono}» repetido en "
                     f"«{vistos[icono]}» y «{clave}»"
                 )
             vistos[icono] = clave
+    # Glifos que no salen de las tablas: el de reserva y el de la lupa.
+    usados = set(claves) | _ICONOS_FIJOS
+    for icono in sorted(usados):
+        ruta = visor.SITIO / "sitio" / "iconos" / f"{icono}.svg"
+        quien = " y ".join(claves.get(icono, ["el glifo de reserva o la lupa"]))
+        if not ruta.is_file():
+            errores.append(f"falta sitio/iconos/{icono}.svg para {quien}")
+        elif not visor._dibujo(ruta):
+            errores.append(
+                f"sitio/iconos/{icono}.svg no suelta glifo para el árbol, "
+                f"que es lo que usa {quien}"
+            )
+    for ruta in sorted((visor.SITIO / "sitio" / "iconos").glob("*.svg")):
+        if ruta.stem not in usados:
+            errores.append(f"icono sin uso: sitio/iconos/{ruta.name}")
     return errores
 
 

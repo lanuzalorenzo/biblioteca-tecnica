@@ -611,7 +611,7 @@ body.pagina-portada .marco { grid-template-columns: var(--ancho-lateral) minmax(
   font: inherit; font-size: 13px; cursor: pointer;
   transition: color 200ms ease, border-color 200ms ease;
 }
-.chips-filtro button .icono-filtro { width: 15px; height: 15px; flex: none; fill: currentColor; }
+.chips-filtro button .icono-filtro { width: 16px; height: 16px; flex: none; fill: currentColor; }
 .chips-filtro button:hover { color: var(--ink); border-color: var(--line-strong); }
 .chips-filtro button[aria-pressed="true"] {
   border-color: var(--accent); color: var(--accent-hover); font-weight: 700;
