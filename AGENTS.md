@@ -30,7 +30,7 @@ Cada fuente se resuelve por etiqueta con `privatenotes/scripts/repos.py` y `work
 
 - `ciclo-asir`: módulos en `primer-curso/` y `segundo-curso/`, con `teoria/` y `ejercicios/`. Se esperan 12 módulos, 58 apuntes y 36 guías.
 - `curso-ciberseguridad`: módulos `5021`–`5026` en la raíz, con `teoria/` y `ejercicios/`. Se esperan 6 módulos.
-- `apuntes`: módulos por carpeta con `README.md` y los apuntes al mismo nivel; `Azure` agrupa nueve módulos. Se esperan 14 módulos y 64 apuntes.
+- `apuntes`: módulos por carpeta con `README.md` y los apuntes al mismo nivel; `Azure` agrupa nueve módulos. Se esperan 14 módulos y 66 apuntes.
 - La configuración declara `estructura` (`curso`, `asir` o `apuntes`), las raíces de los módulos, los conteos esperados, el nombre corto de cada módulo (`nombres`) y las categorías de las tarjetas. Un curso nuevo se añade por configuración; no se crea contenido para rellenar el visor.
 - Las fuentes que no viven en el contenedor se declaran con `local` y se resuelven en `$XDG_CONFIG_HOME/privatenotes/fuentes.locales`, que no se versiona. La raíz del contenido no se escribe en la configuración y el contenido no se copia al repositorio.
 - Los prefijos numéricos de los módulos del curso son internos: no se muestran en la navegación ni en las tarjetas.

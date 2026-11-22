@@ -35,7 +35,7 @@ etiqueta = "apuntes"
 titulo = "Apuntes de cursos"
 estructura = "apuntes"
 local = "APUNTES"
-esperados = { modulos = 14, apuntes = 64 }
+esperados = { modulos = 14, apuntes = 66 }
 nombres = { angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", "docker-y-podman" = "Docker y Podman", git = "Git", "testing-xunit-moq" = "Testing .NET", "01-fundamentos" = "Fundamentos", "02-red" = "Red", "03-identidad" = "Identidad", "04-computo" = "Cómputo", "05-datos" = "Datos y almacenamiento", "06-bus-de-mensajeria" = "Bus de mensajería", "07-servicios-orientados-a-eventos" = "Servicios orientados a eventos", "08-monitorizacion" = "Monitorización", "09-seguridad-y-gobierno" = "Seguridad y gobierno" }
 
 # Categorías de las tarjetas: agrupan por materia, no por curso.
