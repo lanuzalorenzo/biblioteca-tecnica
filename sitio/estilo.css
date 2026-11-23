@@ -270,11 +270,8 @@ kbd {
   transform: rotate(42deg);
 }
 
-/* Prosa: ocupa la columna entera entre el lateral y el índice, pero el texto
-   se queda en la medida de lectura; el código y las tablas sí usan la columna. */
+/* Prosa: ocupa la columna entera entre el lateral y el índice */
 .prosa { font-size: 1rem; line-height: 1.8; }
-.prosa p, .prosa ul, .prosa ol, .prosa blockquote,
-.prosa h2, .prosa h3, .prosa h4, .prosa h5 { max-width: var(--medida); }
 
 .prosa h2 {
   margin: 44px 0 12px;
