@@ -14,7 +14,7 @@
   --ancho-lateral: 288px;
   --ancho-toc: 224px;
   --alto-cabecera: var(--header-h);
-  --medida: 36rem;
+  --medida: 31rem;
 }
 
 * { box-sizing: border-box; }
@@ -156,6 +156,7 @@ kbd {
 }
 .boton-arbol:hover { color: var(--accent-hover); }
 .lateral-inicio {
+  display: inline-flex; align-items: center; min-height: 44px;
   font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--muted);
 }
@@ -270,8 +271,10 @@ kbd {
   transform: rotate(42deg);
 }
 
-/* Prosa: ocupa la columna entera entre el lateral y el índice */
+/* Prosa: el texto se limita a la medida de lectura; el código y las tablas
+   aprovechan la columna entera. */
 .prosa { font-size: 1rem; line-height: 1.8; }
+.prosa p, .prosa ul, .prosa ol, .prosa blockquote { max-width: var(--medida); }
 
 .prosa h2 {
   margin: 44px 0 12px;
@@ -322,9 +325,9 @@ h2:hover .ancla, h3:hover .ancla { opacity: 1; }
 .prosa :not(pre) > code {
   font: 400 0.92em/1.5 var(--mono);
   background: var(--surface);
-  padding: 1px 5px; border-radius: 3px; color: var(--ink);
+  padding: 1px 0 1px 2px; border-radius: 3px; color: var(--ink);
   /* Un comando largo sin espacios se parte antes que desbordar la columna. */
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 pre.codigo {
@@ -428,7 +431,8 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 }
 .pasos a {
   display: flex; flex-direction: column; gap: 2px;
-  min-height: 0; padding: 0; border: 0; background: transparent;
+  min-height: 44px; justify-content: center;
+  padding: 0; border: 0; background: transparent;
   color: var(--ink); transition: color 200ms ease;
 }
 .pasos a:hover { color: var(--accent-hover); text-decoration: none; }
@@ -831,6 +835,8 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 }
 
 .pie-sitio .wordmark img { width: 40px; height: 40px; }
+.pie-sitio a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; }
+.cabecera .wordmark { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
 
 @media (max-width: 940px) {
   .cabecera { padding: 0 20px; }
