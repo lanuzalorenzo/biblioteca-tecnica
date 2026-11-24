@@ -13,6 +13,6 @@ El dibujo se mide por su caja de tinta, no por la rejilla. Todos los glifos ocup
 - **Baldosa completa desde 32 px.** En las tarjetas y en la portada se usa el SVG tal cual.
 - **Glifo a una tinta por debajo de 32 px.** El árbol y los filtros no muestran la baldosa: el visor extrae el dibujo del grupo escalado y lo pinta con el color del texto en un `viewBox` de 24, como los iconos simbólicos del tema. Así el icono se lee a 16-20 px y cambia con el tema claro u oscuro.
 
-Un icono de módulo del repositorio de origen tiene prioridad sobre estos glifos. El orden es: `<fuente>/assets/iconos/<clave>.svg`, `<fuente>/assets/iconos/<prefijo>.svg` (lo que hay antes del primer guion, como `5021` o `sad`), el glifo de `ICONOS_MODULO` para la clave o, si no, para ese prefijo y, como último recurso, `documento.svg`.
+Un icono de módulo del repositorio de origen tiene prioridad sobre estos glifos. El orden es: `<fuente>/assets/iconos/<clave>.svg`, `<fuente>/assets/iconos/<prefijo>.svg` (lo que hay antes del primer guion, como `sad` o `fh`), el glifo de `ICONOS_MODULO` para la clave o, si no, para ese prefijo y, como último recurso, `documento.svg`.
 
 Para cambiar la receta común —fondo, borde, tamaño del glifo— se editan todos los archivos a la vez.

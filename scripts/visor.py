@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Construye el visor local del temario a partir de los Markdown de los cursos.
+"""Construye el sitio de la biblioteca a partir de los Markdown versionados.
 
-No guarda contenido propio: cada build lee las fuentes configuradas, las
-convierte a HTML y genera un sitio en `dist/`. La raíz de cada fuente se
-resuelve por etiqueta con `privatenotes/scripts/repos.py`; no hay rutas de
-repos en el código.
+Cada build lee las fuentes configuradas, las convierte a HTML y genera un
+sitio en `dist/`. Las fuentes viven en este repositorio, bajo `contenido/`,
+y su ruta se declara en `config/fuentes.toml`; no hay rutas del equipo ni
+dependencias externas.
 
 Uso:
     python3 scripts/visor.py build
@@ -18,11 +18,9 @@ import contextlib
 import hashlib
 import html
 import json
-import os
 import posixpath
 import re
 import shutil
-import subprocess
 import sys
 import threading
 import time
@@ -44,7 +42,7 @@ AUTOR = "Lorenzo Lanuza"
 TITULO_SITIO = f"Biblioteca técnica — {AUTOR}"
 MARCA_SITIO = "Lorenzo Lanuza"
 DESCRIPCION_SITIO = (
-    "Biblioteca técnica de Lorenzo Lanuza: apuntes y prácticas de sistemas, "
+    "Biblioteca técnica de Lorenzo Lanuza: apuntes y notas de sistemas, "
     "redes, datos, desarrollo, operaciones y seguridad."
 )
 
@@ -139,20 +137,6 @@ class Fuente:
     nombres: dict[str, str] = field(default_factory=dict)
 
 
-def leer_env(ruta: Path) -> dict[str, str]:
-    """Lee un archivo KEY=valor como `workspace/rutas.env`."""
-    datos: dict[str, str] = {}
-    if not ruta.exists():
-        raise SystemExit(f"No existe el registro de rutas: {ruta}")
-    for linea in ruta.read_text(encoding="utf-8").splitlines():
-        linea = linea.strip()
-        if not linea or linea.startswith("#") or "=" not in linea:
-            continue
-        clave, valor = linea.split("=", 1)
-        datos[clave.strip()] = valor.strip().strip("'\"")
-    return datos
-
-
 def cargar_config(ruta: Path = CONFIG) -> dict:
     if not ruta.exists():
         raise SystemExit(f"No existe la configuración: {ruta}")
@@ -160,69 +144,26 @@ def cargar_config(ruta: Path = CONFIG) -> dict:
         return tomllib.load(archivo)
 
 
-def archivo_locales() -> Path:
-    """Raíces personales fuera del contenedor; no se versionan."""
-    config_dir = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-    return config_dir / "privatenotes" / "fuentes.locales"
-
-
 def resolver_fuentes(config: dict) -> list[Fuente]:
-    """Resuelve cada etiqueta a su raíz con `repos.py`; no adivina rutas."""
-    registro = config.get("registro", {})
-    if not registro.get("rutas_env"):
-        raise SystemExit("config/fuentes.toml no declara registro.rutas_env")
-    env_ruta = Path(registro["rutas_env"]).expanduser()
-    env = leer_env(env_ruta)
-    privatenotes = env.get("PRIVATENOTES")
-    if not privatenotes:
-        raise SystemExit("rutas.env no declara PRIVATENOTES")
-    repos_py = Path(privatenotes) / "scripts" / "repos.py"
-    if not repos_py.exists():
-        raise SystemExit(f"No existe la puerta del registro: {repos_py}")
-    locales_ruta = archivo_locales()
-    locales: dict[str, str] | None = None
-
+    """Resuelve cada fuente a su carpeta dentro del repositorio."""
     fuentes: list[Fuente] = []
     for item in config.get("fuente", []):
-        etiqueta = item["etiqueta"]
-        if clave_local := item.get("local"):
-            # Raíz personal fuera del contenedor: se lee del archivo local,
-            # nunca se escribe en la configuración.
-            if locales is None:
-                if not locales_ruta.exists():
-                    raise SystemExit(
-                        f"Falta el archivo de raíces locales {locales_ruta}: "
-                        f"crea {clave_local}=<ruta> con permisos de solo el usuario"
-                    )
-                try:
-                    locales = leer_env(locales_ruta)
-                except (OSError, UnicodeDecodeError) as error:
-                    raise SystemExit(f"No se pudo leer {locales_ruta}: {error}")
-            valor = locales.get(clave_local)
-            if not valor:
-                raise SystemExit(
-                    f"La fuente local {etiqueta!r} no está en {locales_ruta}: "
-                    f"añade {clave_local}=<ruta> con permisos de solo el usuario"
-                )
-            raiz = Path(valor).expanduser()
-        else:
-            proceso = subprocess.run(
-                [sys.executable, str(repos_py), "campo", etiqueta, "ruta"],
-                capture_output=True,
-                text=True,
+        identificador = item["id"]
+        ruta = item.get("ruta")
+        if not ruta:
+            raise SystemExit(
+                f"La fuente {identificador!r} no declara una ruta dentro del repositorio"
             )
-            if proceso.returncode != 0 or not proceso.stdout.strip():
-                raise SystemExit(
-                    f"No se pudo resolver la fuente {etiqueta!r}: {proceso.stderr.strip()}"
-                )
-            raiz = Path(proceso.stdout.strip())
+        raiz = (SITIO / ruta).resolve()
+        if not raiz.is_relative_to(SITIO.resolve()):
+            raise SystemExit(f"La fuente {identificador!r} sale del repositorio: {ruta}")
         if not raiz.is_dir():
-            raise SystemExit(f"La fuente {etiqueta!r} no es un directorio: {raiz}")
+            raise SystemExit(f"La fuente {identificador!r} no es un directorio: {raiz}")
         fuentes.append(
             Fuente(
-                id=item["id"],
-                etiqueta=etiqueta,
-                titulo=item.get("titulo", item["id"]),
+                id=identificador,
+                etiqueta=item.get("etiqueta", identificador),
+                titulo=item.get("titulo", identificador),
                 estructura=item.get("estructura", "curso"),
                 raiz=raiz,
                 raices=item.get("raices", []),
@@ -652,12 +593,13 @@ def slug(texto: str) -> str:
     return re.sub(r"\s+", "-", limpio).strip("-") or "apartado"
 
 
-def reescribir_enlace(destino: str, base: Path | None = None) -> str:
+def reescribir_enlace(destino: str, base: Path | None = None) -> str | None:
     """Ajusta un enlace del Markdown al fichero equivalente dentro del sitio.
 
     `base` es la carpeta del documento: sirve para comprobar qué existe de
-    verdad. Los enlaces que salen del repositorio (puentes al portfolio) se
-    resuelven como `file://` para que abran el fichero local real.
+    verdad. Un enlace que sale del repositorio o apunta a un archivo vetado
+    se desenvuelve: no se publica una ruta del equipo ni una página que no
+    existe.
     """
     if not destino or destino.startswith(("http://", "https://", "mailto:", "tel:", "#", "//")):
         return destino
@@ -672,7 +614,7 @@ def reescribir_enlace(destino: str, base: Path | None = None) -> str:
     dentro = objetivo.is_relative_to(RAIZ.resolve())
 
     if not dentro or objetivo.name in VETADOS:
-        return "file://" + str(objetivo)
+        return None
 
     destino_url = url_de(objetivo)
     if PAGINA_ACTUAL:
@@ -1024,7 +966,10 @@ class Markdown:
     def imagen_cruda(self, etiqueta: str) -> str:
         origen = re.search(r'src="([^"]*)"', etiqueta)
         if origen:
-            etiqueta = etiqueta.replace(origen.group(1), reescribir_enlace(origen.group(1), self.base), 1)
+            destino = reescribir_enlace(origen.group(1), self.base)
+            if destino is None:
+                return ""
+            etiqueta = etiqueta.replace(origen.group(1), destino, 1)
         return etiqueta
 
     def inline(self, texto: str) -> str:
@@ -1063,13 +1008,18 @@ class Markdown:
                 flags=re.IGNORECASE,
             )
             alt = resto
-            return f'<img src="{reescribir_enlace(m.group(2), self.base)}" alt="{alt}" loading="lazy">'
+            destino = reescribir_enlace(m.group(2), self.base)
+            if destino is None:
+                return alt
+            return f'<img src="{destino}" alt="{alt}" loading="lazy">'
 
         texto = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)", imagen, texto)
 
         def enlace(m: re.Match) -> str:
             etiqueta, destino = m.group(1), m.group(2)
             href = reescribir_enlace(destino, self.base)
+            if href is None:
+                return etiqueta
             externo = ' target="_blank" rel="noopener"' if href.startswith("http") else ""
             return f'<a href="{href}"{externo}>{etiqueta}</a>'
 
@@ -1788,11 +1738,8 @@ def revisar_enlaces() -> list[str]:
             if not ruta:
                 continue
             if ruta.startswith("file://"):
-                objetivo = Path(ruta[len("file://") :])
-                if objetivo.exists():
-                    continue
                 avisos.append(
-                    f"{archivo.relative_to(SALIDA)} → fuera del repo, no existe: {ruta}"
+                    f"{archivo.relative_to(SALIDA)} → enlace file:// no permitido: {ruta}"
                 )
                 continue
             if not (archivo.parent / ruta).resolve().exists():
@@ -1853,18 +1800,6 @@ def construir_fuente(
                 return True
         return False
 
-    def pie(pagina: str) -> str:
-        enlaces: list[str] = []
-        if (RAIZ / "entregas.md").exists():
-            enlaces.append(
-                f'<a href="{relativo(url_de(RAIZ / "entregas.md"), pagina)}">Entregas</a>'
-            )
-        if (RAIZ / "campusvdi.md").exists():
-            enlaces.append(
-                f'<a href="{relativo(url_de(RAIZ / "campusvdi.md"), pagina)}">Laboratorio</a>'
-            )
-        return "".join(enlaces)
-
     def pintar(
         pagina: str,
         cuerpo: str,
@@ -1895,7 +1830,7 @@ def construir_fuente(
             "{{PAGINA}}": pagina,
             "{{MARCA}}": MARCA_SITIO,
             "{{DESCRIPCION}}": html.escape(DESCRIPCION_SITIO),
-            "{{PIE}}": pie(pagina),
+            "{{PIE}}": "",
             "{{CURSOS}}": relativo("index.html", pagina),
             "{{FAVICON}}": favicon,
             "{{ICONO_CABECERA}}": icono_cabecera,
@@ -2120,7 +2055,9 @@ def construir_portada(
         ignore=shutil.ignore_patterns("README.md"),
     )
     shutil.copy2(SITIO / "LICENSE", SALIDA / "_sitio" / "LICENSE")
-    shutil.copytree(SITIO / "_identidad", SALIDA / "_identidad", dirs_exist_ok=True)
+    (SALIDA / "_identidad").mkdir(parents=True, exist_ok=True)
+    for nombre in ("identidad.css", "marca-tile.svg"):
+        shutil.copy2(SITIO / "_identidad" / nombre, SALIDA / "_identidad" / nombre)
 
     filtros = ['<button type="button" data-categoria="todas" aria-pressed="true">Todo</button>']
     for categoria in sorted(
@@ -2196,7 +2133,7 @@ def construir_portada(
             version,
             lateral,
             contenido,
-            "Visor local del contenido: módulos de sistemas, redes, datos, desarrollo y seguridad.",
+            "Biblioteca técnica: módulos de sistemas, redes, datos, desarrollo y seguridad.",
         ),
     )
 
@@ -2414,9 +2351,6 @@ class Manejador(SimpleHTTPRequestHandler):
 
 def archivos_vigilados(fuentes: list[Fuente]) -> list[Path]:
     rutas = [CONFIG]
-    locales = archivo_locales()
-    if locales.exists():
-        rutas.append(locales)
     for fuente in fuentes:
         rutas.extend(
             ruta

@@ -112,8 +112,14 @@ def main() -> int:
         for md in sorted(fuente.raiz.rglob("*.md")):
             texto = md.read_text(encoding="utf-8")
             ruta_rel = md.relative_to(fuente.raiz)
-            if re.search(r"campus\s*mvp", texto, flags=re.I):
-                errores.append(f"{identificador}: cita al proveedor del curso en {ruta_rel}")
+            if re.search(r"img/p\d{3}_", texto):
+                errores.append(f"{identificador}: captura de PDF en {ruta_rel}")
+            if re.search(
+                r"\b(te presentamos|te voy a enseñar|vamos a conocer)\b",
+                texto,
+                flags=re.I,
+            ):
+                errores.append(f"{identificador}: voz de material ajeno en {ruta_rel}")
             if re.search(r"^> \*\*(Curso|Fuente):\*\*", texto, flags=re.M):
                 errores.append(f"{identificador}: cabecera de curso en {ruta_rel}")
             if re.search(r"<!--\s*pág\.", texto):

@@ -1,0 +1,84 @@
+name: Publicar
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Verificar y construir
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Construir y verificar
+        run: python3 scripts/verificar.py
+
+      - name: Comprobar enlaces del repositorio
+        uses: lanuzalorenzo/core/actions/check-links@v1.8
+        with:
+          root: "."
+          skip: "dist,sitio"
+
+      - name: Comprobar enlaces del sitio generado
+        uses: lanuzalorenzo/core/actions/check-links@v1.8
+        with:
+          root: "dist"
+
+      - name: Desactivar Jekyll en el artefacto
+        run: touch dist/.nojekyll
+
+      - name: Preparar el artefacto de Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  secretos:
+    name: Detección de secretos
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Escanear secretos con Gitleaks
+        uses: lanuzalorenzo/core/actions/gitleaks@v1.8
+
+  publicar:
+    name: Publicar en GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [ verificar, secretos ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Desplegar
+        id: deployment
+        uses: actions/deploy-pages@v4

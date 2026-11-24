@@ -1,5 +1,6 @@
-# Fuentes del visor. Cada fila se resuelve por etiqueta con
-# privatenotes/scripts/repos.py; aquí no se escribe ninguna ruta de repo.
+# Fuentes del visor. El contenido vive en este repositorio, bajo contenido/.
+# Cada fuente declara su ruta relativa: no hay etiquetas, registro externo ni
+# rutas del equipo.
 
 orden_categorias = [
   "Sistemas y redes",
@@ -11,32 +12,21 @@ orden_categorias = [
   "Empleo",
 ]
 
-[registro]
-rutas_env = "~/Repositorios/privatenotes/workspace/rutas.env"
-
 [[fuente]]
-id = "ciclo-asir"
-etiqueta = "ciclo-asir"
+id = "asir"
 titulo = "Ciclo ASIR"
 estructura = "asir"
+ruta = "contenido/asir"
 raices = ["primer-curso", "segundo-curso"]
-esperados = { modulos = 12, apuntes = 58, guias = 36 }
-
-[[fuente]]
-id = "curso-ciberseguridad"
-etiqueta = "curso-ciberseguridad"
-titulo = "Curso de Ciberseguridad"
-estructura = "curso"
-esperados = { modulos = 6 }
+esperados = { modulos = 12, apuntes = 58, guias = 0 }
 
 [[fuente]]
 id = "apuntes"
-etiqueta = "apuntes"
-titulo = "Apuntes de cursos"
+titulo = "Apuntes de Azure"
 estructura = "apuntes"
-local = "APUNTES"
-esperados = { modulos = 17, apuntes = 88 }
-nombres = { angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", "docker-y-podman" = "Docker y Podman", git = "Git", "testing-xunit-moq" = "Testing .NET", "01-fundamentos" = "Fundamentos", "02-red" = "Red", "03-identidad" = "Identidad", "04-computo" = "Cómputo", "05-datos" = "Datos y almacenamiento", "06-bus-de-mensajeria" = "Bus de mensajería", "07-servicios-orientados-a-eventos" = "Servicios orientados a eventos", "08-monitorizacion" = "Monitorización", "09-seguridad-y-gobierno" = "Seguridad y gobierno" }
+ruta = "contenido/apuntes"
+esperados = { modulos = 12, apuntes = 12 }
+nombres = { "01-fundamentos" = "Fundamentos", "02-red" = "Red", "03-identidad" = "Identidad", "04-computo" = "Cómputo", "05-datos" = "Datos y almacenamiento", "06-bus-de-mensajeria" = "Bus de mensajería", "07-servicios-orientados-a-eventos" = "Servicios orientados a eventos", "08-monitorizacion" = "Monitorización", "09-seguridad-y-gobierno" = "Seguridad y gobierno", "10-gestion-de-apis" = "Gestión de APIs", "11-cache-y-entrega" = "Caché y entrega", "12-patrones" = "Patrones" }
 
 # Categorías de las tarjetas: agrupan por materia, no por curso.
 [categorias]
@@ -45,24 +35,13 @@ iso = "Sistemas y redes"
 redes = "Sistemas y redes"
 aso = "Operaciones"
 sri = "Operaciones"
-"5023-puesta-en-produccion-segura" = "Operaciones"
 gbd = "Datos"
 asgbd = "Datos"
 lmsgi = "Desarrollo"
 iaw = "Desarrollo"
 sad = "Seguridad"
-"5021-incidentes-de-ciberseguridad" = "Seguridad"
-"5022-bastionado-de-redes-y-sistemas" = "Seguridad"
-"5024-analisis-forense-informatico" = "Seguridad"
-"5025-hacking-etico" = "Seguridad"
-"5026-normativa-de-ciberseguridad" = "Seguridad"
 fol = "Empleo"
 eie = "Empleo"
-angular = "Desarrollo"
-"aspnet-core-mvc" = "Desarrollo"
-git = "Desarrollo"
-"testing-xunit-moq" = "Desarrollo"
-"docker-y-podman" = "Operaciones"
 "01-fundamentos" = "Azure"
 "02-red" = "Azure"
 "03-identidad" = "Azure"
@@ -72,3 +51,6 @@ git = "Desarrollo"
 "07-servicios-orientados-a-eventos" = "Azure"
 "08-monitorizacion" = "Azure"
 "09-seguridad-y-gobierno" = "Azure"
+"10-gestion-de-apis" = "Azure"
+"11-cache-y-entrega" = "Azure"
+"12-patrones" = "Azure"

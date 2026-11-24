@@ -1,4 +1,4 @@
-/* Interacción del sitio: progreso, búsqueda, navegación y plazos.
+/* Interacción del sitio: progreso, búsqueda, navegación y filtros.
    Sin dependencias. Todo el estado vive en localStorage del navegador. */
 
 (() => {
@@ -423,107 +423,6 @@
     });
   }
 
-  /* --------------------------------------------------------------- plazos */
-
-  function plazos() {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    // Las fechas llegan en ISO (panel) o como en el Markdown (dd/mm/aaaa).
-    const aFecha = (texto) => {
-      let partes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto);
-      if (partes) return new Date(`${partes[1]}-${partes[2]}-${partes[3]}T00:00:00`);
-      partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(texto);
-      if (partes) return new Date(`${partes[3]}-${partes[2]}-${partes[1]}T00:00:00`);
-      return null;
-    };
-
-    $$("table").forEach((tabla) => {
-      const cabeceras = $$("th", tabla).map((th) => normalizar(th.textContent));
-      const columnaLimite = cabeceras.findIndex((c) => c.includes("limite"));
-      const columnaEstado = cabeceras.findIndex((c) => c.includes("estado"));
-      if (columnaLimite < 0 || columnaEstado < 0) return;
-
-      const filas = $$("tbody tr", tabla);
-      filas.forEach((fila) => {
-        const celda = fila.children[columnaLimite];
-        const estado = fila.children[columnaEstado]?.textContent || "";
-        // Lo ya subido no necesita cuenta atrás.
-        if (/^subido/i.test(estado.trim())) return;
-        const fecha = celda && aFecha(celda.dataset.limite || celda.textContent.trim());
-        if (!fecha) return;
-        const dias = Math.round((fecha - hoy) / 86400000);
-        const insignia = document.createElement("span");
-        insignia.className = "insignia";
-        if (dias < 0) {
-          insignia.classList.add("vencida");
-          insignia.textContent = `vencida hace ${-dias} d`;
-        } else if (dias === 0) {
-          insignia.classList.add("vencida");
-          insignia.textContent = "hoy";
-        } else if (dias <= 7) {
-          insignia.classList.add("urgente");
-          insignia.textContent = `en ${dias} d`;
-        } else if (dias <= 21) {
-          insignia.classList.add("proxima");
-          insignia.textContent = `en ${dias} d`;
-        } else {
-          insignia.classList.add("lejana");
-          insignia.textContent = `en ${dias} d`;
-        }
-        celda.appendChild(insignia);
-      });
-
-      // Filtro por estado, solo si hay estados distintos.
-      const estados = new Set(filas.map((f) => (f.children[columnaEstado]?.textContent || "").split(" ")[0].trim()));
-      if (estados.size < 2) return;
-      const marco = tabla.closest(".tabla-marco") || tabla;
-      const chips = document.createElement("div");
-      chips.className = "chips-filtro";
-      const opciones = [
-        ["Todas", () => true],
-        ["Pendientes", (texto) => /pendiente|sin subir/i.test(texto)],
-        ["Subidas", (texto) => /^subido/i.test(texto)],
-      ];
-      opciones.forEach(([etiqueta, prueba], posicion) => {
-        const boton = document.createElement("button");
-        boton.type = "button";
-        boton.textContent = etiqueta;
-        boton.setAttribute("aria-pressed", String(posicion === 0));
-        boton.addEventListener("click", () => {
-          $$("button", chips).forEach((b) => b.setAttribute("aria-pressed", "false"));
-          boton.setAttribute("aria-pressed", "true");
-          filas.forEach((fila) => {
-            const texto = fila.children[columnaEstado]?.textContent || "";
-            fila.hidden = !prueba(texto);
-          });
-        });
-        chips.appendChild(boton);
-      });
-      marco.parentElement.insertBefore(chips, marco);
-    });
-  }
-
-  /* --------------------------------------------------------------- filtros */
-
-  function filtros() {
-    const contenedor = $("[data-filtros]");
-    if (!contenedor) return;
-    const tarjetas = $$(".rejilla-contenido .tarjeta");
-    contenedor.querySelectorAll("button").forEach((boton) => {
-      boton.addEventListener("click", () => {
-        const categoria = boton.dataset.categoria || "todas";
-        contenedor.querySelectorAll("button").forEach((otro) => {
-          otro.setAttribute("aria-pressed", String(otro === boton));
-        });
-        tarjetas.forEach((tarjeta) => {
-          tarjeta.hidden =
-            categoria !== "todas" && tarjeta.dataset.categoria !== categoria;
-        });
-      });
-    });
-  }
-
   /* ---------------------------------------------------------------- inicio */
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -532,7 +431,6 @@
     navegacion();
     lectura();
     búsqueda();
-    plazos();
     filtros();
   });
 

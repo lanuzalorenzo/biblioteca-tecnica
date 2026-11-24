@@ -1,4 +1,4 @@
-/* Sitio local del curso. Identidad navy y cian, un solo tema.
+/* Biblioteca técnica. Identidad navy y cian, un solo tema.
    Escala de 4, radio solo en etiqueta, píldora y círculo. */
 
 :root {
@@ -548,7 +548,6 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 .panel .tabla-marco { margin: 0; border: 0; background: transparent; }
 .panel .tabla-marco th { background: transparent; padding-left: 0; }
 .panel .tabla-marco td { padding-left: 0; }
-.tabla-entregas { font-size: 13px; }
 .celda-modulo { font: 700 11px/1.4 var(--mono); color: var(--muted); letter-spacing: 0.08em; }
 .celda-limite { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pie-panel { margin: 16px 0 0; font-size: 12px; color: var(--muted); max-width: var(--medida); }
