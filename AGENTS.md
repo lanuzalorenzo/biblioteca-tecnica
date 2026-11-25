@@ -1,13 +1,13 @@
 # Guía para agentes: biblioteca-tecnica
 
-Biblioteca técnica: el contenido versionado en `contenido/` y el visor que lo convierte en un sitio estático. El repositorio es privado por ahora y se prepara para publicarse; es dueño del contenido publicable y no lee fuentes externas.
+Biblioteca técnica: el contenido versionado en `contenido/` y el visor que lo convierte en un sitio estático. El repositorio es público desde el 2026-11-25; es dueño del contenido publicable y no lee fuentes externas.
 
 ## Propósito y límites
 
 - `contenido/` es la fuente de verdad. El visor genera `dist/` y no se versiona.
 - Solo entra material propio y publicable: teoría y notas reescritas. Quedan fuera los enunciados y prácticas de los cursos, el seguimiento de entregas, los datos de acceso a plataformas del centro y cualquier dato personal o de terceros.
 - No se reproduce material de terceros: ni portada, ni logotipo, ni aviso legal, ni datos del profesorado, ni el nombre de la plataforma que imparte el curso.
-- El destino es un sitio público y estático. Mientras el repositorio sea privado no hay despliegue, y el contenido no debe salir de él hasta estar adaptado.
+- El destino es un sitio público y estático: solo se publica material adaptado.
 - No usa red, CDN ni telemetría en el build ni en el sitio.
 
 ## Estructura
@@ -49,14 +49,14 @@ Antes de dar un lote por cerrado:
 python3 scripts/verificar.py
 ```
 
-`verificar.py` exige un mínimo de 29 módulos y 160 apuntes, que la búsqueda encuentre un apunte, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. El mínimo es del total: añadir módulos no obliga a tocar la configuración, y el desglose por grupo no lo comprueba el script. Al publicar, el CI añadirá Gitleaks sobre el historial completo y `check-links` sobre el repositorio —sin `sitio/`, que es plantilla— y sobre `dist/`. Si falla un conteo, no cambies el número: revisa el contenido.
+`verificar.py` exige un mínimo de 29 módulos y 160 apuntes, que la búsqueda encuentre un apunte, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. El mínimo es del total: añadir módulos no obliga a tocar la configuración, y el desglose por grupo no lo comprueba el script. El CI añade Gitleaks sobre el historial completo y `check-links` sobre el repositorio —sin `sitio/`, que es plantilla— y sobre `dist/`. Si falla un conteo, no cambies el número: revisa el contenido.
 
 ## Publicación
 
-- Al publicar, el sitio se servirá con GitHub Pages desde un workflow: build en CI y artefacto de `dist/`.
+- El sitio se sirve con GitHub Pages desde `.github/workflows/sitio.yml`: build en CI y artefacto de `dist/`.
 - GitHub Pages fija las cabeceras de respuesta, incluida `Server`; no se presenta como control propio.
-- Cuando el repositorio sea público, todo cambio entrará por rama y pull request, con `main` protegida y los checks obligatorios. Mientras sea privado, el flujo es el de un repositorio privado.
-- Al publicar, la línea base: permisos mínimos en cada workflow, Gitleaks sobre el historial completo y Dependabot para GitHub Actions, con auto-merge de parche y minor cuando los checks pasen.
+- Todo cambio entra por rama y pull request, con `main` protegida y los checks obligatorios.
+- La línea base: permisos mínimos en cada workflow, Gitleaks sobre el historial completo y Dependabot para GitHub Actions, con auto-merge de parche y minor cuando los checks pasen.
 - Un lote de más de un archivo, o que toque reglas, CI, seguridad o publicación, pasa por el revisor de cambios antes de commitear.
 
 ## Licencia
