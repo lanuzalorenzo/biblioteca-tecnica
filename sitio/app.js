@@ -176,6 +176,12 @@
         botonTemario.setAttribute("aria-expanded", String(abierto));
         if (abierto) lateral.querySelector("a, summary, button")?.focus();
       });
+      // El menú principal queda por debajo del overlay del cajón: si se abre,
+      // el cajón se cierra para que el primer clic no se pierda.
+      const menuPrincipal = $(".menu-toggle");
+      menuPrincipal?.addEventListener("click", () => {
+        if (menuPrincipal.getAttribute("aria-expanded") === "true") plegarMenu();
+      });
       document.addEventListener("click", (evento) => {
         if (!lateral.classList.contains("abierto")) return;
         if (lateral.contains(evento.target) || botonTemario.contains(evento.target)) return;

@@ -14,6 +14,8 @@
   --ancho-lateral: 288px;
   --ancho-toc: 224px;
   --medida: 36rem;
+  /* Medida de lectura: 68-76 caracteres, unos 760-820 px. */
+  --medida-lectura: 48rem;
 }
 
 * { box-sizing: border-box; }
@@ -113,14 +115,21 @@ kbd {
 .migas a:hover { color: var(--accent-hover); }
 .migas [aria-current] { color: var(--ink); }
 
-/* Marco de tres columnas */
+/* Alineación con el marco: el paquete de identidad centra cabecera y pie en
+   1180 px; aquí el documento usa el mismo contenedor de 1440 px que .marco.
+   No cambia la capa de identidad, solo el ancho del contenedor. */
+.site-header,
+.site-footer {
+  padding-inline: max(40px, calc((100% - 1440px) / 2));
+}
+
+/* Marco de tres columnas: un solo contenedor para cabecera, pie y documento. */
 .marco {
   display: grid;
   grid-template-columns: var(--ancho-lateral) minmax(0, 1fr) var(--ancho-toc);
   gap: 40px;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 40px;
+  width: min(1440px, calc(100% - 80px));
+  margin-inline: auto;
   align-items: start;
 }
 
@@ -267,8 +276,12 @@ kbd {
   transform: rotate(42deg);
 }
 
-/* Prosa: ocupa la columna entera entre el lateral y el índice */
-.prosa { font-size: 1rem; line-height: 1.8; }
+/* Prosa: media de lectura centrada en su columna. */
+.prosa {
+  max-width: var(--medida-lectura);
+  margin-inline: auto;
+  font-size: 1rem; line-height: 1.8;
+}
 
 .prosa h2 {
   margin: 44px 0 12px;
@@ -412,11 +425,6 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 }
 .toc li a:hover { color: var(--ink); text-decoration: none; }
 .toc li.activo a, .toc li a[aria-current="page"] { color: var(--accent-hover); border-left-color: var(--accent); }
-/* Segundo bloque del índice: separado del árbol del módulo. */
-.toc .toc-titulo + ul + .toc-titulo {
-  margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line);
-}
-.toc .nivel-3 a { padding-left: 24px; }
 
 /* Anterior y siguiente */
 .pasos {
@@ -441,7 +449,8 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 .portada {
   /* Sin halo: la cabecera fija es opaca y lo cortaba en recto, así que el
      degradado se leía como una banda de otro color sobre el fondo. */
-  max-width: 720px;
+  max-width: var(--medida-lectura);
+  margin-inline: auto;
   padding: 32px 0 24px;
 }
 .antetitulo {
@@ -556,7 +565,8 @@ blockquote.nota, blockquote.importante, blockquote.aviso {
 .enlace-suelto:hover { border-color: var(--accent); color: var(--accent-hover); text-decoration: none; }
 
 /* Portada del temario: índice completo, sin selector de cursos */
-body.pagina-portada .marco { grid-template-columns: var(--ancho-lateral) minmax(0, 1fr); }
+body.pagina-portada .marco,
+body.sin-toc .marco { grid-template-columns: var(--ancho-lateral) minmax(0, 1fr); }
 .portada-temario { max-width: none; padding-top: 48px; }
 .portada-temario h1 {
   font-size: clamp(40px, 5vw, 56px);
@@ -837,7 +847,7 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 }
 
 /* Adaptación: el documento fluye y el lateral y el índice se fijan bajo la cabecera. */
-@media (max-width: 1279px) {
+@media (max-width: 1100px) {
   .marco { grid-template-columns: var(--ancho-lateral) minmax(0, 1fr); }
   .toc { display: none; }
 }
@@ -848,9 +858,21 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 }
 
 @media (max-width: 940px) {
-  .site-nav { --nav-gap: 14px; }
-  .marco { grid-template-columns: minmax(0, 1fr); }
-  body.pagina-portada .marco { grid-template-columns: minmax(0, 1fr); }
+  /* Corte responsive: el cajón y los 24 px de contenedor entran a 940 px;
+     la hamburguesa de identidad sigue a 850 px y entre ambos la nav se
+     compacta para que quepan los seis enlaces, el buscador y «Temario». */
+  .site-header,
+  .site-footer { padding-inline: 24px; }
+  .site-nav { --nav-gap: 10px; }
+  .site-nav a,
+  .nav-temario { font-size: 11px; }
+  .nav-temario { order: -1; }
+  .marco {
+    grid-template-columns: minmax(0, 1fr);
+    width: calc(100% - 48px);
+  }
+  body.pagina-portada .marco,
+  body.sin-toc .marco { grid-template-columns: minmax(0, 1fr); }
   .contenido { padding: 32px 0 64px; }
   .lateral {
     position: fixed; top: var(--header-h); bottom: 0; left: 0; z-index: 45;
@@ -877,8 +899,9 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 }
 
 @media (max-width: 850px) {
-  .marco { padding: 0 24px; }
+  .site-nav a { font-size: 12px; }
   .nav-temario {
+    order: 0;
     width: 100%; height: auto; min-height: 44px;
     padding: 12px 0; border-bottom: 1px solid var(--line);
     font-size: 13px;
@@ -893,7 +916,6 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 }
 
 @media (max-width: 620px) {
-  .marco { padding: 0 20px; }
   .contenido { padding-top: 24px; }
 }
 

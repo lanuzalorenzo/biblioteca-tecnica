@@ -41,13 +41,13 @@ python3 scripts/visor.py serve --vigilar --abrir
 | `scripts/visor.py` | Build, servidor, vigilancia y composición del contenido |
 | `scripts/verificar.py` | Verificación de módulos, búsqueda, enlaces y `dist/` |
 | `sitio/plantilla.html` | Esqueleto de cada página; marcadores `{{...}}` |
-| `sitio/estilo.css` | Distribución del visor: marco fijo, lateral, contenido y TOC |
+| `sitio/estilo.css` | Distribución del visor: marco fluido, lateral y TOC sticky, contenido |
 | `sitio/app.js` | Progreso, búsqueda, filtros y navegación |
-| `_identidad/` | Paquete de identidad consumido: CSS y tile; no se retoca |
+| `_identidad/` | Paquete de identidad consumido: CSS, guion del menú y tile; no se retoca |
 | `sitio/iconos/` | Iconos de categorías y módulos |
 | `dist/` | Salida generada; ignorada por Git |
 
-`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`; la cabecera y el pie se componen en `sitio/plantilla.html`, y los estilos, el guion del menú y el tile vienen de `dist/_identidad/`.
+`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`. La cabecera y el pie se componen en `sitio/plantilla.html`: la identidad aporta `identidad.css`, `menu.js` y el tile de `dist/_identidad/`, y el visor añade `estilo.css` y `app.js` desde `dist/_sitio/`.
 
 ## Publicación
 

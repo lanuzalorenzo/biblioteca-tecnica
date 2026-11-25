@@ -1605,17 +1605,19 @@ def recortar(nodo: Nodo, nivel: int) -> Nodo:
     return copia
 
 
-def bloque_toc(toc: list[tuple[int, str, str]], modulo: Nodo | None = None, pagina: str = "") -> str:
-    arbol = bloque_modulo(modulo, pagina)
-    if not toc and not arbol:
-        return ""
+def bloque_toc(toc: list[tuple[int, str, str]]) -> str:
+    """Índice de la página: solo los encabezados de este documento."""
     piezas = "".join(
         f'<li class="nivel-{nivel}"><a href="#{ident}">{html.escape(texto)}</a></li>'
         for nivel, ident, texto in toc
         if nivel == 2
     )
-    en_pagina = f'<p class="toc-titulo">En esta página</p><ul>{piezas}</ul>' if piezas else ""
-    return f'<nav class="toc" aria-label="Contenido del módulo y de la página">{arbol}{en_pagina}</nav>'
+    if not piezas:
+        return ""
+    return (
+        '<nav class="toc" aria-label="En esta página">'
+        f'<p class="toc-titulo">En esta página</p><ul>{piezas}</ul></nav>'
+    )
 
 
 def ruta_de(nodo: Nodo) -> Path:
@@ -1629,37 +1631,6 @@ def raiz_modulo(ruta: Path) -> Path:
     while carpeta != raiz and not (carpeta / "README.md").exists():
         carpeta = carpeta.parent
     return carpeta
-
-
-def bloque_modulo(modulo: Nodo | None, pagina: str) -> str:
-    """Árbol del módulo en la columna derecha: dónde estás y qué más hay."""
-    if not modulo:
-        return ""
-    piezas: list[str] = []
-
-    def recorrer(nodo: Nodo, nivel: int) -> None:
-        if nodo.url:
-            actual = ' aria-current="page"' if nodo.url == pagina else ""
-            piezas.append(
-                f'<li class="nivel-{min(nivel, 3)}">'
-                f'<a href="{relativo(nodo.url, pagina)}"{actual}>{html.escape(limpiar_titulo(nodo.titulo))}</a></li>'
-            )
-        for hijo in nodo.hijos:
-            recorrer(hijo, nivel + 1)
-
-    if modulo.url:
-        actual = ' aria-current="page"' if modulo.url == pagina else ""
-        piezas.append(
-            f'<li class="nivel-1"><a href="{relativo(modulo.url, pagina)}"{actual}>Introducción</a></li>'
-        )
-    for hijo in modulo.hijos:
-        recorrer(hijo, 2)
-    if not piezas:
-        return ""
-    return (
-        '<p class="toc-titulo">En este módulo</p>'
-        f'<ul>{"".join(piezas)}</ul>'
-    )
 
 
 def bloque_paso(anterior: Nodo | None, siguiente: Nodo | None, pagina: str) -> str:
@@ -1846,7 +1817,10 @@ def construir_fuente(
             "{{FAVICON}}": favicon,
             "{{ICONO_CABECERA}}": icono_cabecera,
             "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
-            "{{CLASE_CUERPO}}": "",
+            "{{NAV_INDICE}}": (
+                ' class="is-active" aria-current="page"' if pagina == "index.html" else ""
+            ),
+            "{{CLASE_CUERPO}}": "" if toc else "sin-toc",
         }
         salida = plantilla
         for clave, valor in reemplazos.items():
@@ -1910,7 +1884,7 @@ def construir_fuente(
                 f"{titulo} — {AUTOR}",
                 cabecera,
                 lateral,
-                bloque_toc(md.toc, modulo, pagina),
+                bloque_toc(md.toc),
             ),
         )
         pagina_count += 1
@@ -1986,6 +1960,7 @@ def pintar_global(
         "{{FAVICON}}": '<link rel="icon" href="_identidad/marca-tile.svg">',
         "{{ICONO_CABECERA}}": '<img src="_identidad/marca-tile.svg" alt="" width="40" height="40">',
         "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
+        "{{NAV_INDICE}}": ' class="is-active" aria-current="page"',
         "{{CLASE_CUERPO}}": "pagina-portada",
     }
     salida = plantilla
@@ -2377,6 +2352,7 @@ def archivos_vigilados(fuentes: list[Fuente]) -> list[Path]:
         for ruta in FUENTE.iterdir()
         if ruta.is_file() and ruta.suffix in {".css", ".js", ".html"}
     )
+    rutas.append(SITIO / "_identidad" / "menu.js")
     return rutas
 
 
