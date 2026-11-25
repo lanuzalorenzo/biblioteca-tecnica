@@ -14,11 +14,11 @@ Los cuatro bloques del anexo no son compartimentos estancos. Un control organiza
 
 ## El ENS
 
-El Esquema Nacional de Seguridad (ENS) se regula por el Real Decreto 311/2022 y se aplica a las Administraciones Públicas y a los proveedores que les prestan servicios. Exige clasificar la información —básica, media o alta—, aplicar medidas proporcionadas al nivel, gestionar riesgos, controlar accesos, garantizar la continuidad y notificar incidentes al CCN-CERT.
+El Esquema Nacional de Seguridad (ENS) se regula por el Real Decreto 311/2022 y se aplica a las Administraciones Públicas y a los proveedores que les prestan servicios. Exige categorizar el sistema de información —básica, media o alta—, aplicar medidas proporcionadas al nivel, gestionar riesgos, controlar accesos, garantizar la continuidad y notificar incidentes al CCN-CERT.
 
 No es una recomendación: es una obligación con consecuencias contractuales. Un proveedor que no acredita el nivel exigido puede quedarse fuera de un contrato público, aunque su seguridad técnica sea razonable.
 
-La clasificación no es un ejercicio de estilo: decide qué medidas son exigibles y qué evidencias hay que conservar. Cambiar el nivel de un sistema cambia sus obligaciones, de modo que la decisión se documenta y se revisa cuando cambia el servicio.
+La categorización no es un ejercicio de estilo: decide qué medidas son exigibles y qué evidencias hay que conservar. Cambiar el nivel de un sistema cambia sus obligaciones, de modo que la decisión se documenta y se revisa cuando cambia el servicio.
 
 El ENS también pide evidencias de que las medidas están implantadas. Una declaración de conformidad sin registros de acceso, pruebas de continuidad o trazas de incidentes se queda en una afirmación que nadie puede contrastar.
 
@@ -66,7 +66,7 @@ El plan también necesita un orden de recuperación. No todos los servicios vuel
 
 ## Un proveedor municipal
 
-Una empresa de servicios cloud presta servicio a varios ayuntamientos. Debe cumplir el ENS, clasificar la información municipal y notificar incidentes al CCN-CERT. Si falla una copia de seguridad, su RTO y su RPO determinan cuánto tarda en recuperar el servicio y cuántos datos puede perder.
+Una empresa de servicios cloud presta servicio a varios ayuntamientos. Debe cumplir el ENS, categorizar sus sistemas de información y notificar incidentes al CCN-CERT. Si falla una copia de seguridad, su RTO y su RPO determinan cuánto tarda en recuperar el servicio y cuántos datos puede perder.
 
 La obligación no desaparece porque el proveedor sea privado. El ENS alcanza a quien presta el servicio, y el contrato debe repartir responsabilidades sin convertir la Administración en espectadora de su propio incidente.
 

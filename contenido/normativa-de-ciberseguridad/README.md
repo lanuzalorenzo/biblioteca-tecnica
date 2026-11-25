@@ -10,7 +10,7 @@ Estas notas recorren el marco que convierte la seguridad y la protección de dat
 
 Las tres primeras notas explican cómo se organiza el cumplimiento: quién responde, con qué método se dirige y cómo se priorizan los riesgos. Las dos siguientes bajan al terreno de la responsabilidad —penal, antisoborno y protección de datos—, donde el incumplimiento tiene consecuencias directas para la organización y para las personas.
 
-Las notas de seguridad de la información y ENS conectan ese marco con los sistemas: clasificación, notificación de incidentes y continuidad. Las dos últimas se ocupan de la evidencia: el documento electrónico y la firma. Sin ellas, el resto del sistema se apoya en afirmaciones que no se pueden probar.
+La nota sobre seguridad de la información y ENS conecta ese marco con los sistemas: categorización, notificación de incidentes y continuidad. Las dos últimas se ocupan de la evidencia: el documento electrónico y la firma. Sin ellas, el resto del sistema se apoya en afirmaciones que no se pueden probar.
 
 ## Contenido
 
@@ -27,7 +27,7 @@ Las notas de seguridad de la información y ENS conectan ese marco con los siste
 
 ## Convenciones
 
-Las normas se citan por su referencia oficial, sin añadir artículos ni fechas que la propia norma no fije. Cuando una edición o una transposición puede haber cambiado, la nota lo advierte en lugar de dar una fecha por buena. Los plazos, umbrales y cifras son los que recoge el texto normativo citado.
+Las normas se citan por su referencia oficial, sin añadir artículos ni fechas que la propia norma no fije. Cuando una edición o una transposición puede haber cambiado, la nota lo advierte en lugar de dar una fecha por buena. Los plazos, umbrales y cifras se trasladan de las normas citadas; revisa la vigencia antes de aplicarlos.
 
 Los ejemplos son ilustrativos y no describen organizaciones reales. Sirven para ver cómo se aplica una regla, no para sustituir el análisis de un caso concreto.
 
@@ -35,4 +35,4 @@ Estas notas resumen el marco para entenderlo y aplicarlo. La decisión sobre un 
 
 ## Fuentes
 
-Cada nota cierra con las normas y estándares que utiliza. Los principales son el Reglamento (UE) 2016/679 y la Ley Orgánica 3/2018, en protección de datos; el Real Decreto 311/2022 y la Ley 8/2011, en seguridad pública; la Ley 2/2023 y el Código Penal, en responsabilidad penal; y las normas ISO 37301, ISO 31000, ISO/IEC 27001, ISO 22301, UNE 19601 e ISO 37001, en sistemas de gestión.
+Cada nota cierra con las principales normas y estándares que utiliza. Los más citados son el Reglamento (UE) 2016/679 y la Ley Orgánica 3/2018, en protección de datos; el Real Decreto 311/2022, en seguridad del sector público, y la Ley 8/2011, en infraestructuras críticas; la Ley 2/2023 y el Código Penal, en responsabilidad penal; y las normas ISO 37301, ISO 31000, ISO/IEC 27001, ISO 22301, UNE 19601 e ISO 37001, en sistemas de gestión.

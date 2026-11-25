@@ -39,7 +39,7 @@ La integración no significa confundir los objetos. Un sistema común puede tene
 
 ## El canal de denuncias
 
-La Ley 2/2023 obliga a muchas organizaciones —entre ellas, las de más de 50 empleados— a tener un sistema interno de información. El canal debe garantizar confidencialidad, prohibir las represalias y permitir denunciar de buena fe. La persona informante puede acudir también a la Autoridad Independiente de Protección del Informante o a la vía judicial.
+La Ley 2/2023 obliga a muchas organizaciones —con carácter general, las de cincuenta o más trabajadores, y otras por su actividad o financiación con independencia del tamaño— a tener un sistema interno de información. El canal debe garantizar confidencialidad, prohibir las represalias y permitir denunciar de buena fe. La persona informante puede acudir también a la Autoridad Independiente de Protección del Informante o a la vía judicial.
 
 Un canal de denuncias no es un buzón anónimo abandonado. Exige un procedimiento, un responsable, plazos de respuesta y protección real para quien informa. Sin investigación y sin registro, el canal cumple el expediente y falla en lo que importa: detectar a tiempo y no castigar al que avisa.
 

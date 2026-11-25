@@ -102,4 +102,8 @@ La misma empresa contrata a un proveedor de copias sin comprobar sus controles. 
 - Ley 19/2013, de 9 de diciembre, de transparencia, acceso a la información pública y buen gobierno.
 - Ley 11/2018, de 28 de diciembre, de información no financiera y diversidad.
 - Ley 2/2023, de 20 de febrero, reguladora de la protección de las personas que informen sobre infracciones normativas y de lucha contra la corrupción.
+- Reglamento (UE) 2016/679, artículo 28, sobre el encargo de tratamiento.
+- Directiva (UE) 2019/1024, sobre datos abiertos y reutilización de la información del sector público.
+- Ley 37/2007, sobre reutilización de la información del sector público.
+- Real Decreto 1495/2011, de desarrollo de la Ley 37/2007.
 - ISO 26000:2010, *Guidance on social responsibility*.
