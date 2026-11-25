@@ -161,3 +161,9 @@ Para que la detección no dependa de la intuición:
 ## Cierre
 
 Detectar es ganar tiempo. Las señales salen de los registros, la red, los terminales, la identidad, las personas y las fuentes externas; las herramientas las recogen y las correlacionan, pero la decisión sigue siendo humana. Con la señal en la mano, el siguiente paso es clasificarla, valorarla y decidir quién actúa.
+
+## Fuentes
+
+- ISO/IEC 27001, controles de seguridad física (anexo A.11 en la edición de 2013; anexo A.7 en la de 2022).
+- CCN-CERT. Sistemas de alerta temprana SAT-SARA y SAT-ICS.
+- ENISA. *Reference Security Incident Taxonomy*.

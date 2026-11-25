@@ -106,3 +106,9 @@ El caso se analiza primero de forma preliminar, se contiene la cuenta o el servi
 ## Cierre
 
 Detectar abre el caso; clasificar y valorar deciden por dónde se empieza. El registro deja memoria, los estados ordenan el trabajo y la gravedad se argumenta con sistemas, datos, tiempo y alcance. Cerrar el ticket no cierra el incidente: quedan notificar, medir y corregir. Esa es la diferencia entre apagar un fuego y evitar el siguiente.
+
+## Fuentes
+
+- CCN-CERT. *Guía CCN-STIC-817* y *Guía Nacional de Notificación y Gestión de Ciberincidentes*.
+- NIST. *Computer Security Incident Handling Guide* (SP 800-61).
+- MITRE. *ATT&CK*.

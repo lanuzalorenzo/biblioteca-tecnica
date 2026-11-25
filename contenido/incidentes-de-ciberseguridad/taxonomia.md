@@ -81,3 +81,9 @@ Llega un correo que suplanta a un banco y pide credenciales. Si solo se ha entre
 ## Cierre
 
 La taxonomía da un sitio estable a lo que ocurre. Alinea el lenguaje, orienta la respuesta, permite medir y sostiene la notificación. Su valor se pierde si se usa como una etiqueta decorativa o si se queda congelada cuando los hechos cambian. Con el vocabulario fijado, el paso siguiente es ver de dónde salen las señales que permiten reconocer cada familia.
+
+## Fuentes
+
+- ENISA. *Reference Security Incident Taxonomy*.
+- CCN-CERT. *Guía Nacional de Notificación y Gestión de Ciberincidentes*.
+- INCIBE-CERT. Categorías de incidentes y servicios de gestión.

@@ -43,9 +43,9 @@ La seguridad de la información se mide en tres dimensiones:
 
 La autenticación y el no repudio las refuerzan: permiten saber quién accede y demostrar que una acción ocurrió. Ninguna dimensión se maximiza a costa de las otras. Cifrar todos los datos y perder la clave protege la confidencialidad y destruye la disponibilidad; hacer copias sin cifrar protege la disponibilidad y abre una vía a la fuga. El objetivo es un equilibrio proporcionado al valor de cada activo y al coste de cada medida.
 
-## Marcos de referencia
+## Marcos y organismos
 
-Los marcos habituales son NIST, ENISA, INCIBE, CCN, CCN-CERT y el Esquema Nacional de Seguridad. Su función es orientar el análisis y la implantación de medidas proporcionadas; no son recetas cerradas. Cada organización adapta el marco a su tamaño, su sector y su presupuesto, y documenta por qué elige unas medidas y no otras.
+Los marcos y organismos de referencia habituales son NIST, ENISA, INCIBE, CCN, CCN-CERT y el Esquema Nacional de Seguridad. Los marcos aportan métodos y catálogos; los organismos publican guías, alertas y certificaciones. Su función es orientar el análisis y la implantación de medidas proporcionadas; no son recetas cerradas. Cada organización adapta el marco a su tamaño, su sector y su presupuesto, y documenta por qué elige unas medidas y no otras.
 
 Un marco no sustituye al criterio. Sirve para no empezar de cero, para comparar el estado propio con una referencia y para justificar decisiones ante terceros. Cuando la organización es pequeña, el marco se recorta; cuando el servicio es crítico, se profundiza. Lo que no cambia es la necesidad de saber qué se protege y qué se acepta como riesgo residual.
 
@@ -78,3 +78,8 @@ La aceptación debe quedar escrita, con el motivo y con la persona que la asume.
 ## Cierre
 
 La seguridad es una práctica de equilibrio y de revisión. No promete que no ocurra nada; promete que lo que ocurra se detecte antes, se contenga mejor y deje una lección aprovechable. Ese es el puente hacia los apuntes siguientes: la higiene que reduce la probabilidad y el ciclo de vida que ordena la respuesta.
+
+## Fuentes
+
+- CCN. *Principios generales en materia de ciberseguridad* (decálogo básico).
+- NIST, ENISA, INCIBE, CCN-CERT y el Esquema Nacional de Seguridad como marcos de referencia.

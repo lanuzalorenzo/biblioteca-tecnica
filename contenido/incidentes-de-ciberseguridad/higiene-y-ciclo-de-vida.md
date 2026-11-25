@@ -1,6 +1,6 @@
 # Higiene y ciclo de vida
 
-La higiene digital es el conjunto de medidas mínimas que se aplican antes de que ocurra nada: parches, copias, contraseñas, configuración. El ciclo de vida es lo que se activa cuando, a pesar de todo, algo ocurre. Uno reduce la probabilidad; el otro reduce el daño y permite volver a operar.
+La higiene digital se parece al mantenimiento de una casa: revisar el tejado, los grifos y las cerraduras no impide una tormenta, pero evita que el daño llegue por una junta descuidada. El ciclo de vida es lo que se activa cuando, a pesar de todo, algo ocurre. Uno reduce la probabilidad; el otro reduce el daño y permite volver a operar.
 
 ## El decálogo como lista mínima
 
@@ -79,3 +79,9 @@ Conviene probar la restauración de forma periódica y registrar el resultado. L
 ## Cierre
 
 La higiene reduce la probabilidad y el ciclo de vida reduce el daño. Ninguna de las dos es un producto que se instala: son prácticas que se revisan. El siguiente paso es bajar al lugar donde la información se maneja todos los días: el puesto de trabajo.
+
+## Fuentes
+
+- CCN. *Principios generales en materia de ciberseguridad* (decálogo básico).
+- NIST. *SP 800-63B*, guía de autenticación y gestión de contraseñas.
+- MITRE. *ATT&CK*, tácticas y técnicas del adversario.

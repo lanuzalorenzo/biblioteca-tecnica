@@ -81,3 +81,9 @@ El ejemplo tiene dos enseñanzas. La primera es que un hallazgo puede ser organi
 ## Cierre
 
 La auditoría compara el estado real con el exigido. AS IS y TO BE convierten la seguridad en un objetivo medible; los tipos de auditoría cubren red, web, perímetro, forense y legal; la periodicidad mínima es semestral, más tras cambios. Sin acciones y verificación no hay mejora. Con el estado comprobado, el siguiente paso es clasificar lo que ocurre cuando algo falla.
+
+## Fuentes
+
+- ISO/IEC 27001. Sistema de Gestión de la Seguridad de la Información.
+- RGPD y LOPDGDD.
+- INCIBE. *Políticas de seguridad para pymes: auditoría de sistemas*.

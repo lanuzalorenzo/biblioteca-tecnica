@@ -80,3 +80,8 @@ Tampoco significa que la responsabilidad recaiga solo en la persona. La organiza
 ## Cierre
 
 La información es el activo y el puesto es su puerta. El teletrabajo amplía el alcance físico y tecnológico, no solo el lugar. Los controles se adaptan al riesgo de cada puesto, y el inventario se protege como lo que es: el mapa de la organización. La siguiente pieza es conseguir que las personas sepan usar esa puerta.
+
+## Fuentes
+
+- INCIBE. *Protección del puesto de trabajo* (colección «Protege tu empresa»).
+- CCN. *Principios generales en materia de ciberseguridad*, puntos 3, 4 y 6.

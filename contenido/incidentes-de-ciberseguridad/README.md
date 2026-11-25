@@ -1,3 +1,5 @@
+<img src="../assets/iconos/incidentes-de-ciberseguridad.svg" width="64" alt="Incidentes de ciberseguridad">
+
 # Incidentes de ciberseguridad
 
 La seguridad de una organización no se mide solo por lo que impide entrar, sino por lo que hace cuando algo entra. Una cerradura buena retrasa al intruso; un plan de respuesta decide quién llama a la puerta siguiente, qué se aísla y cómo se recupera el servicio. Este módulo trata esas dos mitades: preparar el terreno para que el incidente sea menos probable y saber qué hacer cuando ocurre.

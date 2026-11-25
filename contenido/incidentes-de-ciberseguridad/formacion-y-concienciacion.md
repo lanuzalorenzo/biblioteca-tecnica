@@ -24,7 +24,7 @@ Esos objetivos se parecen, pero no son iguales. Conocer una norma no garantiza e
 
 Algunos puestos tienen una responsabilidad especial sobre la información. La pérdida o divulgación de datos sensibles puede tener consecuencias disciplinarias, sobre todo cuando afecta a propiedad industrial o a datos personales.
 
-En protección de datos, el responsable del tratamiento y el delegado de protección de datos figuran en registros oficiales. La responsabilidad recae en el responsable del tratamiento; el delegado supervisa el cumplimiento y no responde personalmente de la filtración salvo que incumpla sus funciones. La organización, además, afronta sanciones. La formación debe dejar claro quién responde de qué, sin convertir al delegado en el chivo expiatorio de cualquier error.
+En protección de datos, el responsable del tratamiento mantiene el registro de actividades de tratamiento y notifica a la autoridad de control la designación del delegado de protección de datos, conforme al RGPD y a la LOPDGDD. La responsabilidad recae en el responsable del tratamiento; el delegado supervisa el cumplimiento y no responde personalmente de la filtración salvo que incumpla sus funciones. La organización, además, afronta sanciones. La formación debe dejar claro quién responde de qué, sin convertir al delegado en el chivo expiatorio de cualquier error.
 
 ## Controles por nivel y alcance
 
@@ -95,3 +95,9 @@ La formación tampoco termina con una nota. Se refuerza con recordatorios, con e
 ## Cierre
 
 La formación enseña qué hacer; la concienciación hace que se haga. El plan necesita dirección, continuidad y adaptación al puesto. Los controles se cruzan por nivel y alcance, y la cultura pesa más que la charla anual. Con las personas preparadas, queda comprobar si las medidas funcionan de verdad: eso es la auditoría.
+
+## Fuentes
+
+- INCIBE. *Kit de Concienciación*.
+- CCN. *Principios generales en materia de ciberseguridad*, punto 1.
+- RGPD y LOPDGDD, en lo relativo al registro de actividades de tratamiento y a la designación del delegado de protección de datos.
