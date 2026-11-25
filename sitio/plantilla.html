@@ -15,21 +15,34 @@
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 <div class="barra-lectura" aria-hidden="true"><span></span></div>
 
-<header class="site-header cabecera">
-  <button class="boton-menu" data-menu aria-label="Abrir el temario" aria-expanded="false">
-    <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
-  </button>
-  <a class="wordmark" href="{{RAIZ}}/index.html" aria-label="Lorenzo Lanuza, inicio">
+<header class="site-header">
+  <a class="wordmark" href="{{RAIZ}}/index.html" aria-label="Biblioteca técnica, índice">
     {{ICONO_CABECERA}}
   </a>
-  <nav class="migas" aria-label="Ruta">{{CABECERA_MIGAS}}</nav>
-  <div class="acciones">
-    <button class="boton-buscar" data-abrir-busqueda aria-label="Buscar en el temario">
-      {{LUPA}}
-      <span class="texto-buscar">Buscar</span>
-      <kbd>Ctrl</kbd><kbd>K</kbd>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+    <span class="sr-only">Abrir menú</span>
+    <span class="menu-line menu-line-top"></span><span class="menu-line menu-line-bottom"></span>
+  </button>
+  <nav class="site-nav" id="site-nav" aria-label="Navegación principal">
+    <button class="nav-temario" type="button" data-abrir-temario aria-controls="lateral" aria-expanded="false">
+      Temario
     </button>
-  </div>
+    <a{{NAV_INDICE}} href="{{RAIZ}}/index.html">Índice de la biblioteca</a>
+    <a href="https://lanuzalorenzo.github.io/">Web personal</a>
+    <div class="site-nav-group" role="group" aria-label="Proyectos">
+      <a href="https://lanuzalorenzo.github.io/portfolio.html">Portfolio</a>
+      <a href="https://lanuzalorenzo.github.io/comicteca.html">Comicteca</a>
+      <a href="https://lanuzalorenzo.github.io/api.html">EcommerceApi</a>
+      <a href="https://lanuzalorenzo.github.io/ia.html">IA aplicada</a>
+    </div>
+    <div class="site-nav-group nav-acciones">
+      <button class="boton-buscar" type="button" data-abrir-busqueda aria-label="Buscar en el temario">
+        {{LUPA}}
+        <span class="texto-buscar">Buscar</span>
+        <kbd>Ctrl</kbd><kbd>K</kbd>
+      </button>
+    </div>
+  </nav>
 </header>
 
 <div class="marco">
@@ -49,20 +62,23 @@
   </aside>
 
   <main class="contenido" id="contenido" tabindex="-1">
-    {{CABECERA}}
-    {{CONTENIDO}}
+    <div class="lectura">
+      <nav class="migas" aria-label="Ruta">{{CABECERA_MIGAS}}</nav>
+      {{CABECERA}}
+      {{CONTENIDO}}
+    </div>
   </main>
 
   {{TOC}}
 </div>
 
-<footer class="site-footer pie-sitio">
+<footer class="site-footer">
   <a class="wordmark" href="https://lanuzalorenzo.github.io/" target="_blank" rel="noreferrer" aria-label="Lorenzo Lanuza, web personal">
     <img src="{{RAIZ}}/_identidad/marca-tile.svg" alt="" width="40" height="40">
   </a>
-  <a href="{{RAIZ}}/_sitio/LICENSE">Licencia MIT</a>
-  <a href="#contenido">Volver arriba</a>
-  <span>© 2026</span>
+  <span>© 2026 Lorenzo Lanuza · <a href="{{RAIZ}}/_sitio/LICENSE">Licencia MIT</a></span>
+  <a href="https://github.com/lanuzalorenzo/biblioteca-tecnica" target="_blank" rel="noreferrer">Código <span aria-hidden="true">↗</span></a>
+  <a href="#contenido">Volver arriba <span aria-hidden="true">↑</span></a>
 </footer>
 
 <dialog class="paleta" id="paleta" aria-label="Buscar en el temario">
@@ -74,6 +90,7 @@
   </div>
 </dialog>
 
+<script src="{{RAIZ}}/_identidad/menu.js?v={{V}}"></script>
 <script src="{{RAIZ}}/_sitio/datos.js?v={{V}}"></script>
 <script src="{{RAIZ}}/_sitio/app.js?v={{V}}"></script>
 </body>
