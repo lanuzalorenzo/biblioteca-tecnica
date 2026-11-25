@@ -128,7 +128,7 @@
     detalles.forEach((detalle) => {
       const clave =
         detalle.dataset.clave || detalle.querySelector("summary")?.textContent?.trim() || "";
-      const dentro = Boolean(detalle.querySelector('[aria-current="page"]'));
+      const dentro = Boolean(detalle.querySelector("[aria-current]"));
       if (!dentro && clave && Object.prototype.hasOwnProperty.call(abiertos, clave)) {
         detalle.open = abiertos[clave];
       }
@@ -193,7 +193,7 @@
         }
       });
       window.addEventListener("resize", () => {
-        if (window.innerWidth > 940 && lateral.classList.contains("abierto")) plegarMenu();
+        if (window.innerWidth > 850 && lateral.classList.contains("abierto")) plegarMenu();
       });
     }
 
