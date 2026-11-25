@@ -38,7 +38,7 @@ Repartir todas las subredes iguales desperdicia direcciones. Con **máscara vari
 - Puestos de trabajo: 25 → `/27` (30 útiles).
 - Enlace punto a punto entre routers: 2 → `/30` (2 útiles).
 
-El ejercicio de VLSM del módulo es exactamente eso: una red multisede que hay que repartir sin solapar rangos.
+Un reparto VLSM típico es una red multisede que hay que dividir sin solapar rangos.
 
 ## Enrutamiento
 

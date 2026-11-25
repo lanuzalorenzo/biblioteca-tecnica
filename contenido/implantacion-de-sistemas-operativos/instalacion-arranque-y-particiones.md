@@ -43,7 +43,7 @@ Instalar un equipo a mano se aprende una vez; instalar veinte exige otra cosa:
 - **Instalación por red** con arranque PXE y un servidor de despliegue, que permite elegir imagen por equipo.
 - **Configuración declarativa** con una herramienta de gestión (Ansible y similares): se describe el estado final y la herramienta converge, en lugar de repetir pasos.
 
-La guía de instalación que se escribió en el módulo cumplía una función que se olvida: dejar por escrito las decisiones —tamaños, nombres, contraseñas de servicio— para que otro pueda repetirlas. Sin eso, la instalación solo la sabe hacer quien la hizo.
+Una guía de instalación cumple una función que se olvida: dejar por escrito las decisiones —tamaños, nombres, contraseñas de servicio— para que otro pueda repetirlas. Sin eso, la instalación solo la sabe hacer quien la hizo.
 
 ## Licencias y activación
 

@@ -72,9 +72,9 @@ En un equipo de escritorio o portátil, lo pasivo se reduce a cuatro cosas: evit
 
 Anclaje o candado Kensington para el robo, caja cerrada con detección de apertura para el interior, contraseña de UEFI y orden de arranque fijado en el disco interno para el LiveCD, y cifrado del disco —BitLocker o LUKS— para el último caso. La contraseña de firmas de UEFI y el arranque seguro se desarrollan en [el apunte de sistema operativo y aplicaciones](sistema-operativo-y-aplicaciones.md).
 
-## Lo que ha cambiado desde 2015
+## Lo que ha cambiado
 
-El apunte original describía un CPD único, centralizado y con temperatura fija de 22 °C. Hoy el modelo habitual mezcla sala propia, colocation y nube; la temperatura se deja subir dentro del rango recomendado porque cada grado ahorra energía; y el respaldo ya no es solo otro edificio, sino réplica entre zonas. Los principios —doble suministro, pasillos separados, parada ordenada, esclusa, plan probado— no han cambiado.
+Hasta hace unos años el CPD era único, centralizado y con temperatura fija de 22 °C. Hoy el modelo habitual mezcla sala propia, colocation y nube; la temperatura se deja subir dentro del rango recomendado porque cada grado ahorra energía; y el respaldo ya no es solo otro edificio, sino réplica entre zonas. Los principios —doble suministro, pasillos separados, parada ordenada, esclusa, plan probado— no han cambiado.
 
 ## Fuentes
 
