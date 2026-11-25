@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" role="img" aria-labelledby="t">
+  <title id="t">Queue Storage y Service Bus: qué añade cada uno</title>
+  <g font-family="Avenir Next, Segoe UI, sans-serif" fill="#f8fafc">
+    <rect x="16" y="20" width="290" height="190" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".45"/>
+    <text x="34" y="50" font-size="14">Queue Storage</text>
+    <text x="34" y="76" font-size="11" fill="#a3b8c9">la cola simple</text>
+    <text x="34" y="106" font-size="12">· hasta 64 KB por mensaje</text>
+    <text x="34" y="130" font-size="12">· siete días de vida máxima</text>
+    <text x="34" y="154" font-size="12">· acceso por HTTP, coste mínimo</text>
+    <rect x="334" y="20" width="290" height="190" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".45"/>
+    <text x="352" y="50" font-size="14">Service Bus</text>
+    <text x="352" y="76" font-size="11" fill="#a3b8c9">el agente de mensajería</text>
+    <text x="352" y="106" font-size="12">· temas, suscripciones y filtros</text>
+    <text x="352" y="130" font-size="12">· sesiones para el orden por clave</text>
+    <text x="352" y="154" font-size="12">· transacciones y cola de muertos</text>
+  </g>
+</svg>

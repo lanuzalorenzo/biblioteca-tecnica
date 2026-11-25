@@ -1,0 +1,71 @@
+name: Sitio de la biblioteca
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sitio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verificar:
+    name: Verificar contenido y enlaces
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Escanear secretos con Gitleaks
+        uses: lanuzalorenzo/core/actions/gitleaks@v1.8
+
+      - name: Construir y verificar el sitio
+        run: python3 scripts/verificar.py
+
+      - name: Comprobar los enlaces del repositorio
+        uses: lanuzalorenzo/core/actions/check-links@v1.8
+        with:
+          root: .
+          skip: sitio,dist
+
+      - name: Comprobar los enlaces del sitio generado
+        uses: lanuzalorenzo/core/actions/check-links@v1.8
+        with:
+          root: dist
+
+      # Se sube el `dist/` que acaba de verificar este job: lo publicado es
+      # exactamente lo comprobado y no se reconstruye en el despliegue.
+      - name: Guardar el artefacto del sitio
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  publicar:
+    name: Publicar en Pages
+    needs: [ verificar ]
+    # Mientras el repositorio sea privado no se despliega: Pages no está
+    # activado y el job fallaría en cada push. La condición se cumple sola
+    # al cambiar la visibilidad.
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/main' &&
+      github.event.repository.private == false
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Desplegar en Pages
+        id: despliegue
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" role="img" aria-labelledby="t">
+  <title id="t">Red bridge propia: dos contenedores con DNS y salida NAT</title>
+  <g font-family="Avenir Next, Segoe UI, sans-serif" fill="#f8fafc" font-size="12">
+    <rect x="24" y="24" width="592" height="272" rx="8" fill="none" stroke="#38bdf8" stroke-opacity=".35"/>
+    <text x="40" y="46" font-size="11" fill="#a3b8c9">host</text>
+
+    <rect x="48" y="64" width="392" height="200" rx="8" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".5"/>
+    <text x="64" y="86" fill="#7dd3fc">mi-red · bridge</text>
+
+    <rect x="72" y="108" width="140" height="56" rx="5" fill="#0b2338" stroke="#38bdf8" stroke-opacity=".5"/>
+    <text x="142" y="132" text-anchor="middle">api</text>
+    <text x="142" y="150" text-anchor="middle" fill="#a3b8c9" font-size="10">172.18.0.2:8080</text>
+
+    <rect x="276" y="108" width="140" height="56" rx="5" fill="#0b2338" stroke="#38bdf8" stroke-opacity=".5"/>
+    <text x="346" y="132" text-anchor="middle">db</text>
+    <text x="346" y="150" text-anchor="middle" fill="#a3b8c9" font-size="10">172.18.0.3:1433</text>
+
+    <line x1="212" y1="136" x2="272" y2="136" stroke="#7dd3fc" stroke-width="1.4"/>
+    <polygon points="272,136 264,132 264,140" fill="#7dd3fc"/>
+    <text x="242" y="126" text-anchor="middle" font-size="10" fill="#a3b8c9">db</text>
+
+    <text x="72" y="200" font-size="10" fill="#a3b8c9">DNS interno: los contenedores se ven por nombre</text>
+    <text x="72" y="218" font-size="10" fill="#a3b8c9">Aislamiento: otra red bridge no ve estas IP</text>
+
+    <rect x="468" y="108" width="124" height="56" rx="5" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".5"/>
+    <text x="530" y="132" text-anchor="middle">puerto 8080</text>
+    <text x="530" y="150" text-anchor="middle" fill="#a3b8c9" font-size="10">publicado del host</text>
+    <line x1="440" y1="136" x2="464" y2="136" stroke="#7dd3fc" stroke-width="1.4"/>
+    <polygon points="464,136 456,132 456,140" fill="#7dd3fc"/>
+
+    <rect x="468" y="196" width="124" height="48" rx="5" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".5"/>
+    <text x="530" y="216" text-anchor="middle">salida NAT</text>
+    <text x="530" y="232" text-anchor="middle" fill="#a3b8c9" font-size="10">hacia internet</text>
+    <line x1="440" y1="220" x2="464" y2="220" stroke="#7dd3fc" stroke-width="1.4"/>
+    <polygon points="464,220 456,216 456,224" fill="#7dd3fc"/>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+# Biblioteca técnica: una sola fuente, un módulo por carpeta.
+# No hay fuentes por curso: el contenido se organiza por módulo y el visor
+# agrupa por categoría en las tarjetas y en el lateral.
+
+orden_categorias = [
+  "Sistemas",
+  "Redes",
+  "Operaciones",
+  "Datos",
+  "Desarrollo",
+  "Seguridad",
+  "Azure",
+  "Empleo",
+]
+
+[[fuente]]
+id = "biblioteca"
+titulo = "Biblioteca técnica"
+estructura = "apuntes"
+ruta = "contenido"
+# Suelo de conteos: por debajo falta contenido. Añadir módulos no toca esta línea.
+minimos = { modulos = 29, apuntes = 160 }
+nombres = { git = "Git", angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", contenedores = "Contenedores", "testing-xunit-moq" = "Testing .NET", fundamentos = "Fundamentos", red = "Red", identidad = "Identidad", computo = "Cómputo", datos = "Datos y almacenamiento", "bus-de-mensajeria" = "Bus de mensajería", "servicios-orientados-a-eventos" = "Servicios orientados a eventos", monitorizacion = "Monitorización", "seguridad-y-gobierno" = "Seguridad y gobierno", "gestion-de-apis" = "Gestión de APIs", "cache-y-entrega" = "Caché y entrega", patrones = "Patrones" }
+
+# Categorías de las tarjetas: agrupan por materia, no por curso.
+[categorias]
+fundamentos-de-hardware = "Sistemas"
+implantacion-de-sistemas-operativos = "Sistemas"
+administracion-de-sistemas-operativos = "Sistemas"
+redes = "Redes"
+servicios-de-red = "Redes"
+gestion-de-bases-de-datos = "Datos"
+administracion-de-bases-de-datos = "Datos"
+lenguajes-de-marcas = "Desarrollo"
+implantacion-de-aplicaciones-web = "Desarrollo"
+git = "Desarrollo"
+angular = "Desarrollo"
+"aspnet-core-mvc" = "Desarrollo"
+"testing-xunit-moq" = "Desarrollo"
+contenedores = "Operaciones"
+seguridad-y-alta-disponibilidad = "Seguridad"
+formacion-y-orientacion-laboral = "Empleo"
+empresa-e-iniciativa-emprendedora = "Empleo"
+fundamentos = "Azure"
+red = "Azure"
+identidad = "Azure"
+computo = "Azure"
+datos = "Azure"
+"bus-de-mensajeria" = "Azure"
+"servicios-orientados-a-eventos" = "Azure"
+monitorizacion = "Azure"
+"seguridad-y-gobierno" = "Azure"
+"gestion-de-apis" = "Azure"
+"cache-y-entrega" = "Azure"
+patrones = "Azure"

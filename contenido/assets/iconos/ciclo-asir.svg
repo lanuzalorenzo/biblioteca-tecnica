@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Ciclo ASIR</title>
+  <desc>Identidad visual: navy con degradado, borde cian y glifo blanco de libro abierto.</desc>
+  <defs>
+    <linearGradient id="bg-ciclo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07131e"/>
+      <stop offset="100%" stop-color="#0e2a47"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg-ciclo)"/>
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="none" stroke="#38bdf8" stroke-width="2"/>
+  <g transform="translate(10 10) scale(1.83334)" fill="#f8fafc" stroke="none">
+    <path d="M2.5,6.8L10.8,4.8V19.2H2.5Z"/>
+    <path d="M13.2,4.8L21.5,6.8V19.2H13.2Z"/>
+  </g>
+</svg>

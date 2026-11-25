@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" width="640" height="300" role="img" aria-labelledby="t d">
+  <title id="t">La jerarquía de Azure y lo que se hereda</title>
+  <desc id="d">Cuatro niveles, del grupo de administración al recurso. Permisos, políticas y bloqueos se aplican en un nivel y bajan a lo que cuelga de él; las etiquetas no se heredan.</desc>
+  <rect width="640" height="300" rx="16" fill="#07131e"/>
+  <g font-family="Avenir Next, Segoe UI, sans-serif" fill="#f8fafc">
+    <path d="M36,44 L36,230" fill="none" stroke="#7dd3fc" stroke-opacity=".6" stroke-width="1.6"/>
+    <line x1="36" y1="44" x2="56" y2="44" stroke="#7dd3fc" stroke-opacity=".6" stroke-width="1.6"/>
+    <line x1="36" y1="106" x2="84" y2="106" stroke="#7dd3fc" stroke-opacity=".6" stroke-width="1.6"/>
+    <line x1="36" y1="168" x2="112" y2="168" stroke="#7dd3fc" stroke-opacity=".6" stroke-width="1.6"/>
+    <line x1="36" y1="230" x2="140" y2="230" stroke="#7dd3fc" stroke-opacity=".6" stroke-width="1.6"/>
+    <rect x="56" y="24" width="260" height="40" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".55" stroke-width="1.6"/>
+    <text x="72" y="49" font-size="13">Grupo de administración</text>
+    <rect x="84" y="86" width="232" height="40" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".55" stroke-width="1.6"/>
+    <text x="100" y="111" font-size="13">Suscripción</text>
+    <rect x="112" y="148" width="204" height="40" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".55" stroke-width="1.6"/>
+    <text x="128" y="173" font-size="13">Grupo de recursos</text>
+    <rect x="140" y="210" width="176" height="40" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".55" stroke-width="1.6"/>
+    <text x="156" y="235" font-size="13">Recurso</text>
+    <path d="M472,44 L472,116 M472,44 L480,44 M472,116 L480,116" fill="none" stroke="#38bdf8" stroke-opacity=".6" stroke-width="1.6"/>
+    <text x="490" y="34" font-size="11" fill="#a3b8c9">lo que baja al nivel</text>
+    <text x="490" y="66" font-size="12">permisos</text>
+    <text x="490" y="90" font-size="12">políticas</text>
+    <text x="490" y="114" font-size="12">bloqueos</text>
+    <text x="490" y="170" font-size="11" fill="#7dd3fc">las etiquetas</text>
+    <text x="490" y="186" font-size="11" fill="#7dd3fc">no se heredan</text>
+  </g>
+</svg>

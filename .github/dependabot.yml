@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # Una versión retirada a los dos días no llega a entrar.
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "ci"
+    groups:
+      # core queda fuera de los grupos: al agrupar, todas sus referencias se
+      # fijan a la versión objetivo del grupo y el cooldown de siete días puede
+      # dejar esa versión por detrás de una referencia fijada a mano, con lo
+      # que se rebaja a una etiqueta donde la acción puede no existir.
+      actions-patch-minor:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "lanuzalorenzo/core*"
+        update-types:
+          - "patch"
+          - "minor"
+      actions-major:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "lanuzalorenzo/core*"
+        update-types:
+          - "major"

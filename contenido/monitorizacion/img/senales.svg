@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 190" role="img" aria-labelledby="t">
+  <title id="t">Métricas, registros y trazas: para qué sirve cada señal</title>
+  <g font-family="Avenir Next, Segoe UI, sans-serif" fill="#f8fafc">
+    <rect x="16" y="24" width="192" height="140" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".45"/>
+    <text x="32" y="54" font-size="14">Métrica</text>
+    <text x="32" y="80" font-size="11" fill="#a3b8c9">un número en el tiempo</text>
+    <text x="32" y="104" font-size="11" fill="#a3b8c9">latencia, errores, CPU</text>
+    <text x="32" y="138" font-size="12" fill="#7dd3fc">alertar y ver tendencia</text>
+    <rect x="224" y="24" width="192" height="140" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".45"/>
+    <text x="240" y="54" font-size="14">Registro</text>
+    <text x="240" y="80" font-size="11" fill="#a3b8c9">un evento con contexto</text>
+    <text x="240" y="104" font-size="11" fill="#a3b8c9">excepción, petición, aviso</text>
+    <text x="240" y="138" font-size="12" fill="#7dd3fc">investigar el qué</text>
+    <rect x="432" y="24" width="192" height="140" rx="6" fill="#0e2a47" stroke="#38bdf8" stroke-opacity=".45"/>
+    <text x="448" y="54" font-size="14">Traza</text>
+    <text x="448" y="80" font-size="11" fill="#a3b8c9">la operación completa</text>
+    <text x="448" y="104" font-size="11" fill="#a3b8c9">tiempo de cada salto</text>
+    <text x="448" y="138" font-size="12" fill="#7dd3fc">dónde se fue el tiempo</text>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#07131e">
+<meta name="description" content="{{DESCRIPCION}}">
+<title>{{TITULO}}</title>
+{{FAVICON}}
+<link rel="stylesheet" href="{{RAIZ}}/_identidad/identidad.css?v={{V}}">
+<link rel="stylesheet" href="{{RAIZ}}/_sitio/estilo.css?v={{V}}">
+</head>
+<body class="{{CLASE_CUERPO}}" data-raiz="{{RAIZ}}" data-pagina="{{PAGINA}}">
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<div class="barra-lectura" aria-hidden="true"><span></span></div>
+
+<header class="site-header cabecera">
+  <button class="boton-menu" data-menu aria-label="Abrir el temario" aria-expanded="false">
+    <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+  </button>
+  <a class="wordmark" href="{{RAIZ}}/index.html" aria-label="Lorenzo Lanuza, inicio">
+    {{ICONO_CABECERA}}
+  </a>
+  <nav class="migas" aria-label="Ruta">{{CABECERA_MIGAS}}</nav>
+  <div class="acciones">
+    <button class="boton-buscar" data-abrir-busqueda aria-label="Buscar en el temario">
+      {{LUPA}}
+      <span class="texto-buscar">Buscar</span>
+      <kbd>Ctrl</kbd><kbd>K</kbd>
+    </button>
+  </div>
+</header>
+
+<div class="marco">
+  <aside class="lateral" id="lateral">
+    <div class="lateral-cabecera">
+      <a class="lateral-inicio" href="{{RAIZ}}/index.html">Índice</a>
+      <span class="lateral-progreso" data-leidas-mini>0 %</span>
+    </div>
+    <div class="arbol-acciones">
+      <button class="boton-arbol" type="button" data-arbol-expandir>Expandir todo</button>
+      <button class="boton-arbol" type="button" data-arbol-comprimir>Contraer todo</button>
+    </div>
+    {{LATERAL}}
+    <div class="lateral-pie">
+      {{PIE}}
+    </div>
+  </aside>
+
+  <main class="contenido" id="contenido" tabindex="-1">
+    {{CABECERA}}
+    {{CONTENIDO}}
+  </main>
+
+  {{TOC}}
+</div>
+
+<footer class="site-footer pie-sitio">
+  <a class="wordmark" href="https://lanuzalorenzo.github.io/" target="_blank" rel="noreferrer" aria-label="Lorenzo Lanuza, web personal">
+    <img src="{{RAIZ}}/_identidad/marca-tile.svg" alt="" width="40" height="40">
+  </a>
+  <a href="{{RAIZ}}/_sitio/LICENSE">Licencia MIT</a>
+  <a href="#contenido">Volver arriba</a>
+  <span>© 2026</span>
+</footer>
+
+<dialog class="paleta" id="paleta" aria-label="Buscar en el temario">
+  <div class="paleta-caja">
+    <input type="search" id="paleta-campo" placeholder="Busca una unidad, un apunte o una actividad" autocomplete="off" spellcheck="false">
+    <p class="paleta-ayuda"><kbd>↑</kbd><kbd>↓</kbd> para moverte · <kbd>Enter</kbd> para abrir · <kbd>Esc</kbd> para cerrar</p>
+    <ul class="paleta-resultados" id="paleta-resultados"></ul>
+    <p class="paleta-vacio" id="paleta-vacio" hidden></p>
+  </div>
+</dialog>
+
+<script src="{{RAIZ}}/_sitio/datos.js?v={{V}}"></script>
+<script src="{{RAIZ}}/_sitio/app.js?v={{V}}"></script>
+</body>
+</html>
