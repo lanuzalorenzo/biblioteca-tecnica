@@ -4,7 +4,7 @@
 
 Biblioteca personal de apuntes de informática: módulos de sistemas, redes, datos, desarrollo, seguridad, empleo y Azure, con notas de Git, Angular, ASP.NET, contenedores y testing que voy completando, convertidos en un sitio navegable con búsqueda, filtros por materia, migas y un árbol de módulos. El contenido lo escribo yo; el visor lo convierte a HTML estático sin red, sin CDN y sin telemetría.
 
-**Sitio:** pendiente de publicación. El destino previsto es <https://lanuzalorenzo.github.io/biblioteca-tecnica/>.
+**Sitio:** <https://lanuzalorenzo.github.io/biblioteca-tecnica/>.
 
 ## Contenido
 
@@ -51,7 +51,7 @@ python3 scripts/visor.py serve --vigilar --abrir
 
 ## Publicación
 
-El repositorio sigue privado mientras se termina la adaptación del contenido. Cuando esté listo, el sitio se publicará con GitHub Pages desde un workflow: el build se ejecutará en CI y se subirá el artefacto de `dist/`. El sitio será estático y no tendrá autenticación ni contenido privado. GitHub Pages fija las cabeceras HTTP de respuesta, incluida `Server`; por eso no se presenta el ocultado de cabeceras como un control propio.
+El sitio se publica con GitHub Pages desde el workflow `.github/workflows/sitio.yml`: el build se ejecuta en CI y se sube el artefacto de `dist/`. Es estático y no tiene autenticación ni contenido privado. GitHub Pages fija las cabeceras HTTP de respuesta, incluida `Server`; por eso no se presenta el ocultado de cabeceras como un control propio.
 
 ## Verificación
 
@@ -59,11 +59,11 @@ El repositorio sigue privado mientras se termina la adaptación del contenido. C
 python3 scripts/verificar.py
 ```
 
-Comprueba que no bajen de 29 módulos y 160 apuntes —hoy 12/58 de la base, 12/12 de Azure, 1/9 de Git, 1/12 de Angular, 1/41 de ASP.NET, 1/14 de contenedores y 1/14 de testing—, que la búsqueda encuentra un apunte, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona. Al publicar, el CI añadirá Gitleaks sobre el historial completo y la comprobación de enlaces relativos del repositorio y del HTML generado.
+Comprueba que no bajen de 29 módulos y 160 apuntes —hoy 12/58 de la base, 12/12 de Azure, 1/9 de Git, 1/12 de Angular, 1/41 de ASP.NET, 1/14 de contenedores y 1/14 de testing—, que la búsqueda encuentra un apunte, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona. El CI añade Gitleaks sobre el historial completo y la comprobación de enlaces relativos del repositorio y del HTML generado.
 
 ## Línea base
 
-Cuando el repositorio pase a público, todo cambio entrará por rama y pull request, con `main` protegida y los checks obligatorios. La línea base se aplicará al publicar: permisos mínimos en cada workflow, Gitleaks sobre el historial completo y Dependabot para GitHub Actions, con auto-merge de parche y minor cuando los checks pasen.
+Todo cambio entra por rama y pull request, con `main` protegida y los checks obligatorios. La línea base: permisos mínimos en cada workflow, Gitleaks sobre el historial completo y Dependabot para GitHub Actions, con auto-merge de parche y minor cuando los checks pasen.
 
 ## Licencia
 
