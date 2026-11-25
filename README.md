@@ -43,11 +43,11 @@ python3 scripts/visor.py serve --vigilar --abrir
 | `sitio/plantilla.html` | Esqueleto de cada página; marcadores `{{...}}` |
 | `sitio/estilo.css` | Distribución del visor: marco fluido, lateral y TOC sticky, contenido |
 | `sitio/app.js` | Progreso, búsqueda, filtros y navegación |
-| `_identidad/` | Paquete de identidad consumido: CSS, guion del menú y tile; no se retoca |
+| `_identidad/` | Paquete de identidad consumido: CSS, cabecera y pie (`shell.py` y `plantilla.tpl`), guion del menú y tile; no se retoca |
 | `sitio/iconos/` | Iconos de categorías y módulos |
 | `dist/` | Salida generada; ignorada por Git |
 
-`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`. La cabecera y el pie se componen en `sitio/plantilla.html`: la identidad aporta `identidad.css`, `menu.js` y el tile de `dist/_identidad/`, y el visor añade `estilo.css` y `app.js` desde `dist/_sitio/`.
+`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`. La cabecera y el pie se toman de `_identidad/plantilla.tpl` con `shell.py`; `sitio/plantilla.html` solo aporta el layout (lateral, documento e índice), y el visor añade `estilo.css` y `app.js` desde `dist/_sitio/`.
 
 ## Publicación
 

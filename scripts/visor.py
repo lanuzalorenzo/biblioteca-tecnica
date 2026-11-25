@@ -38,6 +38,12 @@ CONFIG = SITIO / "config" / "fuentes.toml"
 SALIDA = SITIO / "dist"
 FUENTE = SITIO / "sitio"
 
+# La cabecera y el pie salen del paquete de identidad consumido, no de una
+# copia local. El layout del visor (lateral, documento e índice) es propio.
+sys.path.insert(0, str(SITIO / "_identidad"))
+from shell import Sitio  # noqa: E402
+
+REPO_SITIO = "https://github.com/lanuzalorenzo/biblioteca-tecnica"
 AUTOR = "Lorenzo Lanuza"
 TITULO_SITIO = f"Biblioteca técnica — {AUTOR}"
 MARCA_SITIO = "Lorenzo Lanuza"
@@ -1214,6 +1220,38 @@ def leer_plantilla() -> str:
     return (FUENTE / "plantilla.html").read_text(encoding="utf-8")
 
 
+def nav_principal(raiz: str, pagina: str) -> str:
+    """Nav de la biblioteca: los mismos destinos y orden que la web personal."""
+    activo = (
+        ' aria-current="page"' if pagina == "index.html" else ' class="is-active"'
+    )
+    return f"""        <button class="nav-temario" type="button" data-abrir-temario aria-controls="lateral" aria-expanded="false">
+          Temario
+        </button>
+        <a href="https://lanuzalorenzo.github.io/#perfil">Perfil</a>
+        <a href="https://lanuzalorenzo.github.io/#experiencia">Experiencia</a>
+        <a href="https://lanuzalorenzo.github.io/#proyectos">Proyectos</a>
+        <div class="site-nav-group" role="group" aria-label="Proyectos, laboratorios y biblioteca">
+          <a href="https://lanuzalorenzo.github.io/portfolio.html">Portfolio de seguridad</a>
+          <a href="https://lanuzalorenzo.github.io/comicteca.html">Comicteca</a>
+          <a href="https://lanuzalorenzo.github.io/api.html">EcommerceApi</a>
+          <a href="https://lanuzalorenzo.github.io/ia.html">IA aplicada</a>
+          <a{activo} href="{raiz}/index.html">Biblioteca</a>
+        </div>
+        <div class="site-nav-group">
+          <a href="https://lanuzalorenzo.github.io/#contacto">Contacto</a>
+        </div>"""
+
+
+def cabecera_y_pie(raiz: str, pagina: str) -> tuple[str, str]:
+    """Compone los dos bloques del paquete con la nav y la nota del visor."""
+    inicio = f"{raiz}/index.html"
+    shell = Sitio(perfil="publica", raiz=raiz, repo=REPO_SITIO)
+    cabecera = shell.cabecera(nav=nav_principal(raiz, pagina), inicio=inicio)
+    pie = shell.pie(inicio=inicio, arriba="#contenido", nota=f"© 2026 {AUTOR}")
+    return cabecera, pie
+
+
 def migas(camino: list[Nodo], pagina: str, raiz: str) -> str:
     piezas = [f'<a href="{relativo("index.html", pagina)}">Biblioteca técnica</a>']
     for nodo in camino[1:-1]:
@@ -1549,18 +1587,27 @@ def render_lateral(nodo: Nodo, pagina: str, actual: str) -> str:
     En una rama, el título es el enlace a su página y el marcador de la
     izquierda despliega; cerrar el grupo no impide navegar.
     """
-    def es_actual(candidato: Nodo) -> bool:
-        if not candidato.url:
-            return False
-        if candidato.url == actual:
-            return True
-        if candidato.es_carpeta and candidato.url.endswith("/index.html"):
-            return actual.startswith(candidato.url[: -len("index.html")])
-        return False
+    def es_pagina(candidato: Nodo) -> bool:
+        return bool(candidato.url) and candidato.url == actual
 
-    contiene_actual = any(es_actual(visitado) for visitado in aplanar(nodo, []))
+    def contiene(candidato: Nodo) -> bool:
+        if es_pagina(candidato):
+            return True
+        return bool(
+            candidato.es_carpeta
+            and candidato.url
+            and candidato.url.endswith("/index.html")
+            and actual.startswith(candidato.url[: -len("index.html")])
+        )
+
+    contiene_actual = any(contiene(visitado) for visitado in aplanar(nodo, []))
     etiqueta = html.escape(nodo.titulo)
-    marcado = ' aria-current="page"' if es_actual(nodo) else ""
+    if es_pagina(nodo):
+        marcado = ' aria-current="page"'
+    elif contiene(nodo):
+        marcado = ' aria-current="true"'
+    else:
+        marcado = ""
     icono = ""
     if nodo.icono:
         icono = glifo_en_linea(nodo.icono, "icono-lateral")
@@ -1796,10 +1843,7 @@ def construir_fuente(
             f'<link rel="icon" href="'
             f'{relativo("_identidad/marca-tile.svg", pagina)}">'
         )
-        icono_cabecera = (
-            f'<img src="{relativo("_identidad/marca-tile.svg", pagina)}" '
-            'alt="" width="40" height="40">'
-        )
+        cabecera_shell, pie_shell = cabecera_y_pie(raiz, pagina)
         reemplazos = {
             "{{TITULO}}": html.escape(titulo_html),
             "{{RAIZ}}": raiz,
@@ -1815,11 +1859,9 @@ def construir_fuente(
             "{{PIE}}": "",
             "{{CURSOS}}": relativo("index.html", pagina),
             "{{FAVICON}}": favicon,
-            "{{ICONO_CABECERA}}": icono_cabecera,
+            "{{CABECERA_SHELL}}": cabecera_shell,
+            "{{PIE_SHELL}}": pie_shell,
             "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
-            "{{NAV_INDICE}}": (
-                ' class="is-active" aria-current="page"' if pagina == "index.html" else ""
-            ),
             "{{CLASE_CUERPO}}": "" if toc else "sin-toc",
         }
         salida = plantilla
@@ -1943,6 +1985,7 @@ def construir_fuente(
 def pintar_global(
     plantilla: str, version: str, lateral: str, contenido: str, descripcion: str
 ) -> str:
+    cabecera_shell, pie_shell = cabecera_y_pie(".", "index.html")
     reemplazos = {
         "{{TITULO}}": TITULO_SITIO,
         "{{RAIZ}}": ".",
@@ -1958,9 +2001,9 @@ def pintar_global(
         "{{PIE}}": "",
         "{{CURSOS}}": "index.html",
         "{{FAVICON}}": '<link rel="icon" href="_identidad/marca-tile.svg">',
-        "{{ICONO_CABECERA}}": '<img src="_identidad/marca-tile.svg" alt="" width="40" height="40">',
+        "{{CABECERA_SHELL}}": cabecera_shell,
+        "{{PIE_SHELL}}": pie_shell,
         "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
-        "{{NAV_INDICE}}": ' class="is-active" aria-current="page"',
         "{{CLASE_CUERPO}}": "pagina-portada",
     }
     salida = plantilla

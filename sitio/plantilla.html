@@ -15,35 +15,7 @@
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 <div class="barra-lectura" aria-hidden="true"><span></span></div>
 
-<header class="site-header">
-  <a class="wordmark" href="{{RAIZ}}/index.html" aria-label="Biblioteca técnica, índice">
-    {{ICONO_CABECERA}}
-  </a>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-    <span class="sr-only">Abrir menú</span>
-    <span class="menu-line menu-line-top"></span><span class="menu-line menu-line-bottom"></span>
-  </button>
-  <nav class="site-nav" id="site-nav" aria-label="Navegación principal">
-    <button class="nav-temario" type="button" data-abrir-temario aria-controls="lateral" aria-expanded="false">
-      Temario
-    </button>
-    <a{{NAV_INDICE}} href="{{RAIZ}}/index.html">Índice de la biblioteca</a>
-    <a href="https://lanuzalorenzo.github.io/">Web personal</a>
-    <div class="site-nav-group" role="group" aria-label="Proyectos">
-      <a href="https://lanuzalorenzo.github.io/portfolio.html">Portfolio</a>
-      <a href="https://lanuzalorenzo.github.io/comicteca.html">Comicteca</a>
-      <a href="https://lanuzalorenzo.github.io/api.html">EcommerceApi</a>
-      <a href="https://lanuzalorenzo.github.io/ia.html">IA aplicada</a>
-    </div>
-    <div class="site-nav-group nav-acciones">
-      <button class="boton-buscar" type="button" data-abrir-busqueda aria-label="Buscar en el temario">
-        {{LUPA}}
-        <span class="texto-buscar">Buscar</span>
-        <kbd>Ctrl</kbd><kbd>K</kbd>
-      </button>
-    </div>
-  </nav>
-</header>
+{{CABECERA_SHELL}}
 
 <div class="marco">
   <aside class="lateral" id="lateral">
@@ -52,6 +24,7 @@
       <span class="lateral-progreso" data-leidas-mini>0 %</span>
     </div>
     <div class="arbol-acciones">
+      <button class="boton-arbol busqueda-lateral" type="button" data-abrir-busqueda aria-label="Buscar en el temario (Ctrl+K)">{{LUPA}} Buscar</button>
       <button class="boton-arbol" type="button" data-arbol-expandir>Expandir todo</button>
       <button class="boton-arbol" type="button" data-arbol-comprimir>Contraer todo</button>
     </div>
@@ -72,14 +45,7 @@
   {{TOC}}
 </div>
 
-<footer class="site-footer">
-  <a class="wordmark" href="https://lanuzalorenzo.github.io/" target="_blank" rel="noreferrer" aria-label="Lorenzo Lanuza, web personal">
-    <img src="{{RAIZ}}/_identidad/marca-tile.svg" alt="" width="40" height="40">
-  </a>
-  <span>© 2026 Lorenzo Lanuza · <a href="{{RAIZ}}/_sitio/LICENSE">Licencia MIT</a></span>
-  <a href="https://github.com/lanuzalorenzo/biblioteca-tecnica" target="_blank" rel="noreferrer">Código <span aria-hidden="true">↗</span></a>
-  <a href="#contenido">Volver arriba <span aria-hidden="true">↑</span></a>
-</footer>
+{{PIE_SHELL}}
 
 <dialog class="paleta" id="paleta" aria-label="Buscar en el temario">
   <div class="paleta-caja">
