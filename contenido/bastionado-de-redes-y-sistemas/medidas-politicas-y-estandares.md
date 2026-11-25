@@ -27,6 +27,22 @@ Conviene situar estas:
 
 Acumular prevención no compensa la falta de respuesta. Cuando el incidente ya está dentro, alguien tiene que contenerlo.
 
+## Mitigación temporal: el hueco entre el aviso y el parche
+
+Un parche no llega el día en que se publica la vulnerabilidad. Hay que comprobarlo, desplegarlo y confirmar que no rompe nada, y mientras tanto el sistema sigue expuesto. La mitigación temporal reduce esa exposición sin sustituir la actualización.
+
+La diferencia está en el alcance y en la caducidad. El parche corrige la causa; la mitigación corta la ruta concreta que necesita la explotación. En red suele hacerlo un IPS o un WAF; en el host, un control de ejecución o un programa eBPF. Si bloquea una operación que también usa el tráfico legítimo, el servicio se cae: por eso se prueba antes y se limita a lo imprescindible.
+
+Tres comprobaciones antes de darla por buena:
+
+- **Cubre la explotación.** Se reproduce el ataque y se confirma que el control lo detiene.
+- **No rompe el uso normal.** La misma prueba se repite con peticiones legítimas.
+- **Se puede retirar y deja rastro.** Hay que saber qué se cargó, quién lo firmó y cuándo se quitó; si no, el control se convierte en deuda invisible.
+
+eBPF permite ejecutar programas pequeños en puntos del kernel sin reiniciar el sistema, y el kernel valida cada programa antes de cargarlo. Esa validación limita el riesgo de ejecutar código ajeno, pero no decide si la regla es correcta: eso sigue siendo una decisión del operador. La firma del artefacto acredita que procede de quien lo firmó y que no se alteró, no que la política sea correcta.
+
+Planificar también es parte de la medida. NIST SP 800-40 Rev. 4 trata el parcheo como mantenimiento planificado, y NIST SP 800-53 Rev. 5 (SI-2) exige plazos de remediación. La mitigación cubre ese plazo; no lo amplía.
+
 ## Tres niveles de obligación
 
 - **Recomendación:** una buena práctica. No obliga.
@@ -112,5 +128,7 @@ En tecnología choca con la obsolescencia programada: equipos que no se actualiz
 
 - ISO/IEC 27000, 27001, 27032, 27033, 27034, 27035 y 27036.
 - NIST. *Cybersecurity Framework*.
+- NIST. *SP 800-40 Rev. 4, Guide to Enterprise Patch Management Planning*, y *SP 800-53 Rev. 5*, control SI-2 (corrección de fallos).
+- Linux kernel. Documentación de BPF y del verificador.
 - ENS. *Esquema Nacional de Seguridad* (Real Decreto 311/2022).
 - INCIBE, CCN-CERT, ENISA y ECSO: guías de buenas prácticas.
