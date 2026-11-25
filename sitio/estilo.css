@@ -14,8 +14,8 @@
   --ancho-lateral: 288px;
   --ancho-toc: 224px;
   --medida: 36rem;
-  /* Medida de lectura: 68-76 caracteres, unos 760-820 px. */
-  --medida-lectura: 48rem;
+  /* 72ch resueltos a 16 px: la medida de 68-76 caracteres. */
+  --medida-lectura: 72ch;
 }
 
 * { box-sizing: border-box; }
@@ -275,6 +275,15 @@ kbd {
   border-right: 1.5px solid var(--paper); border-bottom: 1.5px solid var(--paper);
   transform: rotate(42deg);
 }
+
+/* Caja de lectura: el `ch` se resuelve a 16 px una sola vez, así migas,
+   título, prosa y pasos comparten el mismo ancho y centrado. */
+.lectura {
+  max-width: var(--medida-lectura);
+  margin-inline: auto;
+  font-size: 1rem;
+}
+body.pagina-portada .lectura { max-width: none; }
 
 /* Prosa: media de lectura centrada en su columna. */
 .prosa {
@@ -861,12 +870,13 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
   /* Corte responsive: el cajón y los 24 px de contenedor entran a 940 px;
      la hamburguesa de identidad sigue a 850 px y entre ambos la nav se
      compacta para que quepan los seis enlaces, el buscador y «Temario». */
+  /* 24 px entre 621 y 940; a 620 y menos se respeta el gutter de 20 px
+     del paquete en la regla inferior. */
   .site-header,
   .site-footer { padding-inline: 24px; }
   .site-nav { --nav-gap: 10px; }
   .site-nav a,
   .nav-temario { font-size: 11px; }
-  .nav-temario { order: -1; }
   .marco {
     grid-template-columns: minmax(0, 1fr);
     width: calc(100% - 48px);
@@ -901,7 +911,6 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 @media (max-width: 850px) {
   .site-nav a { font-size: 12px; }
   .nav-temario {
-    order: 0;
     width: 100%; height: auto; min-height: 44px;
     padding: 12px 0; border-bottom: 1px solid var(--line);
     font-size: 13px;
@@ -916,6 +925,9 @@ body { font-family: var(--sans); line-height: 1.65; text-wrap: pretty; }
 }
 
 @media (max-width: 620px) {
+  .site-header,
+  .site-footer { padding-inline: 20px; }
+  .marco { width: calc(100% - 40px); }
   .contenido { padding-top: 24px; }
 }
 
