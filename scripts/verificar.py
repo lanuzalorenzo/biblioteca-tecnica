@@ -194,6 +194,7 @@ def main() -> int:
         "_sitio/app.js",
         "_sitio/LICENSE",
         "_identidad/identidad.css",
+        "_identidad/menu.js",
         "_identidad/marca-tile.svg",
     ):
         if not (visor.SALIDA / relativa).exists():

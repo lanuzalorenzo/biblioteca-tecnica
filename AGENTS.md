@@ -65,4 +65,4 @@ MIT, copyright 2026 Lorenzo Lanuza Arellano. El titular se mantiene igual en `LI
 
 ## Scopes de commit
 
-`visor`, `config`, `content`, `ci`, `repo`. Formato: `type(scope): imperative summary in English`. Commit y push requieren autorización explícita por lote.
+`visor`, `config`, `content`, `site`, `ci`, `repo`. Formato: `type(scope): imperative summary in English`. Commit y push requieren autorización explícita por lote.
