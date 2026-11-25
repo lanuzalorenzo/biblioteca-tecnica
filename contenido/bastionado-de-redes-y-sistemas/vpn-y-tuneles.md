@@ -2,61 +2,59 @@
 
 Una oficina nueva a 23 kilómetros necesita usar el sistema de pedidos como si estuviera en el edificio central. La red privada virtual resuelve el transporte sin contratar un cable dedicado. Lo que no resuelve es la confianza: cada persona conectada pasa a formar parte de la red corporativa, y una credencial robada abre esa puerta desde cualquier punto del planeta.
 
-Las familias de VPN y su papel en el control del tráfico se presentan en [Control de la red](../seguridad-y-alta-disponibilidad/control-y-monitorizacion.md). Este apunte se centra en las decisiones de diseño: qué se protege, qué no, y qué hay que revisar antes de confiar en un túnel.
+Las familias de VPN, sus protocolos y su papel en el control del tráfico se explican en [Control de la red](../seguridad-y-alta-disponibilidad/control-y-monitorizacion.md). Este apunte se queda con las decisiones de despliegue: qué se entrega, qué se exige y qué se revisa.
 
-## Qué se gana y qué no
+## La decisión: qué se entrega
 
-Una VPN levanta una red privada encima de otra que no está bajo su control. Lo privado no es el camino, sino el envoltorio que lo recorre: los paquetes siguen pasando por Internet, pero envueltos y cifrados entre dos puntos.
+Una VPN entrega conectividad. El usuario conectado puede alcanzar todo lo que las reglas le permitan, no solo la aplicación que necesita. Esa diferencia es la que separa una VPN de un acceso por aplicación con verificación continua, que no entrega la red entera.
 
-Cuando alguien dice que la comunicación es segura «porque el canal es privado», confunde el medio con la protección. El medio es Internet. Lo que defiende son el cifrado y la autenticación de los extremos; el resto sigue expuesto a cortes, latencia y ataques contra el servicio.
+Antes de elegir producto hay que responder:
 
-## Dos extremos, dos modelos
+- ¿El usuario necesita la red completa o solo una aplicación?
+- ¿El acceso es permanente o para una tarea concreta?
+- ¿Se puede verificar el estado del dispositivo, no solo la identidad?
+- ¿Qué pasa si la credencial se roba?
 
-| Modo | Qué conecta | Uso típico |
+Si la respuesta es «solo una aplicación», una VPN de red es más de lo necesario. Si es «la red completa», hay que asumir que un equipo comprometido puede moverse lateralmente y compensarlo con segmentación.
+
+## Criterios de elección
+
+| Escenario | Familia | Motivo |
 |---|---|---|
-| Cliente a red (acceso remoto) | Un equipo con una red corporativa | Teletrabajo, soporte, viajes |
-| Red a red (sitio a sitio) | Dos sedes o una sede y una nube | Unir oficinas sin línea dedicada |
+| Unir dos sedes de forma permanente | IPsec sitio a sitio | Interoperabilidad y despliegue en routers y cortafuegos |
+| Acceso remoto que debe cruzar redes restrictivas | VPN sobre TLS | Viaja por el puerto 443 y atraviesa mejor los filtros |
+| Enlace moderno con configuración mínima | WireGuard | Código pequeño, rápido y fácil de auditar |
 
-En el modo cliente a red, el cliente recibe una dirección de la red interna y pasa a ser un equipo más, con sus permisos. En el modo red a red, los routers de cada extremo encapsulan el tráfico de toda la red; no hay cliente por usuario.
+La elección no es solo técnica: depende del parque de clientes, de la capacidad del equipo y de las obligaciones del entorno. Un protocolo moderno no compensa una gestión de claves descuidada.
 
-## El paquete dentro del paquete
+## Riesgos de despliegue
 
-Un túnel envuelve un paquete en otro: pone delante una cabecera que permite atravesar la red pública y la quita al llegar al destino. Ese envoltorio lo definen los extremos y el protocolo elegido.
+- **El appliance es un objetivo.** Los equipos VPN expuestos acumulan vulnerabilidades críticas; hay que parchearlos como cualquier servidor frontera.
+- **MFA no es opcional.** Usuario y contraseña solos convierten una filtración en un acceso remoto.
+- **Gestión de claves y certificados.** Es la parte que más falla: inventario, caducidad, revocación y renovación.
+- **Túnel partido.** Si el tráfico personal sale por la conexión local y el corporativo por la VPN, se pierde visibilidad y se mezclan dos mundos.
+- **Movimiento lateral.** Una VPN no segmenta por dentro; el usuario comprometido puede intentar alcanzar otros sistemas.
+- **Registro.** Sin saber quién se conecta, cuándo y desde dónde, un incidente remoto se investiga a ciegas.
 
-La primera decisión, por tanto, es qué se cifra, qué se autentica y en qué capa se hace.
+## Lo que una VPN no hace
 
-## IPsec, en corto
+- No autentica al usuario por sí sola: eso lo hace el mecanismo de acceso.
+- No limita a qué puede acceder una vez dentro: eso lo hace la segmentación.
+- No cifra el extremo final: protege el trayecto entre los dos extremos.
+- No sustituye a un EDR ni a la monitorización del dispositivo.
+- No reemplaza a la gestión de identidades ni a la autenticación multifactor.
+- No convierte una red plana en una red segmentada.
 
-IPsec opera en la capa de red. Esa posición le permite cubrir TCP, UDP e ICMP sin pedir nada a la aplicación; TLS y SSH, en cambio, necesitan que el programa los implemente.
+## Operación
 
-| Pieza | Qué aporta |
-|---|---|
-| AH (*Authentication Header*) | Integridad y autenticación del origen, sin cifrado |
-| ESP (*Encapsulating Security Payload*) | Confidencialidad, integridad y autenticación |
-| Modo transporte | Protege la carga y deja visible la cabecera IP original; se usa entre hosts |
-| Modo túnel | Protege el paquete entero y añade una cabecera; es el de sitio a sitio |
+Un despliegue de VPN necesita las mismas rutinas que cualquier servicio expuesto:
 
-El intercambio de claves lo hace IKE, en su versión 2 en los despliegues actuales. En IPv6, IPsec fue obligatorio en el diseño original y pasó a recomendable con la revisión de 2011.
-
-## Otras familias
-
-- **VPN sobre TLS.** Reutiliza el TLS de la web con un portal o un cliente. Su ventaja es que cruza proxies y cortafuegos con facilidad porque viaja por el puerto 443.
-- **WireGuard.** Un protocolo reciente, de código corto y auditado, presente en el núcleo Linux desde la versión 5.6. Gana en velocidad y sencillez, y pierde en funciones de gestión frente a las suites IPsec empresariales.
-
-## El coste oculto
-
-| A favor | En contra |
-|---|---|
-| Usa Internet en vez de una línea dedicada | La disponibilidad y el caudal dependen del proveedor |
-| El remoto trabaja con las mismas políticas que en la oficina | La gestión de claves y certificados es la parte más frágil |
-| Se llega desde cualquier sitio con conexión | Cifrar y encapsular consume recursos en el cliente |
-| Sirve para sedes, proveedores y consultores con alcance definido | Entrega red, no aplicación: el usuario comprometido puede moverse |
-
-## Lo que sigue expuesto
-
-- **Acceso de red, no de aplicación.** La VPN da conectividad; si el usuario comprometido entra, puede moverse lateralmente. La alternativa que se impone es el acceso por aplicación con verificación continua, que no entrega la red entera.
-- **El dispositivo VPN es un objetivo.** Los appliances expuestos acumulan vulnerabilidades críticas; hay que parchearlos como cualquier servidor frontera y exigir MFA.
-- **Túnel partido (*split tunneling*).** Si el tráfico personal sale por la conexión local y el corporativo por la VPN, se mezclan dos mundos y se pierde visibilidad.
+1. Inventario de certificados, claves y dispositivos.
+2. Renovación antes de la caducidad, con alertas.
+3. Revisión de vulnerabilidades del appliance y del cliente.
+4. Registro de conexiones y de intentos fallidos.
+5. Revisión periódica de quién tiene acceso y a qué.
+6. Procedimiento de revocación cuando alguien se marcha o pierde un equipo.
 
 ## Qué comprobar
 
@@ -77,7 +75,6 @@ El intercambio de claves lo hace IKE, en su versión 2 en los despliegues actual
 
 ## Fuentes
 
-- RFC 4301 (arquitectura IPsec), RFC 7296 (IKEv2) y RFC 6434 (IPv6).
-- WireGuard: documentación oficial del proyecto.
 - NIST SP 800-77, *Guide to IPsec VPNs*.
+- WireGuard: documentación oficial del proyecto.
 - INCIBE. Recomendaciones de seguridad en VPN.

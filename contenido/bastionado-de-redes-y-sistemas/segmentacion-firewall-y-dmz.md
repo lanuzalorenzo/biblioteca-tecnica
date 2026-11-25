@@ -2,89 +2,84 @@
 
 Un edificio de oficinas con una única entrada y sin tabiques interiores deja que cualquiera que pase el portal llegue a todas las plantas. Una red plana funciona igual: el visitante que conecta un portátil alcanza el servidor de nóminas. Segmentar es levantar tabiques y colocar puertas con llave; el cortafuegos decide quién pasa y la DMZ es el vestíbulo donde se atiende a quien viene de la calle.
 
-La separación por VLAN y la autenticación de puerto están en [El acceso a la red](../seguridad-y-alta-disponibilidad/acceso-a-la-red.md), y la lógica de las ACL en [Enrutamiento avanzado, ACL y seguridad de la red](../redes/enrutamiento-acl-y-seguridad.md). Aquí se combinan para diseñar el filtrado y la exposición.
+La separación por VLAN y la autenticación de puerto están en [El acceso a la red](../seguridad-y-alta-disponibilidad/acceso-a-la-red.md), y la lógica de las ACL en [Enrutamiento avanzado, ACL y seguridad de la red](../redes/enrutamiento-acl-y-seguridad.md). Aquí se trata el modelo de filtrado: qué zonas se definen, qué reglas las separan y cómo se revisan.
 
-## VLAN
+## Qué se decide
 
-Una VLAN crea redes lógicas independientes sobre el mismo cableado. Se obtienen cuatro cosas:
+Segmentar no es crear VLAN. Es decidir qué puede hablar con qué y dónde se aplica esa decisión. Cada zona necesita tres cosas:
 
-- **Segmentación.** Cada VLAN agrupa equipos en una subred.
-- **Flexibilidad.** Un equipo cambia de VLAN por configuración, sin mover cables.
-- **Rendimiento.** Menos equipos comparten dominio de difusión.
-- **Seguridad.** Las VLAN se aíslan y el paso entre ellas se permite o se deniega con una regla.
+- Un propósito: usuarios, servidores, invitados, gestión, DMZ, dispositivos industriales.
+- Un límite: una subred o un conjunto de subredes con su puerta de enlace.
+- Una política: qué flujos entran y salen, con origen, destino y puerto.
 
-Una VLAN no habla con otra por sí sola. Para cruzar hay que subir a capa 3, con un router o con un switch que tenga una interfaz por VLAN. El permiso se concreta en listas de control de acceso o en el cortafuegos.
+Sin la tercera, la zona solo cambia el dibujo. La comunicación sigue abierta si el router enruta sin filtro.
 
-### Cómo se configura un puerto
+## Zonas mínimas
 
-| Modo | Qué hace | Uso |
+| Zona | Qué contiene | Si se mezcla |
 |---|---|---|
-| Acceso | Pertenece a una VLAN, sin etiqueta | Equipos finales: PC, impresora, cámara |
-| Troncal | Transporta varias VLAN etiquetadas | Enlace entre switches o hacia el router |
-| Dinámico | Decide acceso o troncal según la trama | Poco recomendable: amplía la superficie |
+| Gestión | Administración de switches, routers y cortafuegos | Un puesto comprometido puede reconfigurar la red |
+| Servidores | Servicios internos y bases de datos | Un usuario alcanza datos que no le tocan |
+| Usuarios | Puestos de trabajo | El malware de un equipo llega al resto |
+| Invitados | Dispositivos de visitas y personales | Un invitado entra en la red corporativa |
+| DMZ | Servicios publicados hacia Internet | Un fallo web abre la red interna |
+| Industrial / IoT | Sensores, cámaras, maquinaria | Un dispositivo sin parches comparte red con oficinas |
 
-El modo dinámico negocia con el vecino y puede permitir que un equipo se haga pasar por un switch para recibir varias VLAN. En una red bastionada, cada puerto se fija a acceso o troncal y el troncal solo se habilita donde hace falta.
+El tamaño importa menos que la separación. Una zona pequeña con reglas claras protege más que una grande sin filtro.
 
-### Fallos que cuestan caros
+## El modelo de reglas
 
-- Usar la VLAN 1, la de gestión por defecto, para usuarios y para el troncal.
-- Llevar un puerto de acceso a un switch no previsto y arrastrar todas las VLAN.
-- Autorizar en el troncal VLAN que nadie utiliza.
-- Enrutar entre VLAN sin ACL y confiar en que la separación lógica basta.
+Una política de filtrado se escribe con cuatro decisiones:
 
-## Cortafuegos
+1. **Denegar por defecto.** Solo pasa lo que está permitido de forma explícita.
+2. **Mínimo privilegio.** Cada permiso fija origen, destino, protocolo y puerto; «cualquier cosa desde dentro» no es una regla.
+3. **Orden consciente.** La primera coincidencia decide; una regla amplia arriba anula las específicas de abajo.
+4. **Registro y caducidad.** Los flujos relevantes se registran y las excepciones tienen fecha de revisión.
 
-Un cortafuegos permite o rechaza tráfico según reglas. Se sitúa donde cambia la confianza: entre la red interna e Internet, entre la interna y la DMZ, y entre segmentos que no deben hablarse.
+Una regla sin dueño ni motivo es deuda técnica. Se revisa, se justifica o se retira.
 
-No todos miran lo mismo:
+## DMZ: qué se publica
 
-| Tipo | Qué mira | Límite |
-|---|---|---|
-| De paquetes | Cabeceras: IP, puerto y protocolo | No entiende el contexto de la conexión |
-| De estado | Añade el estado de la conexión | No inspecciona el contenido de la aplicación |
-| Proxy o pasarela de aplicación | Protocolo de aplicación | Más coste y más puntos de fallo |
-| NGFW | Inspección profunda, aplicación e identidad | Configuración compleja; no sustituye al resto |
+La DMZ existe para que un servicio expuesto no comparta red con lo que se protege. Publicar allí un servidor exige decidir:
 
-La política debe empezar por denegar y abrir solo lo necesario, con el mínimo origen, destino y puerto. Si se permite «todo desde dentro», el cortafuegos deja de servir: el malware que ya está en la red sale sin encontrar obstáculo.
+- **Qué se publica.** Solo el servicio necesario, no el servidor entero.
+- **Qué puede iniciar la DMZ hacia dentro.** Lo imprescindible; por defecto, nada.
+- **Con qué credenciales.** Las del servicio publicado, nunca las de la red interna.
+- **Quién administra.** El acceso de gestión va por una vía separada, no por la misma interfaz pública.
+- **Qué se registra.** Intentos de acceso, errores y cambios de configuración.
 
-El orden también importa. La primera regla que coincide decide, así que una regla amplia situada arriba deja sin efecto las específicas que vienen después.
+Una DMZ que permite tráfico libre hacia la red interna es una red plana con otro nombre. Y publicar un servicio con credenciales internas traslada el problema en lugar de resolverlo.
 
-Las ACL de un router hacen un filtrado sin estado y por interfaz. Sirven para separar VLAN y para aprender la lógica; un cortafuegos de borde cubre más, pero la ACL sigue siendo la herramienta del switch y del router.
+## Auditoría de reglas
 
-## DMZ
+1. Inventaría las reglas y asígnalas a un dueño.
+2. Busca reglas sombreadas: las que nunca se evalúan porque otra anterior las tapa.
+3. Revisa los permisos «any-any» y los que abren más de lo necesario.
+4. Detecta reglas sin tráfico durante un periodo suficiente.
+5. Comprueba que las excepciones temporales tienen fecha y se retiran.
+6. Verifica que el orden del conjunto sigue el criterio documentado.
+7. Contrasta la política con el inventario de servicios y de zonas.
 
-La DMZ es una red aparte para los servicios que deben verse desde Internet: web, correo, proxy inverso. Se coloca entre fuera y dentro, de forma que un fallo en uno de esos servicios no abra la red interna.
+La auditoría no busca solo reglas mal escritas: busca reglas que ya no deberían existir.
 
-Lo habitual es usar dos cortafuegos o uno con tres interfaces: Internet, DMZ y red interna. Las reglas dejan entrar a los servicios publicados y limitan lo que la DMZ puede iniciar hacia dentro. La red interna no se publica.
+## Cambios y excepciones
 
-Lo que aporta:
+Toda excepción se pide, se justifica y se limita en el tiempo. Un cambio de regla sin registro convierte la política en un conjunto de decisiones invisibles.
 
-- Aísla los servicios expuestos y reduce el alcance de una intrusión.
-- Permite apagar en el servidor publicado lo que no se usa.
-- Deja claro qué debe ser accesible desde fuera.
-
-Lo que puede fallar:
-
-- Una DMZ mal configurada que permite tráfico libre hacia la red interna pierde todo el aislamiento.
-- Un servicio publicado con credenciales internas traslada el problema, no lo resuelve.
-- La DMZ no detiene a quien ya está dentro ni corrige un fallo de la aplicación.
-
-## Publicar un servidor
-
-Cada servidor publicado es un objetivo permanente. Si un atacante lo compromete y comparte red con otros equipos, lo usa como trampolín. Las medidas que acompañan a la DMZ son separar el servidor, actualizarlo, retirar servicios y cuentas que no se usan, revisar los registros y limitar por regla lo que puede alcanzar.
+El flujo mínimo: solicitud con origen, destino y motivo; aprobación de quien responde de la zona; aplicación; comprobación de que el flujo funciona y de que no se ha abierto más de la cuenta; fecha de revisión.
 
 ## Qué comprobar
 
-- Cada VLAN tiene una subred y un propósito; no hay equipos sueltos en la VLAN de gestión.
-- Los puertos de acceso llevan una sola VLAN y los troncales solo las necesarias.
-- El paso entre VLAN está permitido por una regla explícita, no por defecto.
-- La política del cortafuegos empieza por denegar y cada permiso justifica origen, destino y puerto.
-- La DMZ solo publica lo que debe ser público y no inicia tráfico hacia dentro salvo lo imprescindible.
-- Las reglas y las ACL se revisan, y las obsoletas se retiran.
+- Cada zona tiene un propósito, una subred y una política.
+- El paso entre zonas está permitido por regla explícita, no por defecto.
+- La política empieza por denegar y cada permiso justifica origen, destino y puerto.
+- La DMZ solo publica lo necesario y no inicia tráfico hacia dentro salvo lo imprescindible.
+- Las reglas y las ACL tienen dueño, registro y revisión.
+- Las excepciones temporales caducan y se retiran.
 
 ## Errores que se repiten
 
-- Suponer que la VLAN de invitados protege sin reglas entre segmentos.
+- Crear VLAN y creer que la seguridad está resuelta.
 - Poner una regla de permiso total «para que funcione».
 - Publicar en la misma red los servicios de Internet y los internos.
 - Abrir un puerto para una prueba y olvidar cerrarlo.
@@ -92,6 +87,6 @@ Cada servidor publicado es un objetivo permanente. Si un atacante lo compromete 
 
 ## Fuentes
 
-- IEEE 802.1Q (VLAN y etiquetado de tramas).
 - NIST SP 800-41 Rev. 1, *Guidelines on Firewalls and Firewall Policy*.
+- IEEE 802.1Q (VLAN y etiquetado de tramas).
 - NIST SP 800-125B, *Secure Virtual Network Configuration for Virtual Machine Protection*.

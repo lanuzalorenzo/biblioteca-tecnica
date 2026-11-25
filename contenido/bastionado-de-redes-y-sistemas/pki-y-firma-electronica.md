@@ -78,7 +78,7 @@ El Reglamento eIDAS distingue tres niveles:
 | Avanzada | Vinculada al firmante, permite detectar cambios y está bajo su control exclusivo |
 | Cualificada | Avanzada con certificado cualificado y dispositivo cualificado; equivale a la firma manuscrita |
 
-La Ley 6/2020 recoge en España los servicios electrónicos de confianza y sitúa esa escala dentro del marco europeo. El DNI electrónico guarda un certificado que no se puede exportar: la clave privada permanece en el chip y se activa con un PIN. De ahí que sirva para firmar, no solo para identificarse.
+La Ley 6/2020 recoge en España los servicios electrónicos de confianza y sitúa esa escala dentro del marco europeo. En el DNI electrónico, el certificado puede leerse, pero la clave privada no se puede exportar: permanece en el chip y se activa con un PIN. De ahí que sirva para firmar, no solo para identificarse.
 
 En banca conviven tres mecanismos: una clave pactada, la biometría del teléfono —que autoriza una clave sin salir del dispositivo— y una clave criptográfica privada. Ninguno envía la clave privada; se envía la prueba de que se utilizó.
 

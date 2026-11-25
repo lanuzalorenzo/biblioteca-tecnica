@@ -2,69 +2,76 @@
 
 Una alarma que salta por cualquier cosa acaba como la de un coche en una calle concurrida: nadie la mira. A una empresa le ocurrió con su sistema de prevención de intrusiones: no veía el tráfico cifrado y producía tantos avisos que el equipo aprendió a ignorarlos. Detectar es relativamente fácil; separar lo importante y reaccionar a tiempo, no.
 
-El control de la red, la captura y el SIEM se presentan en [Control de la red](../seguridad-y-alta-disponibilidad/control-y-monitorizacion.md). Aquí se desarrollan los sensores de intrusión: qué diferencian, dónde se colocan, qué límites tienen y cómo se evita que se conviertan en decoración.
+La diferencia entre detectar y bloquear, los métodos de análisis y la colocación de los sensores se explican en [Control de la red](../seguridad-y-alta-disponibilidad/control-y-monitorizacion.md). Aquí se trata lo que convierte un sensor en un control útil: cobertura, ajuste, modo de fallo y destino de las alertas.
 
-## Dos formas de estar en la red
+## Qué se le pide
 
-| | IDS | IPS |
-|---|---|---|
-| Función | Detectar y alertar | Detectar y actuar |
-| Situación | Fuera del camino, escuchando | En el camino, en línea |
-| Efecto sobre el tráfico | Ninguno | Puede bloquear, descartar o cortar |
-| Riesgo propio | No interviene | Un fallo puede cortar el servicio |
+Un IDS observa y avisa; un IPS observa y actúa. En el diseño importa menos la etiqueta del producto que la respuesta a tres preguntas:
 
-Los productos del mercado suelen ofrecer las dos funciones. Eso no cambia el diseño: el que solo observa no puede cortar nada, y el que está en línea y falla abierto se convierte en un pasillo libre.
+- ¿Qué tráfico ve y cuál se queda fuera?
+- ¿Quién decide que una alerta es importante?
+- ¿Qué ocurre cuando el sensor falla?
 
-## Cómo decide
+Si no hay respuesta para las tres, el sensor está instalado pero no integrado.
 
-- **Firmas.** Busca patrones de ataques ya conocidos. Acierta con lo viejo y no ve lo nuevo.
-- **Anomalías.** Aprende cómo se comporta la red y avisa cuando algo se aparta. Cubre lo desconocido y produce más ruido.
-- **Políticas y estado.** Comprueba reglas y coherencia de las sesiones.
+## Qué ve el sensor
 
-Las tres se complementan. Las firmas aportan precisión sobre lo ya visto; las anomalías cubren lo que aún no tiene patrón; las políticas marcan qué se considera aceptable.
+Un sensor solo protege lo que ve. La cobertura se decide por zonas, no por número de dispositivos:
 
-## Dónde vive el sensor
+- **Borde:** tráfico entre Internet y la organización.
+- **Entre segmentos:** el paso entre usuarios, servidores, DMZ y gestión.
+- **Host:** lo que ocurre dentro de un servidor crítico y no se ve en la red.
+- **Puntos ciegos:** tráfico cifrado, redes de invitados y dispositivos que nunca pasan por el sensor.
 
-| Tipo | Dónde | Ventaja | Límite |
-|---|---|---|---|
-| NIDS (IDS de red) | Puerto espejo o TAP de un switch | No interfiere, ve un segmento entero | No bloquea |
-| NIPS (IPS de red) | En línea entre zonas | Contiene en tiempo real | Puede ser cuello de botella |
-| HIDS (IDS de host) | En el propio servidor | Ve lo que pasa dentro del host | Consume recursos, es intrusivo |
-| HIPS (IPS de host) | En el host, con respuesta | Bloquea procesos y sesiones locales | Puede romper aplicaciones legítimas |
+La pregunta de auditoría no es «¿cuántos sensores hay?», sino «¿qué flujo importante no pasa por ninguno?».
 
-Para que un NIDS reciba tráfico hay que configurar el switch; conectarlo no basta. Un HIDS exige activar registros, lo que consume almacenamiento.
+## Ajuste
 
-## Qué se busca
+Un sensor sin ajuste produce ruido y se acaba ignorando. El trabajo real es un ciclo:
 
-- Cargas con código malicioso conocido.
-- Protocolos y servicios prohibidos: FTP o Telnet donde no debería haberlos.
-- Secuencias que corresponden a un ataque conocido: escaneos, fuerza bruta, explotación.
-- En el host: cambios en ficheros críticos, procesos anómalos, cuentas nuevas, escalada de privilegios.
+1. Partir de una base de reglas adecuada al entorno.
+2. Observar durante un periodo y separar lo normal de lo anómalo.
+3. Silenciar o afinar lo que genera falsos positivos sin perder el caso real.
+4. Asignar un dueño a cada regla o grupo de reglas.
+5. Revisar periódicamente lo silenciado, porque el entorno cambia.
 
-## Lo que no puede hacer
+El ajuste no termina nunca. Una regla que se apaga «porque molestaba» y no se vuelve a mirar es una ceguera permanente.
 
-- **Cifrado.** Sin inspección TLS, el sensor ve paquetes y no contenido. Inspeccionar exige terminación, base jurídica y capacidad de cómputo.
-- **Retraso de firmas.** Entre que aparece una amenaza y se publica la regla hay una ventana que el atacante aprovecha.
-- **Falsos positivos y negativos.** Los primeros gastan el tiempo del analista; los segundos son el fallo grave, porque dan tranquilidad sin protección.
-- **Volumen.** Varios sensores sin correlación producen un muro de alertas que nadie atiende.
+## Modo de fallo
 
-## Evasión
+Un IPS en línea puede fallar abierto o cerrado:
 
-- **Inserción:** el atacante manipula paquetes para que el sensor y el destino lean cosas distintas.
-- **Fragmentación:** parte el ataque en trozos que no coinciden con ninguna firma.
-- **Canales encubiertos:** esconde datos en campos que el sensor no revisa.
-- **Suplantación:** disfraza el tráfico malicioso de legítimo.
-- **Ataques al sensor:** lo satura, llena sus registros o provoca su modo de fallo. Un sensor que se desconecta al fallar deja de proteger justo cuando hace falta.
+- **Abierto:** si el sensor cae, el tráfico sigue. Se protege la disponibilidad y se pierde la inspección.
+- **Cerrado:** si el sensor cae, el tráfico se corta. Se protege la inspección y se arriesga el servicio.
 
-Probar estas técnicas sobre una red exige autorización y un alcance acordado. No es una comprobación que se hace «para ver qué pasa» en un entorno ajeno.
+La decisión se toma antes del incidente y se documenta. También hay que prever la alta disponibilidad y el bypass: un IPS que se convierte en cuello de botella o en un punto único de fallo acaba retirándose.
 
-## Qué automatizar
+## Tráfico cifrado
 
-Las acciones posibles van de descartar un paquete a cerrar la sesión, bloquear una dirección o una cuenta, registrar el evento o avisar. Elegir cuál se automatiza depende de lo que cuesta equivocarse: cortar una IP sospechosa tiene poco coste; dejar sin cuenta a un empleado por un falso positivo, mucho.
+Sin inspección TLS, el sensor ve paquetes y no contenido. Inspeccionar exige terminar la conexión en un punto controlado, capacidad de cómputo y una base jurídica clara. Si no se inspecciona, hay que asumir el límite y compensarlo con registro de terminales, metadatos y análisis de flujo.
 
-## Dónde encaja hoy
+La alternativa no es ignorar el cifrado, sino saber qué se está perdiendo y decirlo.
 
-Hoy el sensor de red comparte trabajo con el registro de terminales (EDR), la correlación de un SIEM y el análisis de metadatos (NDR). Snort, Suricata y Zeek son las referencias libres. La decisión de diseño no está en el producto, sino en lo que se hará con la alerta.
+## Alertas
+
+Una alerta sin destino es un registro que nadie lee. El circuito mínimo:
+
+- Severidad y criterio de escalado.
+- Envío a un registro central con contexto: origen, destino, regla, hora.
+- Procedimiento para cerrar un falso positivo sin apagar la regla.
+- Retención definida y hora sincronizada.
+- Responsable con nombre y turno.
+
+El SIEM correlaciona, pero no sustituye al criterio. Un muro de alertas sin prioridad es el mismo problema con otra herramienta.
+
+## Qué exigir en la compra
+
+- Cobertura declarada y límite de caudal sin pérdida de paquetes.
+- Modo de fallo configurable y bypass.
+- Actualización de firmas y soporte con plazos.
+- Exportación de registros y integración con el SIEM.
+- Capacidad de inspección TLS, si el caso la justifica.
+- Documentación de las reglas y de su mantenimiento.
 
 ## Qué comprobar
 

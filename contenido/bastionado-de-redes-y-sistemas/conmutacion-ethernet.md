@@ -2,27 +2,23 @@
 
 Un switch es el portero de un edificio con muchas puertas. No pregunta quién eres, solo mira el nombre del sobre y lo lleva a la mesa correspondiente. Esa eficacia es también su punto débil: si alguien puede escribir el nombre que quiera en el sobre, el portero lo entregará donde diga.
 
-En capa 2 se decide qué equipo recibe cada trama dentro del segmento local. El aprendizaje y el reenvío se explican en [Ethernet, conmutación, STP y VLAN](../redes/ethernet-conmutacion-y-vlan.md). Este apunte se queda con lo que hay que cerrar para que esa entrega no se convierta en una puerta abierta.
+El funcionamiento del enlace —tramas, aprendizaje, inundación y STP— se explica en [Ethernet, conmutación, STP y VLAN](../redes/ethernet-conmutacion-y-vlan.md). Este apunte se queda con lo que hay que cerrar para que esa entrega no se convierta en una puerta abierta.
 
-## Qué decisiones toma el switch
+## Dónde está el riesgo
 
-Cuando entra una trama, el switch aprende la MAC de origen en ese puerto y consulta la de destino. Si la conoce por otro puerto, reenvía solo por él; si la conoce por el mismo, filtra; si es desconocida o de difusión, inunda los puertos permitidos menos el de entrada.
-
-Tres consecuencias para el bastionado:
-
-- La tabla de direcciones se construye observando el tráfico. Un equipo puede anunciar una MAC que no le pertenece y desviar respuestas hacia su puerto.
-- La inundación es normal, pero también es la vía por la que un atacante ve tráfico que no iba dirigido a él.
-- Las entradas caducan. Una tabla vacía o en aprendizaje se comporta distinto de una consolidada, y eso explica resultados que parecen aleatorios.
-
-## Riesgos del enlace local
-
-- **Suplantación de MAC.** Cambiar la dirección de la tarjeta es inmediato. Sirve para ocupar el sitio de otro equipo, saltarse un filtro que solo mira la MAC o provocar que el switch reenvíe hacia el atacante.
-- **Saturación de la tabla.** Si se generan más direcciones de las que caben, el switch puede inundar por necesidad y el tráfico deja de estar contenido.
-- **Bucles.** Un enlace redundante mal controlado multiplica tramas y difusiones hasta saturar la red. STP bloquea los enlaces sobrantes para mantener una topología sin ciclos, pero también se puede manipular para cambiar quién es la raíz.
+- **Suplantación de MAC.** Cambiar la dirección de la tarjeta es inmediato. Sirve para ocupar el sitio de otro equipo, saltarse un filtro que solo mira la MAC o desviar respuestas hacia el atacante.
+- **Saturación de la tabla.** Si se generan más direcciones de las que caben, el switch inunda por necesidad y el tráfico deja de estar contenido.
+- **Bucles.** Un enlace redundante mal controlado multiplica tramas y difusiones hasta saturar la red. Además, quien consigue influir en la topología puede colocarse en el camino del tráfico.
 - **Salto de VLAN.** Un puerto mal configurado o un troncal demasiado permisivo puede permitir que una trama etiquetada termine en una VLAN que no le corresponde.
 - **Servicios falsos.** Un equipo puede declararse servidor DHCP o responder por ARP en lugar de la puerta de enlace real.
 
+Ninguno se resuelve mirando solo la tabla de direcciones. Son riesgos de configuración y de confianza en el puerto.
+
+## Lo que la VLAN no resuelve
+
 Las VLAN separan dominios de difusión, pero no cifran ni autentican. Un portátil conectado a la VLAN de invitados sigue siendo un portátil desconocido. La separación lógica y el control de acceso son dos capas distintas: la primera ordena, la segunda decide.
+
+Por eso una VLAN de invitados sin reglas hacia la red interna no protege nada. Y una VLAN de gestión que comparte puerto con un puesto de trabajo pone la administración del switch al alcance de ese puesto.
 
 ## Cerrar el puerto
 
@@ -34,38 +30,43 @@ Tres controles convierten una boca de switch en algo defendible. Su configuraci�
 
 Ninguno sustituye a los otros. La seguridad de puerto sin DHCP snooping deja pasar un servidor falso por un puerto autorizado; el snooping sin inspección de ARP no impide responder por un equipo que ya tiene dirección.
 
-## Troncales y VLAN de gestión
+## Troncales y gestión
 
-El troncal transporta varias VLAN a la vez. Es el punto donde un error de configuración tiene más alcance:
+El troncal transporta varias VLAN a la vez y es donde un error de configuración tiene más alcance:
 
 - La **VLAN nativa** viaja sin etiquetar. Si se deja la de gestión o la de usuarios, una trama sin etiqueta puede acabar donde no debe. Se cambia por una VLAN sin uso y no se emplea para tráfico real.
-- La lista de VLAN permitidas en el troncal debe ser explícita. Permitir todas «por si acaso» convierte cualquier equipo conectado en candidato a recibir redes que no necesita.
+- La lista de VLAN permitidas debe ser explícita. Permitir todas «por si acaso» convierte cualquier equipo conectado en candidato a recibir redes que no necesita.
 - Los puertos **dinámicos** negocian su modo con el vecino. En una red bastionada se fijan a acceso o troncal; el modo automático amplía la superficie sin aportar nada.
 - La VLAN de **gestión** se separa del tráfico de usuarios. Compartir puerto con un puesto de trabajo pone la administración del switch al alcance de ese puesto.
 
-Los puertos que no se usan se desactivan. Un latiguillo olvidado en una sala accesible es una entrada libre, y el inventario de qué equipo entra por cada boca es tan útil como la propia configuración.
+Los puertos que no se usan se desactivan. Un latiguillo olvidado en una sala accesible es una entrada libre.
 
-## Bucles y STP
+## Físico y cambios
 
-STP evita ciclos, pero la protección no termina en activarlo. Un equipo que se declara raíz puede reorganizar la topología a su favor, y un puerto de usuario que recibe BPDU puede introducir información de spanning tree donde no corresponde. Las defensas habituales son limitar los BPDU en los puertos de acceso y fijar la raíz en un switch controlado.
+La configuración no lo es todo. El switch vive en un armario que debe estar cerrado y fuera del alcance de quien no administra; un puerto al que se accede con la mano es un control que se puede saltar sin tocar la interfaz de gestión.
 
-El objetivo no es solo que la red no se caiga: es que la topología no la decida un equipo no autorizado.
+La configuración también caduca. Un puerto que se abrió para una sustitución, una VLAN que se creó para una prueba y una regla que se añadió para un evento se quedan si nadie las retira. Conviene guardar la configuración, versionarla y revisar los cambios con la misma disciplina que el resto de la infraestructura.
 
-## Inventario y cambios
+Saber qué equipo entra por cada boca no es una curiosidad: permite detectar un dispositivo desconocido y explicar por qué un puerto está en una VLAN concreta.
 
-La configuración del switch caduca como cualquier otra. Un puerto que se abrió para una sustitución, una VLAN que se creó para una prueba y una regla que se añadió para un evento se quedan si nadie las retira.
+## Auditoría del switch
 
-Conviene guardar la configuración, versionarla y revisar los cambios con la misma disciplina que el resto de la infraestructura. Saber qué equipo entra por cada boca no es una curiosidad: es lo que permite detectar un dispositivo desconocido y explicar por qué un puerto está en una VLAN concreta.
+1. Contrasta el inventario de puertos con lo que hay conectado.
+2. Comprueba que los puertos sin uso están desactivados y que no hay latiguillos olvidados.
+3. Revisa la configuración de seguridad de puerto y el número de MAC permitido por boca.
+4. Verifica DHCP snooping e inspección de ARP en las VLAN de usuarios.
+5. Mira el troncal: VLAN permitidas, VLAN nativa y puertos dinámicos.
+6. Confirma que la gestión está en una VLAN separada y con acceso restringido.
+7. Revisa firmware, copia de configuración y registro de cambios.
 
-## Lo que se comprueba
+## Qué comprobar
 
 - Cada puerto de acceso pertenece a una sola VLAN y tiene un propósito documentado.
 - Los puertos sin uso están desactivados.
-- La seguridad de puerto está activa donde hay equipos finales, con un número de MAC coherente con el puesto.
+- La seguridad de puerto está activa donde hay equipos finales.
 - DHCP snooping e inspección de ARP funcionan en las VLAN de usuarios.
 - El troncal solo permite las VLAN declaradas y la nativa no es de gestión ni de usuarios.
-- La administración del switch está en una VLAN separada, con acceso restringido y registro.
-- El firmware está actualizado y la configuración se guarda y se versiona.
+- La administración del switch está separada, restringida y registrada.
 
 ## Errores que se repiten
 
@@ -73,7 +74,6 @@ Conviene guardar la configuración, versionarla y revisar los cambios con la mis
 - Dejar la VLAN 1 para todo, incluida la gestión.
 - Conectar un switch no previsto a un puerto de acceso y arrastrar todas las VLAN.
 - Filtrar por MAC y llamarlo autenticación.
-- Tener STP activo y dar por hecho que nadie puede influir en la topología.
 - No revisar los puertos que se dieron de alta para una sustitución y quedaron abiertos.
 
 ## Fuentes
