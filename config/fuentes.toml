@@ -20,7 +20,7 @@ estructura = "apuntes"
 ruta = "contenido"
 # Suelo de conteos: por debajo falta contenido. Añadir módulos no toca esta línea.
 minimos = { modulos = 29, apuntes = 160 }
-nombres = { git = "Git", angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", contenedores = "Contenedores", "testing-xunit-moq" = "Testing .NET", fundamentos = "Fundamentos", red = "Red", identidad = "Identidad", computo = "Cómputo", datos = "Datos y almacenamiento", "bus-de-mensajeria" = "Bus de mensajería", "servicios-orientados-a-eventos" = "Servicios orientados a eventos", monitorizacion = "Monitorización", "seguridad-y-gobierno" = "Seguridad y gobierno", "gestion-de-apis" = "Gestión de APIs", "cache-y-entrega" = "Caché y entrega", patrones = "Patrones" }
+nombres = { git = "Git", angular = "Angular", "aspnet-core-mvc" = "ASP.NET Core MVC", contenedores = "Contenedores", "testing-xunit-moq" = "Testing .NET", fundamentos = "Fundamentos", red = "Red", identidad = "Identidad", computo = "Cómputo", datos = "Datos y almacenamiento", "bus-de-mensajeria" = "Bus de mensajería", "servicios-orientados-a-eventos" = "Servicios orientados a eventos", monitorizacion = "Monitorización", "seguridad-y-gobierno" = "Seguridad y gobierno", "gestion-de-apis" = "Gestión de APIs", "cache-y-entrega" = "Caché y entrega", patrones = "Patrones", "analisis-forense-informatico" = "Análisis forense", "incidentes-de-ciberseguridad" = "Incidentes de ciberseguridad", "hacking-etico" = "Hacking ético", "normativa-de-ciberseguridad" = "Normativa de ciberseguridad", "bastionado-de-redes-y-sistemas" = "Bastionado de redes y sistemas" }
 
 # Categorías de las tarjetas: agrupan por materia, no por curso.
 [categorias]
@@ -53,3 +53,8 @@ monitorizacion = "Azure"
 "gestion-de-apis" = "Azure"
 "cache-y-entrega" = "Azure"
 patrones = "Azure"
+"analisis-forense-informatico" = "Seguridad"
+"incidentes-de-ciberseguridad" = "Seguridad"
+"hacking-etico" = "Seguridad"
+"normativa-de-ciberseguridad" = "Seguridad"
+"bastionado-de-redes-y-sistemas" = "Seguridad"
