@@ -18,7 +18,7 @@ La búsqueda empieza por el mercado real, no por las ofertas que aparecen en un 
 - **Portales de empleo** y webs de empresas: útiles para volumen, con mucha competencia.
 - **Sitios de las empresas**: muchas publican antes en su web que en los agregadores.
 - **Redes profesionales**: permiten encontrar a la persona que decide, no solo el anuncio.
-- **Contactos**: compañeros de curso, profesores, antiguos clientes, comunidades técnicas.
+- **Contactos**: antiguos clientes, colegas de profesión y comunidades técnicas.
 - **Servicios públicos de empleo** y entidades colaboradoras: ofertas, orientación y formación.
 - **Empresas de trabajo temporal**: para puestos temporales o primeras experiencias.
 

@@ -81,9 +81,9 @@ Sobre esa base, las técnicas concretas que se estudiaron: ingeniería social y 
 
 La clasificación por motivación —hacker, cracker, *script kiddie*, programador de malware, analista de tráfico, ciberterrorista— sirve para explicar el oficio, no para decidir defensas. En la práctica lo que cambia la respuesta es el **recurso** del atacante y su **objetivo**: un oportunista que busca cualquier puerta abierta se contiene con lo básico bien hecho; un atacante dirigido necesita detección y segmentación, porque entrará.
 
-## Marco legal: lo que ha cambiado desde 2015
+## Marco legal: lo que ha cambiado
 
-El apunte original se apoyaba en la **LOPD 15/1999** y sus tres niveles de protección. Esa ley está derogada y los niveles ya no existen:
+La normativa anterior se apoyaba en la **LOPD 15/1999** y sus tres niveles de protección. Esa ley está derogada y los niveles ya no existen:
 
 - **RGPD** (Reglamento UE 2016/679), aplicable desde mayo de 2018, sustituye el modelo de niveles por el de principios, base jurídica y evaluación de impacto.
 - **LOPDGDD** (LO 3/2018) adapta el RGPD al ordenamiento español y deroga la LOPD de 1999.

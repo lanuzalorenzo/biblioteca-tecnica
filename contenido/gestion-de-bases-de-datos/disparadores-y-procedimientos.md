@@ -39,7 +39,7 @@ Un criterio práctico: el disparador para **garantizar un invariante** —algo q
 - **Procedimiento:** ejecuta acciones, puede recibir parámetros de entrada y salida, y no devuelve un valor por sí mismo. Se invoca con `CALL`.
 - **Función:** devuelve un valor y se usa dentro de una consulta. No debería modificar datos.
 
-En el material del módulo aparecen ejemplos de los dos: funciones que calculan cargos o ingresos, y procedimientos que registran movimientos bancarios. La lógica de un movimiento —comprobar saldo, insertar, actualizar— es exactamente un procedimiento con transacción, no un disparador.
+Hay ejemplos de los dos: funciones que calculan cargos o ingresos, y procedimientos que registran movimientos bancarios. La lógica de un movimiento —comprobar saldo, insertar, actualizar— es exactamente un procedimiento con transacción, no un disparador.
 
 ```sql
 CREATE PROCEDURE mover_saldo(IN p_cuenta INT, IN p_importe DECIMAL(12,2))
