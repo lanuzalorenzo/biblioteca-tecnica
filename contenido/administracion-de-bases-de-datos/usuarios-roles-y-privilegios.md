@@ -49,7 +49,7 @@ Y hay que poder auditar: saber qué privilegios tiene hoy cada cuenta, no cuále
 
 - Cuentas de ejemplo del instalador.
 - Cuentas de empleados que ya no están.
-- Cuentas con contraseña que no rota desde 2015.
+- Cuentas con contraseña que no rota desde hace años.
 - Cuentas de aplicación compartidas por tres servicios distintos: cuando uno se ve comprometido, no se sabe cuál fue.
 
 ## Lo que se comprueba

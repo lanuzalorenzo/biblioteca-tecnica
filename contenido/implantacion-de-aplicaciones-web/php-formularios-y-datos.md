@@ -53,7 +53,7 @@ foreach ($stmt as $fila) { /* ... */ }
 
 Concatenar el valor en la consulta es cómo se construye una inyección de SQL, aunque el valor venga de un desplegable. La conexión se abre con un usuario limitado, sin permisos de administración, y con los errores desactivados en pantalla.
 
-## La aplicación de incidencias del módulo
+## La aplicación de incidencias
 
 El proyecto de 2016 —inventario de equipos, incidencias y usuarios, en PHP y MariaDB— tenía la estructura correcta: separación entre la capa que accede a datos, la que gestiona incidencias y la administración, y un fichero de conexión común. Lo que hoy no se reutiliza es la pila: PHP 5.6 lleva años sin soporte, y el volcado de la base incluía una contraseña en claro que no debe copiarse a ningún sitio.
 

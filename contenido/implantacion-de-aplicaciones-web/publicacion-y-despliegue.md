@@ -5,7 +5,7 @@ Una aplicación que funciona en el equipo de quien la escribió no está termina
 
 ## De ASP a lo que hay hoy
 
-Las prácticas del módulo usaban **ASP clásico**, que ejecutaba scripts en el servidor de Microsoft. Ese modelo está descatalogado y no se usa en instalaciones nuevas; su sucesor es **ASP.NET**, con un modelo de ejecución distinto (compilado, sobre el runtime de .NET).
+Hace años se usaba **ASP clásico**, que ejecutaba scripts en el servidor de Microsoft. Ese modelo está descatalogado y no se usa en instalaciones nuevas; su sucesor es **ASP.NET**, con un modelo de ejecución distinto (compilado, sobre el runtime de .NET).
 
 La idea que se estudiaba —páginas que se generan en el servidor y llegan al navegador ya montadas— sigue vigente en todos los lenguajes de servidor. Lo que cambió es la herramienta y la forma de desplegarla.
 

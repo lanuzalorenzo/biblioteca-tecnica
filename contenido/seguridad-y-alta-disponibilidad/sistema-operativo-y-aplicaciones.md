@@ -25,7 +25,7 @@ El cifrado protege el dato en reposo, no el sistema en marcha: con la sesión ab
 ## Autenticación
 
 - **Contraseña:** sigue siendo el factor principal y la causa principal de incidentes. El criterio actual —NIST SP 800-63B— pide longitud mínima de 8 caracteres, comprobación contra listas de contraseñas filtradas y **nada de caducidad forzada ni reglas de composición**. Rotar cada 90 días produce contraseñas peores y más predecibles. Se cambia cuando hay indicio de compromiso.
-- **Tarjeta o token:** el material de 2015 distinguía bien dos tipos. En una tarjeta de **almacenamiento**, el equipo lee la clave y la usa; en una de **procesamiento**, la clave nunca sale del chip y es el chip quien firma el desafío. La segunda es la que aguanta un ataque sobre el lector.
+- **Tarjeta o token:** conviene distinguir dos tipos. En una tarjeta de **almacenamiento**, el equipo lee la clave y la usa; en una de **procesamiento**, la clave nunca sale del chip y es el chip quien firma el desafío. La segunda es la que aguanta un ataque sobre el lector.
 - **Biometría:** cómoda, no secreta y no revocable. Se mide con dos tasas: falsos positivos (acepta a quien no es) y falsos negativos (rechaza a quien sí es). Se usa como comodidad o como segundo factor, no como llave única.
 - **Multifactor:** combinar factores de tipos distintos. Contraseña más código en el móvil es MFA; contraseña más pregunta secreta, no.
 
@@ -59,15 +59,15 @@ Tres condiciones hacen útil un registro: **hora fiable** (servicio de tiempo si
 
 ## Línea base y comprobación
 
-Endurecer un sistema es aplicar una configuración conocida y poder demostrar que sigue puesta. Se parte de una guía pública —CIS Benchmarks, DISA STIG— y se adapta: no todos los controles aplican a un servidor de base de datos ni a un puesto de aula. Después se comprueba de forma automática y periódica, porque lo que no se mide vuelve a su estado por defecto en la siguiente instalación.
+Endurecer un sistema es aplicar una configuración conocida y poder demostrar que sigue puesta. Se parte de una guía pública —CIS Benchmarks, DISA STIG— y se adapta: no todos los controles aplican a un servidor de base de datos ni a un puesto de trabajo. Después se comprueba de forma automática y periódica, porque lo que no se mide vuelve a su estado por defecto en la siguiente instalación.
 
 ## Errores que se siguen viendo
 
-Cuenta de administrador local compartida para todo y con la misma contraseña en cien equipos; actualizaciones desatendidas durante meses; antivirus instalado pero sin actualizar firmas; registro activado sin nadie que lo lea; y la idea de que un equipo de aula no necesita protección porque «no tiene datos», cuando lo que guarda son credenciales de la red.
+Cuenta de administrador local compartida para todo y con la misma contraseña en cien equipos; actualizaciones desatendidas durante meses; antivirus instalado pero sin actualizar firmas; registro activado sin nadie que lo lea; y la idea de que un equipo compartido no necesita protección porque «no tiene datos», cuando lo que guarda son credenciales de la red.
 
-## Lo que ha cambiado desde 2015
+## Lo que ha cambiado
 
-BIOS pasó a UEFI con arranque seguro; el antivirus de firmas se ha quedado corto frente al EDR; la caducidad periódica de contraseñas se ha retirado de las recomendaciones; Windows 7 y Windows Server 2008 —los del material original— llevan fuera de soporte desde enero de 2020. La idea de fondo no ha cambiado: menos superficie, menos privilegio, registro y actualización.
+BIOS pasó a UEFI con arranque seguro; el antivirus de firmas se ha quedado corto frente al EDR; la caducidad periódica de contraseñas se ha retirado de las recomendaciones; Windows 7 y Windows Server 2008 —los de las guías antiguas— llevan fuera de soporte desde enero de 2020. La idea de fondo no ha cambiado: menos superficie, menos privilegio, registro y actualización.
 
 ## Fuentes
 

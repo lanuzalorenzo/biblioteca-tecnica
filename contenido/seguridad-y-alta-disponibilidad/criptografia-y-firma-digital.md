@@ -34,7 +34,7 @@ En la práctica se combinan. En TLS 1.3, el cliente y el servidor acuerdan una c
 Una función resumen convierte cualquier entrada en una huella de tamaño fijo. No es cifrado —no se descifra— y sirve para detectar cambios: si un byte cambia, la huella cambia por completo.
 
 - **SHA-256 y SHA-3** son las opciones vigentes.
-- **MD5 y SHA-1** están rotos para colisiones. SHA-1 aparece todavía en certificados antiguos y en configuraciones heredadas: cuando se encuentra, es un hallazgo, no una curiosidad. Es exactamente lo que pasaba con la entidad certificadora que se montó en la práctica de 2015, que emitía con SHA-1.
+- **MD5 y SHA-1** están rotos para colisiones. SHA-1 aparece todavía en certificados antiguos y en configuraciones heredadas: cuando se encuentra, es un hallazgo, no una curiosidad. Es lo que ocurre con una CA antigua que todavía emite con SHA-1.
 - **HMAC** combina un hash con una clave secreta para autenticar mensajes cuando ambas partes comparten esa clave.
 
 ## Firma digital
