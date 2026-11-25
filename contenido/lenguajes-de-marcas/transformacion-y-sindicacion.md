@@ -35,7 +35,7 @@ Una hoja XSLT es un documento XML que describe la transformación. Se compone de
 </xsl:stylesheet>
 ```
 
-La versión 1.0 es la que implementan los navegadores y la que se estudió en el módulo; la 3.0 es la actual y aporta funciones y procesamiento en streaming, pero se ejecuta fuera del navegador, con un procesador.
+La versión 1.0 es la que implementan los navegadores; la 3.0 es la actual y aporta funciones y procesamiento en streaming, pero se ejecuta fuera del navegador, con un procesador.
 
 Un uso práctico que se sigue viendo: recibir un XML de un proveedor y publicar el catálogo en HTML sin tocar el original. Se cambia la hoja, no los datos.
 

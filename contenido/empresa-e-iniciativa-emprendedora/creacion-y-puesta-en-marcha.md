@@ -74,7 +74,7 @@ La regla es sencilla: lo que se compra para durar se financia a largo; lo que se
 
 ## El plan de empresa
 
-El documento reúne la idea y el mercado, la forma jurídica, los medios técnicos, las personas, los números y los riesgos. Su valor no está en la extensión sino en la coherencia: si el plan dice que se atienden veinte clientes al mes, la previsión de ingresos, el personal y la tesorería tienen que cuadrar con veinte. La guía de la práctica desarrolla la estructura y un ejemplo numérico.
+El documento reúne la idea y el mercado, la forma jurídica, los medios técnicos, las personas, los números y los riesgos. Su valor no está en la extensión sino en la coherencia: si el plan dice que se atienden veinte clientes al mes, la previsión de ingresos, el personal y la tesorería tienen que cuadrar con veinte. El plan desarrolla la estructura y un ejemplo numérico.
 
 ## Lo que se comprueba
 

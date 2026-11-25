@@ -10,7 +10,7 @@ Dos aproximaciones distintas:
 - **Contadores:** cuántos bytes y paquetes pasan por una interfaz, agrupados por puerto y protocolo. Cuestan poco, no guardan el contenido y sirven para saber si lo que ocurre es normal. Se consultan por SNMP; en versión 1 y 2c el tráfico viaja sin cifrar, así que en producción se usa SNMPv3 con autenticación.
 - **Captura:** copiar los paquetes y analizarlos. Da el detalle y consume CPU y disco. Herramientas: `tcpdump` en consola, Wireshark para leer la captura.
 
-Para capturar en un switch gestionable no se intercala un hub —el apaño que se usaba en 2015 ya no tiene sentido con conmutación—: se configura **espejo de puertos** (SPAN en Cisco, port mirroring en el resto), que replica el tráfico de uno o varios puertos hacia el de análisis.
+Para capturar en un switch gestionable no se intercala un hub —el apaño de los hubs ya no tiene sentido con conmutación—: se configura **espejo de puertos** (SPAN en Cisco, port mirroring en el resto), que replica el tráfico de uno o varios puertos hacia el de análisis.
 
 ## De los datos a las conclusiones
 
@@ -41,7 +41,7 @@ Y dos familias de tecnología:
 | TLS | OpenVPN y similares, sobre TCP o UDP | Atraviesa redes restrictivas con facilidad |
 | WireGuard | Curva25519 y ChaCha20, muy simple | Enlaces modernos, configuración mínima y auditable |
 
-La práctica de 2015 montó una VPN de acceso remoto y otra entre hosts. Lo que ha cambiado es la herramienta y el criterio: WireGuard ha desplazado a las configuraciones largas de OpenVPN en muchos despliegues, y el certificado de servidor se ha vuelto obligatorio también dentro. Lo que no ha cambiado: una VPN solo cifra el trayecto; no autentica al usuario ni limita a qué puede acceder una vez dentro. Eso lo hace la segmentación.
+Un montaje clásico levanta una VPN de acceso remoto y otra entre hosts. Lo que ha cambiado es la herramienta y el criterio: WireGuard ha desplazado a las configuraciones largas de OpenVPN en muchos despliegues, y el certificado de servidor se ha vuelto obligatorio también dentro. Lo que no ha cambiado: una VPN solo cifra el trayecto; no autentica al usuario ni limita a qué puede acceder una vez dentro. Eso lo hace la segmentación.
 
 ## Anonimato: TOR
 
@@ -53,7 +53,7 @@ Límites que conviene tener claros:
 - No protege del propio equipo, de una sesión iniciada con identidad real ni de un fallo de configuración que escape del proxy.
 - Su uso en una red corporativa suele estar prohibido por política, y detectarlo es parte del trabajo de control.
 
-La práctica de 2015 se hizo para entender el mecanismo, no como herramienta operativa. Rehacerla hoy exige fijar antes el alcance: qué se prueba, en qué red y con qué autorización.
+Ese montaje se hace para entender el mecanismo, no como herramienta operativa. Rehacerla hoy exige fijar antes el alcance: qué se prueba, en qué red y con qué autorización.
 
 ## Lo que se mide y con qué se queda
 

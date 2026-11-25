@@ -21,7 +21,7 @@ Una VLAN divide un switch en varias redes lógicas independientes. Los equipos d
 
 Segmentar reduce el dominio de difusión —menos tráfico, menos alcance de un fallo— y permite restringir qué VLAN se habla con cuál en el router. Lo que **no** hace es cifrar ni autenticar: un portátil conectado a la VLAN de invitados sigue siendo un portátil desconocido.
 
-En 2015 se practicó con VTP, el protocolo de Cisco que propaga la lista de VLAN entre switches. Sigue existiendo, pero un VTP mal configurado propaga también los borrados: hoy se prefiere configuración declarativa por equipo o herramientas de gestión central.
+Se usó mucho VTP, el protocolo de Cisco que propaga la lista de VLAN entre switches. Sigue existiendo, pero un VTP mal configurado propaga también los borrados: hoy se prefiere configuración declarativa por equipo o herramientas de gestión central.
 
 ## Control de acceso al puerto
 
@@ -39,7 +39,7 @@ En lugar de confiar en el puerto, se pide autenticación antes de dar acceso:
 2. **Autenticador:** el switch o el punto de acceso, que no deja pasar tráfico hasta que alguien le autorice.
 3. **Servidor de autenticación:** normalmente RADIUS, que valida contra un directorio.
 
-Los métodos de EAP más usados son **EAP-TLS**, con certificado en el cliente y en el servidor —el más sólido y el que exige más administración—, **PEAP** y **EAP-TTLS**, que montan un túnel TLS y validan usuario y contraseña dentro. La práctica del módulo montó un servidor RADIUS con wifi y un Windows 7 como cliente: el esquema es el correcto, las versiones no —hoy se hace con FreeRADIUS o NPS vigente y con certificados SHA-256.
+Los métodos de EAP más usados son **EAP-TLS**, con certificado en el cliente y en el servidor —el más sólido y el que exige más administración—, **PEAP** y **EAP-TTLS**, que montan un túnel TLS y validan usuario y contraseña dentro. Un montaje clásico levanta un servidor RADIUS con wifi y un cliente Windows 7: el esquema es correcto, las versiones no —hoy se hace con FreeRADIUS o NPS vigente y con certificados SHA-256.
 
 ## Wifi
 
@@ -53,7 +53,7 @@ Los métodos de EAP más usados son **EAP-TLS**, con certificado en el cliente y
 
 Un proxy intermedio tiene dos usos distintos y conviene no confundirlos:
 
-- **Proxy directo:** los clientes le piden a él las páginas y él las descarga. Permite autenticar, filtrar por categoría, cachear y registrar quién visitó qué. Es el que se montó en el módulo con Squid sobre Ubuntu.
+- **Proxy directo:** los clientes le piden a él las páginas y él las descarga. Permite autenticar, filtrar por categoría, cachear y registrar quién visitó qué. El montaje clásico es Squid sobre Ubuntu.
 - **Proxy inverso:** está delante de los servidores propios, reparte carga, termina TLS y protege la aplicación del exterior.
 
 El registro del proxy es a la vez control y problema: guarda hábitos de navegación de personas identificadas, así que su retención y acceso se deciden con criterio jurídico, no solo técnico.

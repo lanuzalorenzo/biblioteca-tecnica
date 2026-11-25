@@ -53,7 +53,7 @@ Un clúster sin pruebas de fallo es una hipótesis. Se prueba en una ventana de 
 
 La monitorización debe cubrir disponibilidad, latencia, errores y retraso de replicación. Se alerta por retraso, no solo por caída, porque un secundario retrasado no sirve para cumplir el RPO. El mantenimiento también se prueba: actualizar un nodo sin cortar el servicio exige capacidad y drenar antes.
 
-## Lo que ha cambiado desde 2015
+## Lo que ha cambiado 
 
 Los conceptos siguen siendo los mismos: quórum, fencing, comprobación de salud, RPO y RTO. Las herramientas de entonces también aguantan: keepalived, HAProxy, Pacemaker y DRBD continúan vigentes.
 
