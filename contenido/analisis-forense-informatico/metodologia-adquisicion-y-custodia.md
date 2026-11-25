@@ -4,7 +4,7 @@ Un forense digital trabaja como quien acordona una escena: lo primero no es orde
 
 ## Qué busca el análisis forense
 
-El AFI tiene un objetivo: contar la historia de lo que ha sucedido y aportar evidencias que sostengan los hechos. El analista debe poder responder qué pasó, dónde, quién estuvo implicado, cuándo y con qué motivación o herramientas.
+El AFI tiene un objetivo: contar la historia de lo que ha sucedido y aportar evidencias que sostengan los hechos. El analista debe poder responder qué pasó, dónde, quién estuvo implicado, cuándo y con qué medios.
 
 Hay dos escenarios que cambian el rigor del método:
 

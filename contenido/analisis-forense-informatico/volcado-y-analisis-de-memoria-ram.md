@@ -1,5 +1,7 @@
 # Volcado y análisis de memoria RAM
 
+La memoria es la libreta donde el sistema apunta lo que está haciendo: quién trabaja, qué habla con quién y qué ha ejecutado. Si se apaga el equipo, esa libreta se borra. Por eso, cuando hay que reconstruir un incidente, la memoria se captura antes que cualquier otra cosa.
+
 ## Por qué empezar por la memoria
 
 La RAM es la evidencia más volátil del sistema: al apagar o reiniciar se pierde. En ella viven los procesos y sus argumentos, las conexiones de red, los usuarios con sesión abierta, el historial de consola, claves y certificados en uso, y el malware que nunca toca el disco (*fileless*). Todo eso no se recupera después con un análisis del disco.
@@ -32,7 +34,7 @@ Para inspeccionar en vivo en Windows, Process Explorer y TCPView (Suite Sysinter
 
 ```bash
 # Linux con AVML (binario estático)
-sudo avml acquire /evidencias/memoria.lime
+sudo avml /evidencias/memoria.lime
 
 # Linux con LiME (módulo compilado para el kernel en ejecución)
 sudo insmod lime-$(uname -r).ko "path=/evidencias/memoria.lime format=lime"

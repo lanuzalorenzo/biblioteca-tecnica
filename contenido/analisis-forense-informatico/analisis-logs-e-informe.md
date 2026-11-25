@@ -37,7 +37,7 @@ Las herramientas de adquisición y análisis de logs están en la tabla de [meto
 
 ## El informe forense
 
-El informe presenta los resultados y responde a las cinco preguntas iniciales: qué, dónde, quién, cuándo y por qué. Tiene dos partes:
+El informe presenta los resultados y responde a las cinco preguntas iniciales: qué pasó, dónde, quién estuvo implicado, cuándo y con qué medios. Tiene dos partes:
 
 1. **Resumen ejecutivo.** Conclusiones principales, sin tecnicismos, para dirección o juez.
 2. **Desglose técnico.** Proceso completo, evidencias, análisis, conclusiones y justificación.
