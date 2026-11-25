@@ -85,7 +85,7 @@ Las salidas se guardan siempre junto al volcado y se referencian en el informe. 
 |---|---|---|
 | Identificar el sistema | `windows.info` | Versión, kernel y tiempo de arranque. |
 | Procesos activos | `windows.pslist` | Recorre la lista enlazada de procesos. |
-| Procesos ocultos o terminados | `windows.psscan` | Escanea el *pool* del kernel y encuentra procesos desenlazados. |
+| Procesos ocultos o terminados | `windows.psscan` | Escanea el *pool* (las estructuras que reserva el kernel) y encuentra procesos desenlazados. |
 | Jerarquía | `windows.pstree` | Relación padre-hijo. |
 | Argumentos | `windows.cmdline` | Línea de comandos de cada proceso. |
 | Usuarios | `windows.getsids` | SID propietario de cada proceso. |

@@ -8,7 +8,7 @@ La disciplina se apoya en una idea sencilla y exigente a la vez: lo que no se ha
 
 ## Qué reconstruye
 
-El análisis busca responder a cinco preguntas: qué pasó, dónde, quién estuvo implicado, cuándo y con qué medios. La respuesta se arma con evidencias digitales —datos almacenados o transmitidos— que se ordenan en una línea de tiempo.
+El análisis busca responder a cinco preguntas: qué pasó, dónde, quién estuvo implicado, cuándo y por qué. La respuesta se arma con evidencias digitales —datos almacenados o transmitidos— que se ordenan en una línea de tiempo.
 
 Hay dos escenarios que cambian el rigor del trabajo:
 
