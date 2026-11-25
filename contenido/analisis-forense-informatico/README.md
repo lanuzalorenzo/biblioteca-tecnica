@@ -1,3 +1,5 @@
+<img src="../assets/iconos/analisis-forense-informatico.svg" width="64" alt="Análisis forense informático">
+
 # Análisis forense informático
 
 Cuando un sistema se compromete, la pregunta no es solo qué ha fallado, sino qué ha pasado, en qué orden y cómo demostrarlo. El análisis forense informático (AFI) responde a eso: reconstruye los hechos a partir de los rastros que deja un equipo, sin alterar la evidencia y con un registro que permita sostener las conclusiones ante un tercero.
