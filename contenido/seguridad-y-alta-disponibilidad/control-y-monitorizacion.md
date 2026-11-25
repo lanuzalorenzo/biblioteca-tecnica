@@ -53,7 +53,7 @@ Límites que conviene tener claros:
 - No protege del propio equipo, de una sesión iniciada con identidad real ni de un fallo de configuración que escape del proxy.
 - Su uso en una red corporativa suele estar prohibido por política, y detectarlo es parte del trabajo de control.
 
-Ese montaje se hace para entender el mecanismo, no como herramienta operativa. Rehacerla hoy exige fijar antes el alcance: qué se prueba, en qué red y con qué autorización.
+Un montaje de TOR se hace para entender el mecanismo, no como herramienta operativa. Rehacerlo hoy exige fijar antes el alcance: qué se prueba, en qué red y con qué autorización.
 
 ## Lo que se mide y con qué se queda
 

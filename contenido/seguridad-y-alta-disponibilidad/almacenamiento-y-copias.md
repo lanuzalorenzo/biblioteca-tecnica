@@ -77,9 +77,9 @@ Una copia sin restauración probada es una hipótesis. Un plan razonable define 
 
 Si las copias van cifradas —deben ir—, la clave se guarda aparte. Una copia cifrada cuya clave está en el mismo servidor es una copia perdida.
 
-## Lo que ha cambiado 
+## Lo que ha cambiado
 
-El material original aún discutía cintas, copias a DVD y servicios de primera generación. Las piezas que siguen son las mismas —completa, incremental, diferencial, 3-2-1, prueba de restauración—; lo que ha cambiado es el destino: almacenamiento de objeto con versionado e inmutabilidad, deduplicación y compresión para no multiplicar el espacio, y la nube como segunda ubicación en lugar del disco externo que nadie se lleva a casa.
+Hasta hace unos años se discutía cintas, copias a DVD y servicios de primera generación. Las piezas que siguen son las mismas —completa, incremental, diferencial, 3-2-1, prueba de restauración—; lo que ha cambiado es el destino: almacenamiento de objeto con versionado e inmutabilidad, deduplicación y compresión para no multiplicar el espacio, y la nube como segunda ubicación en lugar del disco externo que nadie se lleva a casa.
 
 ## Fuentes
 

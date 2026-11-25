@@ -53,7 +53,7 @@ Los métodos de EAP más usados son **EAP-TLS**, con certificado en el cliente y
 
 Un proxy intermedio tiene dos usos distintos y conviene no confundirlos:
 
-- **Proxy directo:** los clientes le piden a él las páginas y él las descarga. Permite autenticar, filtrar por categoría, cachear y registrar quién visitó qué. El montaje clásico es Squid sobre Ubuntu.
+- **Proxy directo:** los clientes le piden a él las páginas y él las descarga. Permite autenticar, filtrar por categoría, cachear y registrar quién visitó qué. El montaje clásico se hace con Squid sobre Ubuntu.
 - **Proxy inverso:** está delante de los servidores propios, reparte carga, termina TLS y protege la aplicación del exterior.
 
 El registro del proxy es a la vez control y problema: guarda hábitos de navegación de personas identificadas, así que su retención y acceso se deciden con criterio jurídico, no solo técnico.

@@ -38,7 +38,7 @@ El instalador crea cuentas de administración con privilegios totales y, según 
 2. Eliminar las cuentas de ejemplo y las bases de datos de demostración.
 3. Crear una cuenta de administración nominal por persona, y una cuenta distinta, más limitada, para la aplicación.
 
-Una guía de instalación tiene el mismo sentido que en sistemas operativos: dejar por escrito quién queda con qué permisos, para poder repetirlo y auditarlo.
+Una guía de instalación tiene el mismo sentido que la de sistemas operativos: dejar por escrito quién queda con qué permisos, para poder repetirlo y auditarlo.
 
 ## Lo que se comprueba
 
