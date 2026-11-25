@@ -1,3 +1,5 @@
+<img src="../assets/iconos/bastionado-de-redes-y-sistemas.svg" width="64" alt="Bastionado de redes y sistemas">
+
 # Bastionado de redes y sistemas
 
 Bastionar es preparar una instalación para que aguante sola: no basta con echar la llave a la puerta principal si quedan ventanas abiertas, un buzón sin candado y una copia de la llave bajo el felpudo. En una red pasa lo mismo. La seguridad no sale de una herramienta única, sino de revisar cada punto por el que se puede entrar, decidir cuáles deben existir y cerrar el resto.
