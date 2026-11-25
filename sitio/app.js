@@ -121,7 +121,7 @@
 
   function navegacion() {
     const lateral = $("#lateral");
-    const botonMenu = $("[data-menu]");
+    const botonTemario = $("[data-abrir-temario]");
     const abiertos = leer(CLAVE_ABIERTOS, {});
     const detalles = $$(".lateral details");
 
@@ -154,24 +154,40 @@
       });
     }
 
-    if (botonMenu && lateral) {
-      const plegarMenu = () => {
+    if (botonTemario && lateral) {
+      // El temario es un cajón aparte: se abre desde el menú principal, que
+      // se cierra antes para no dejar dos paneles superpuestos.
+      const plegarMenu = (devolverFoco) => {
         lateral.classList.remove("abierto");
         document.body.classList.remove("menu-abierto");
-        botonMenu.setAttribute("aria-expanded", "false");
+        botonTemario.setAttribute("aria-expanded", "false");
+        if (devolverFoco) {
+          const toggle = $(".menu-toggle");
+          const visible = toggle && getComputedStyle(toggle).display !== "none";
+          (visible ? toggle : botonTemario).focus();
+        }
       };
-      botonMenu.addEventListener("click", () => {
-        const abierto = lateral.classList.toggle("abierto");
+      botonTemario.addEventListener("click", () => {
+        const menuPrincipal = $(".menu-toggle");
+        if (menuPrincipal?.getAttribute("aria-expanded") === "true") menuPrincipal.click();
+        const abierto = !lateral.classList.contains("abierto");
+        lateral.classList.toggle("abierto", abierto);
         document.body.classList.toggle("menu-abierto", abierto);
-        botonMenu.setAttribute("aria-expanded", String(abierto));
+        botonTemario.setAttribute("aria-expanded", String(abierto));
+        if (abierto) lateral.querySelector("a, summary, button")?.focus();
       });
       document.addEventListener("click", (evento) => {
         if (!lateral.classList.contains("abierto")) return;
-        if (lateral.contains(evento.target) || botonMenu.contains(evento.target)) return;
+        if (lateral.contains(evento.target) || botonTemario.contains(evento.target)) return;
         plegarMenu();
       });
       document.addEventListener("keydown", (evento) => {
-        if (evento.key === "Escape" && lateral.classList.contains("abierto")) plegarMenu();
+        if (evento.key === "Escape" && lateral.classList.contains("abierto")) {
+          plegarMenu(true);
+        }
+      });
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 940 && lateral.classList.contains("abierto")) plegarMenu();
       });
     }
 
@@ -192,19 +208,21 @@
 
   function lectura() {
     const barra = $(".barra-lectura span");
-    const caja = $("#contenido");
-    if (barra && caja) {
+    if (barra) {
       const actualizar = () => {
-        const alto = caja.scrollHeight - caja.clientHeight;
-        const avance = alto > 0 ? Math.min(1, caja.scrollTop / alto) : 0;
+        const doc = document.scrollingElement || document.documentElement;
+        const alto = doc.scrollHeight - doc.clientHeight;
+        const avance = alto > 0 ? Math.min(1, doc.scrollTop / alto) : 0;
         barra.style.transform = `scaleX(${avance})`;
       };
       actualizar();
-      caja.addEventListener("scroll", actualizar, { passive: true });
+      window.addEventListener("scroll", actualizar, { passive: true });
       window.addEventListener("resize", actualizar);
     }
 
     const enlaces = $$(".toc a");
+    const altoCabecera =
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 78;
     if (enlaces.length && "IntersectionObserver" in window) {
       const mapa = new Map();
       enlaces.forEach((enlace) => {
@@ -220,7 +238,10 @@
             if (enlace) enlace.parentElement.classList.add("activo");
           });
         },
-        { rootMargin: "-70px 0px -75% 0px", threshold: 0 }
+        {
+          rootMargin: `-${altoCabecera + 8}px 0px -75% 0px`,
+          threshold: 0,
+        }
       );
       mapa.forEach((_, destino) => observador.observe(destino));
     }
@@ -296,6 +317,11 @@
     let elegido = -1;
 
     const abrir = async () => {
+      // El buscador no debe quedar detrás de un menú móvil abierto.
+      const menuPrincipal = $(".menu-toggle");
+      if (menuPrincipal?.getAttribute("aria-expanded") === "true") menuPrincipal.click();
+      const temario = $("[data-abrir-temario]");
+      if (temario?.getAttribute("aria-expanded") === "true") temario.click();
       paleta.showModal();
       campo.value = "";
       campo.focus();

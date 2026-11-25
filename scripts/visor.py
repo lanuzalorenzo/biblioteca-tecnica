@@ -1773,6 +1773,7 @@ def construir_fuente(
         (FUENTE / "estilo.css").read_bytes()
         + (FUENTE / "app.js").read_bytes()
         + (SITIO / "_identidad" / "identidad.css").read_bytes()
+        + (SITIO / "_identidad" / "menu.js").read_bytes()
     ).hexdigest()[:8]
 
     copiados = 0
@@ -1973,7 +1974,7 @@ def pintar_global(
         "{{RAIZ}}": ".",
         "{{V}}": version,
         "{{LATERAL}}": lateral,
-        "{{CABECERA_MIGAS}}": '<span class="seccion-cabecera">Biblioteca técnica</span>',
+        "{{CABECERA_MIGAS}}": "",
         "{{CABECERA}}": "",
         "{{CONTENIDO}}": contenido,
         "{{TOC}}": "",
@@ -2003,6 +2004,7 @@ def construir_portada(
         (FUENTE / "estilo.css").read_bytes()
         + (FUENTE / "app.js").read_bytes()
         + (SITIO / "_identidad" / "identidad.css").read_bytes()
+        + (SITIO / "_identidad" / "menu.js").read_bytes()
     ).hexdigest()[:8]
     modulos_global: list[dict] = []
     indice_global: list[dict] = []
@@ -2066,7 +2068,7 @@ def construir_portada(
     )
     shutil.copy2(SITIO / "LICENSE", SALIDA / "_sitio" / "LICENSE")
     (SALIDA / "_identidad").mkdir(parents=True, exist_ok=True)
-    for nombre in ("identidad.css", "marca-tile.svg"):
+    for nombre in ("identidad.css", "marca-tile.svg", "menu.js"):
         shutil.copy2(SITIO / "_identidad" / nombre, SALIDA / "_identidad" / nombre)
 
     filtros = ['<button type="button" data-categoria="todas" aria-pressed="true">Todo</button>']

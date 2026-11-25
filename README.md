@@ -47,7 +47,7 @@ python3 scripts/visor.py serve --vigilar --abrir
 | `sitio/iconos/` | Iconos de categorías y módulos |
 | `dist/` | Salida generada; ignorada por Git |
 
-`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`; la cabecera y el pie se componen en `sitio/plantilla.html`, y los estilos y el tile vienen de `dist/_identidad/`.
+`dist/index.html` es la portada del contenido. Cada módulo vive en `dist/<modulo>/` y comparte el lateral, la búsqueda, los filtros y los recursos de `dist/_sitio/`; la cabecera y el pie se componen en `sitio/plantilla.html`, y los estilos, el guion del menú y el tile vienen de `dist/_identidad/`.
 
 ## Publicación
 
