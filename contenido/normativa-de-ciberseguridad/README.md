@@ -1,3 +1,5 @@
+<img src="../assets/iconos/normativa-de-ciberseguridad.svg" width="64" alt="Normativa de ciberseguridad">
+
 # Normativa de ciberseguridad
 
 El cumplimiento normativo no se resuelve al final con un archivador de políticas: es una forma de gobernar la organización. Se parece a la señalización de un edificio: marca salidas, responsabilidades y avisos, y solo sirve si estaba colocada antes del incidente.
