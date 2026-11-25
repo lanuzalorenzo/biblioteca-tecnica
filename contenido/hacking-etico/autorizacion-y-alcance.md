@@ -16,7 +16,7 @@ La preparación, o *pre-engagement*, suele incluir reuniones, un cuestionario de
 2. **Activos incluidos**: direcciones IP o rangos, dominios, aplicaciones y URL, redes inalámbricas, instalaciones o categorías de personas. Debe permitir decidir sin dudas si un sistema está dentro o fuera; «toda la red de la empresa» es una señal de alarma.
 3. **Exclusiones expresas**: sistemas críticos o frágiles, equipos de terceros, entornos de otros clientes, servicios en la nube sin permiso del proveedor y cuentas excluidas.
 4. **Técnicas permitidas y prohibidas**: reconocimiento pasivo, escaneo, explotación, ataques a credenciales, ingeniería social, pruebas físicas, postexplotación y movimiento lateral. La denegación de servicio se excluye por defecto salvo acuerdo específico y controlado.
-5. **Enfoque**: caja negra, gris o blanca, porque cambia el esfuerzo y el tipo de hallazgos.
+5. **Enfoque**: [caja negra, gris o blanca](caja-negra-gris-y-blanca.md), porque cambia el esfuerzo y el tipo de hallazgos.
 6. **Ventana temporal**: fechas, horas y franjas permitidas, a menudo fuera de la mayor actividad.
 7. **Origen de las pruebas**: direcciones IP y personas que actuarán, para distinguir al auditor de un atacante y decidir si se avisa al equipo de monitorización.
 

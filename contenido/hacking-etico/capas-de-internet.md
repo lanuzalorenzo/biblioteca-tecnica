@@ -48,7 +48,7 @@ Los servicios onion no están en el DNS ni en los buscadores: se llega por enlac
 1. **Inteligencia de amenazas.** Los grupos de *ransomware* publican datos de víctimas que no pagan; los intermediarios anuncian accesos iniciales; las credenciales robadas circulan. Saber que esa información existe permite forzar cambios de contraseña, revocar accesos y preparar la comunicación de una brecha.
 2. **Vigilancia de credenciales y de marca.** Comprobar si los correos corporativos aparecen en filtraciones y si se menciona a la empresa. Suele contratarse como servicio, porque hacerlo directamente exige marco jurídico y método.
 3. **Detección del uso de redes de anonimato desde dentro.** Como las listas de nodos son públicas, se puede detectar o bloquear su uso, con la limitación de los puentes. Bloquear o vigilar es una decisión de política: en un banco puede ser razonable bloquear; en una redacción, un uso legítimo.
-4. **Ampliación del reconocimiento.** Algunas fuentes de filtraciones consultadas en la fase de reconocimiento viven en estos espacios.
+4. **Ampliación del reconocimiento.** Algunas fuentes de filtraciones consultadas en la fase de [reconocimiento](fases-de-un-ataque.md) viven en estos espacios.
 
 ## Límites del auditor
 

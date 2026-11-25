@@ -6,7 +6,7 @@ La ficha técnica de un coche indica potencia, consumo y emisiones en un ciclo h
 
 CVSS (*Common Vulnerability Scoring System*) responde a dos preguntas: qué difícil es explotar técnicamente el fallo y cuánto daño puede causar si se explota. Todo lo demás queda fuera.
 
-No dice si el componente afectado está instalado, si está expuesto a internet, cuánto vale el dato que protege, si hay un atacante interesado ni cuánto costaría el incidente. Por eso una puntuación de 9.8 en un servidor apagado no es el riesgo de nadie, y un 5.3 en el sistema que cobra cada minuto sí puede serlo. La puntuación ordena hallazgos; la prioridad la decide el contexto.
+No dice si el componente afectado está instalado, si está expuesto a internet, cuánto vale el dato que protege, si hay un atacante interesado ni cuánto costaría el incidente. Por eso una puntuación de 9.8 en un servidor apagado no es el riesgo de nadie, y un 5.3 en el sistema que cobra cada minuto sí puede serlo. La puntuación ordena hallazgos; la prioridad la decide el contexto. Cómo se integra la nota en un informe se explica en [Documentar un hallazgo](documentar-un-hallazgo.md).
 
 ## Las tres capas
 
@@ -70,7 +70,7 @@ La calculadora oficial de FIRST está en <https://www.first.org/cvss/calculator/
 
 Cada versión de CVSS tiene sus propias métricas y su propia fórmula, y las puntuaciones **no se comparan entre versiones**. FIRST publicó la 4.0 en 2023 y mantiene la 3.1 en su archivo porque sigue en uso en muchos informes y normativas. Estas notas explican la 3.1, la más extendida; si el encargo exige la 4.0, se aplican sus métricas. Al citar una nota hay que escribir siempre la versión: «9.8, CVSS 3.1», nunca «9.8» a secas.
 
-La precaución no es teórica. En el NVD, CVE-2013-0941 está puntuado con CVSS **2.0** (2.1) y CVE-2012-2532 también con 2.0 (5.0); ninguno de los dos tiene vector 3.x. Comparar esos números con un 3.1 es sumar unidades distintas.
+La precaución no es teórica. En el NVD, CVE-2013-0941 figura con CVSS **2.0** (2.1) y CVE-2012-2532 con 2.0 (5.0); ninguno de los dos tiene vector 3.x. Comparar esos números con un 3.1 es sumar unidades distintas.
 
 ## Errores frecuentes
 
@@ -115,4 +115,4 @@ La precaución no es teórica. En el NVD, CVE-2013-0941 está puntuado con CVSS 
 
 - [CVSS v3.1 Specification Document](https://www.first.org/cvss/v3-1/specification-document): definición de métricas, fórmulas y escala cualitativa.
 - [CVSS v3.1 Calculator](https://www.first.org/cvss/calculator/3.1): herramienta oficial.
-- NVD, fichas de CVE-2013-0941 y CVE-2012-2532, puntuadas con CVSS 2.0.
+- NVD: [CVE-2013-0941](https://nvd.nist.gov/vuln/detail/CVE-2013-0941) y [CVE-2012-2532](https://nvd.nist.gov/vuln/detail/CVE-2012-2532), ambas con CVSS 2.0.

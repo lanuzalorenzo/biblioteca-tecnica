@@ -4,7 +4,7 @@ Un taller mecánico no se organiza memorizando marcas de llaves, sino por lo que
 
 ## Cuatro criterios que se combinan
 
-**Por fase.** Es el orden en que se trabaja: reconocimiento, escaneo y enumeración, obtención de acceso, mantenimiento del acceso y borrado de huellas, más la documentación que añade un test de intrusión. Sirve para ordenar un laboratorio, porque las herramientas se usan en ese orden.
+**Por fase.** Es el orden en que se trabaja, el mismo de [Fases de un ataque](fases-de-un-ataque.md): reconocimiento, escaneo y enumeración, obtención de acceso, mantenimiento del acceso y borrado de huellas, más la documentación que añade un test de intrusión. Sirve para ordenar un laboratorio, porque las herramientas se usan en ese orden.
 
 **Por función técnica.** Es el criterio más preciso y el que se usa como esqueleto aquí: qué hace la herramienta, no cómo se llama.
 

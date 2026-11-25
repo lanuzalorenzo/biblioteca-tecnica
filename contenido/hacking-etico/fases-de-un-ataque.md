@@ -45,7 +45,7 @@ La cara defensiva es central: los registros deben enviarse a un sistema centrali
 Un auditor recorre las fases anteriores con límites y añade dos tramos propios:
 
 - **Preparación y autorización**: alcance, reglas de actuación y documentos firmados.
-- **Documentación y reporte**: informe técnico y ejecutivo, evidencias y recomendaciones.
+- **Documentación y reporte**: informe técnico y ejecutivo, evidencias y recomendaciones, con la ficha que se describe en [Documentar un hallazgo](documentar-un-hallazgo.md).
 
 Son las que convierten una intrusión en un servicio profesional.
 

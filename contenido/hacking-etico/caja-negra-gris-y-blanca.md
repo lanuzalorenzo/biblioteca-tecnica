@@ -63,7 +63,7 @@ En sectores regulados, algunos ejercicios de equipo rojo son obligatorios. En el
 
 ## Cómo elegir
 
-No hay una respuesta universal, pero sí criterios que ordenan la decisión: el objetivo, la madurez de la organización, el tiempo y el presupuesto, el riesgo tolerado sobre producción, los requisitos regulatorios o contractuales y la naturaleza del activo. No se audita igual un perímetro externo, que conviene ver desde fuera, que una aplicación nueva, donde el código y las cuentas de prueba multiplican la eficacia.
+No hay una respuesta universal, pero sí criterios que ordenan la decisión: el objetivo, la madurez de la organización, el tiempo y el presupuesto, el riesgo tolerado sobre producción, los requisitos regulatorios o contractuales y la naturaleza del activo. El enfoque elegido se fija por escrito en el [alcance](autorizacion-y-alcance.md). No se audita igual un perímetro externo, que conviene ver desde fuera, que una aplicación nueva, donde el código y las cuentas de prueba multiplican la eficacia.
 
 La madurez merece un apartado propio porque es el error de planteamiento más caro. Las evaluaciones forman una escalera: primero la higiene básica y la evaluación de vulnerabilidades periódica; después los tests de intrusión de caja gris, externos e internos; más arriba los ejercicios menos anunciados; y en la cima los ejercicios de rojo y púrpura continuos. Un equipo rojo contra una organización sin parches ni registros centralizados es un desperdicio: entrará con técnicas elementales y el azul no verá nada porque no tiene con qué verlo.
 

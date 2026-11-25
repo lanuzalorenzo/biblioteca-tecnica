@@ -1,3 +1,5 @@
+<img src="../assets/iconos/hacking-etico.svg" width="64" alt="Hacking ético">
+
 # Hacking ético
 
 Una prueba de intrusión es un simulacro: se provoca un fuego controlado para comprobar cómo responde el edificio. La técnica ofensiva es real y el resultado importa, pero el ejercicio solo tiene sentido si hay permiso, un perímetro definido y alguien que corrija lo que se descubra. Sin esas tres piezas, el mismo trabajo deja de ser una auditoría y pasa a ser un delito.
@@ -31,4 +33,4 @@ Este módulo describe técnicas ofensivas con fines formativos. Nada de lo que a
 
 ## Cómo se leen
 
-Las notas van de lo general a lo concreto: primero el marco ético y legal, después el encargo, la ejecución y la entrega. Cada una se apoya en las anteriores y enlaza a la que amplía el tema. Los ejemplos con dominios `.example` y rangos reservados son ficticios; ninguna cifra, captura ni hallazgo de estas páginas procede de un sistema real.
+Las notas van de lo general a lo concreto: primero el marco ético y legal, después el encargo, la ejecución y la entrega. Cada una se apoya en las anteriores y enlaza a las que amplían el tema. Los ejemplos con dominios `.example` y rangos reservados son ficticios; ninguna cifra, captura ni hallazgo de estas páginas procede de un sistema real.
