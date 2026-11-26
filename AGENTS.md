@@ -49,7 +49,7 @@ Antes de dar un lote por cerrado:
 python3 scripts/verificar.py
 ```
 
-`verificar.py` exige un mínimo de 29 módulos y 160 apuntes, que la búsqueda encuentre un apunte, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. El mínimo es del total: añadir módulos no obliga a tocar la configuración, y el desglose por grupo no lo comprueba el script. El CI añade Gitleaks sobre el historial completo y `check-links` sobre el repositorio —sin `sitio/`, que es plantilla— y sobre `dist/`. Si falla un conteo, no cambies el número: revisa el contenido.
+`verificar.py` exige un mínimo de 34 módulos y 208 apuntes, que la búsqueda encuentre un apunte, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. El mínimo es del total: añadir módulos no obliga a tocar la configuración, y el desglose por grupo no lo comprueba el script. El CI añade Gitleaks sobre el historial completo y `check-links` sobre el repositorio —sin `sitio/`, que es plantilla— y sobre `dist/`. Si falla un conteo, no cambies el número: revisa el contenido.
 
 ## Publicación
 
