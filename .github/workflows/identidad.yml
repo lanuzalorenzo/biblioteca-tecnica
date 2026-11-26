@@ -1,0 +1,47 @@
+name: identidad
+
+# Mantiene la copia de `_identidad/` en la última etiqueta `identidad-v*`.
+# Si hay versión nueva, abre una PR; el merge sigue siendo manual.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Traer la última versión del paquete
+        run: scripts/actualizar-identidad.sh
+
+      - name: ¿Hay cambios?
+        id: diff
+        run: |
+          if git diff --quiet -- _identidad; then
+            echo "cambio=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "cambio=si" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Abrir PR con la versión nueva
+        if: steps.diff.outputs.cambio == 'si'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="$(cat _identidad/VERSION)"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "chore/identidad-$version"
+          git add _identidad
+          git commit -m "chore(site): bump the identity package to $version"
+          git push -u origin "chore/identidad-$version"
+          gh pr create --base main --head "chore/identidad-$version" \
+            --title "chore(site): bump the identity package to $version" \
+            --body "Actualiza \`_identidad/\` a la etiqueta \`identidad-v$version\` y comprueba las huellas. Lo abrió el trabajo \`identidad\`; el merge es manual."

@@ -27,6 +27,9 @@ jobs:
       - name: Escanear secretos con Gitleaks
         uses: lanuzalorenzo/core/actions/gitleaks@v1.8
 
+      - name: Comprobar la versión del paquete de identidad
+        run: scripts/actualizar-identidad.sh --check
+
       - name: Construir y verificar el sitio
         run: python3 scripts/verificar.py
 

@@ -46,7 +46,6 @@ from shell import Sitio  # noqa: E402
 REPO_SITIO = "https://github.com/lanuzalorenzo/biblioteca-tecnica"
 AUTOR = "Lorenzo Lanuza"
 TITULO_SITIO = f"Biblioteca técnica — {AUTOR}"
-MARCA_SITIO = "Lorenzo Lanuza"
 DESCRIPCION_SITIO = (
     "Biblioteca técnica de Lorenzo Lanuza: apuntes y notas de sistemas, "
     "redes, datos, desarrollo, operaciones y seguridad."
@@ -1217,10 +1216,6 @@ def aplanar(nodo: Nodo, salida: list[Nodo]) -> list[Nodo]:
 # Construcción de páginas
 # --------------------------------------------------------------------------
 
-def leer_plantilla() -> str:
-    return (FUENTE / "plantilla.html").read_text(encoding="utf-8")
-
-
 def nav_principal(raiz: str, pagina: str) -> str:
     """Nav de la biblioteca: los mismos destinos y orden que la web personal."""
     activo = (
@@ -1244,15 +1239,6 @@ def nav_principal(raiz: str, pagina: str) -> str:
         </div>"""
 
 
-def cabecera_y_pie(raiz: str, pagina: str) -> tuple[str, str]:
-    """Compone los dos bloques del paquete con la nav y la nota del visor."""
-    inicio = f"{raiz}/index.html"
-    shell = Sitio(perfil="publica", raiz=raiz, repo=REPO_SITIO)
-    cabecera = shell.cabecera(nav=nav_principal(raiz, pagina), inicio=inicio)
-    pie = shell.pie(inicio=inicio, arriba="#contenido", nota=f"© 2026 {AUTOR}")
-    return cabecera, pie
-
-
 def migas(camino: list[Nodo], pagina: str, raiz: str) -> str:
     piezas = [f'<a href="{relativo("index.html", pagina)}">Biblioteca técnica</a>']
     for nodo in camino[1:-1]:
@@ -1263,6 +1249,70 @@ def migas(camino: list[Nodo], pagina: str, raiz: str) -> str:
     if len(camino) > 1:
         piezas.append(f'<span aria-current="page">{html.escape(camino[-1].titulo)}</span>')
     return '<span class="sep">/</span>'.join(piezas)
+
+
+def cuerpo_pagina(
+    raiz: str,
+    lateral: str,
+    cabecera_html: str,
+    contenido: str,
+    toc: str,
+    migas_html: str,
+) -> str:
+    """Reparto del visor dentro del marco común del paquete."""
+    lupa = glifo_en_linea("_sitio/iconos/lupa.svg", "lupa")
+    return f"""<div class="frame marco">
+  <aside class="lateral" id="lateral">
+    <div class="lateral-cabecera">
+      <a class="lateral-inicio" href="{raiz}/index.html">Índice</a>
+      <span class="lateral-progreso" data-leidas-mini>0 %</span>
+    </div>
+    <div class="arbol-acciones">
+      <button class="boton-arbol busqueda-lateral" type="button" data-abrir-busqueda aria-label="Buscar en el temario (Ctrl+K)">{lupa} Buscar</button>
+      <button class="boton-arbol" type="button" data-arbol-expandir>Expandir todo</button>
+      <button class="boton-arbol" type="button" data-arbol-comprimir>Contraer todo</button>
+    </div>
+    {lateral}
+  </aside>
+
+  <main class="contenido" id="contenido" tabindex="-1">
+    <div class="lectura">
+      <nav class="migas" aria-label="Ruta">{migas_html}</nav>
+      {cabecera_html}
+      {contenido}
+    </div>
+  </main>
+
+  {toc}
+</div>
+
+<dialog class="paleta" id="paleta" aria-label="Buscar en el temario">
+  <div class="paleta-caja">
+    <input type="search" id="paleta-campo" placeholder="Busca una unidad, un apunte o una actividad" autocomplete="off" spellcheck="false">
+    <p class="paleta-ayuda"><kbd>↑</kbd><kbd>↓</kbd> para moverte · <kbd>Enter</kbd> para abrir · <kbd>Esc</kbd> para cerrar</p>
+    <ul class="paleta-resultados" id="paleta-resultados"></ul>
+    <p class="paleta-vacio" id="paleta-vacio" hidden></p>
+  </div>
+</dialog>"""
+
+
+def scripts_pagina(raiz: str, version: str) -> str:
+    return (
+        f'    <script src="{raiz}/_identidad/menu.js?v={version}"></script>\n'
+        f'    <script src="{raiz}/_sitio/datos.js?v={version}"></script>\n'
+        f'    <script src="{raiz}/_sitio/app.js?v={version}"></script>'
+    )
+
+
+def sitio_pagina(raiz: str, version: str) -> Sitio:
+    return Sitio(
+        perfil="publica",
+        raiz=raiz,
+        estilos=["_identidad/identidad.css", "_sitio/estilo.css"],
+        version=version,
+        repo=REPO_SITIO,
+        nota=f"© 2026 {AUTOR}",
+    )
 
 
 def etiquetas(ruta: Path) -> list[str]:
@@ -1787,7 +1837,6 @@ def construir_fuente(
     global RAIZ, ACTUAL
     RAIZ = fuente.raiz
     ACTUAL = fuente
-    plantilla = leer_plantilla()
     version = hashlib.sha1(
         (FUENTE / "estilo.css").read_bytes()
         + (FUENTE / "app.js").read_bytes()
@@ -1840,35 +1889,30 @@ def construir_fuente(
     ) -> str:
         base = posixpath.dirname(pagina) or "."
         raiz = posixpath.relpath(".", base) if base != "." else "."
-        favicon = (
-            f'<link rel="icon" href="'
-            f'{relativo("_identidad/marca-tile.svg", pagina)}">'
+        clase = "" if toc else "sin-toc"
+        return sitio_pagina(raiz, version).pagina(
+            titulo=html.escape(titulo_html),
+            descripcion=html.escape(DESCRIPCION_SITIO),
+            nav=nav_principal(raiz, pagina),
+            cuerpo=cuerpo_pagina(
+                raiz,
+                lateral,
+                cabecera_html,
+                cuerpo,
+                toc,
+                migas(caminos.get(pagina, []), pagina, raiz),
+            ),
+            atributos_cuerpo=f' class="{clase}" data-raiz="{raiz}" data-pagina="{pagina}"',
+            antes_cabecera='    <div class="barra-lectura" aria-hidden="true"><span></span></div>',
+            arriba="#contenido",
+            head_extra=(
+                f'<link rel="icon" href="{relativo("_identidad/marca-tile.svg", pagina)}"'
+                ' type="image/svg+xml">'
+            ),
+            marca_svg=relativo("_identidad/marca-tile.svg", pagina),
+            menu_js="",
+            scripts=scripts_pagina(raiz, version),
         )
-        cabecera_shell, pie_shell = cabecera_y_pie(raiz, pagina)
-        reemplazos = {
-            "{{TITULO}}": html.escape(titulo_html),
-            "{{RAIZ}}": raiz,
-            "{{V}}": version,
-            "{{LATERAL}}": lateral,
-            "{{CABECERA_MIGAS}}": migas(caminos.get(pagina, []), pagina, raiz),
-            "{{CABECERA}}": cabecera_html,
-            "{{CONTENIDO}}": cuerpo,
-            "{{TOC}}": toc,
-            "{{PAGINA}}": pagina,
-            "{{MARCA}}": MARCA_SITIO,
-            "{{DESCRIPCION}}": html.escape(DESCRIPCION_SITIO),
-            "{{PIE}}": "",
-            "{{CURSOS}}": relativo("index.html", pagina),
-            "{{FAVICON}}": favicon,
-            "{{CABECERA_SHELL}}": cabecera_shell,
-            "{{PIE_SHELL}}": pie_shell,
-            "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
-            "{{CLASE_CUERPO}}": "" if toc else "sin-toc",
-        }
-        salida = plantilla
-        for clave, valor in reemplazos.items():
-            salida = salida.replace(clave, valor)
-        return salida
 
     pagina_count = 0
 
@@ -1983,34 +2027,21 @@ def construir_fuente(
     }
 
 
-def pintar_global(
-    plantilla: str, version: str, lateral: str, contenido: str, descripcion: str
-) -> str:
-    cabecera_shell, pie_shell = cabecera_y_pie(".", "index.html")
-    reemplazos = {
-        "{{TITULO}}": TITULO_SITIO,
-        "{{RAIZ}}": ".",
-        "{{V}}": version,
-        "{{LATERAL}}": lateral,
-        "{{CABECERA_MIGAS}}": "",
-        "{{CABECERA}}": "",
-        "{{CONTENIDO}}": contenido,
-        "{{TOC}}": "",
-        "{{PAGINA}}": "index.html",
-        "{{MARCA}}": MARCA_SITIO,
-        "{{DESCRIPCION}}": html.escape(DESCRIPCION_SITIO),
-        "{{PIE}}": "",
-        "{{CURSOS}}": "index.html",
-        "{{FAVICON}}": '<link rel="icon" href="_identidad/marca-tile.svg">',
-        "{{CABECERA_SHELL}}": cabecera_shell,
-        "{{PIE_SHELL}}": pie_shell,
-        "{{LUPA}}": glifo_en_linea("_sitio/iconos/lupa.svg", "lupa"),
-        "{{CLASE_CUERPO}}": "pagina-portada",
-    }
-    salida = plantilla
-    for clave, valor in reemplazos.items():
-        salida = salida.replace(clave, valor)
-    return salida
+def pintar_global(version: str, lateral: str, contenido: str) -> str:
+    """Portada: el mismo esqueleto del paquete, con la clase de portada."""
+    return sitio_pagina(".", version).pagina(
+        titulo=TITULO_SITIO,
+        descripcion=html.escape(DESCRIPCION_SITIO),
+        nav=nav_principal(".", "index.html"),
+        cuerpo=cuerpo_pagina(".", lateral, "", contenido, "", ""),
+        atributos_cuerpo=' class="pagina-portada" data-raiz="." data-pagina="index.html"',
+        antes_cabecera='    <div class="barra-lectura" aria-hidden="true"><span></span></div>',
+        arriba="#contenido",
+        head_extra='<link rel="icon" href="_identidad/marca-tile.svg" type="image/svg+xml">',
+        marca_svg="_identidad/marca-tile.svg",
+        menu_js="",
+        scripts=scripts_pagina(".", version),
+    )
 
 
 def construir_portada(
@@ -2018,7 +2049,6 @@ def construir_portada(
     raiz_global: Nodo,
 ) -> None:
     """Portada única: todos los módulos como items, sin separar por cursos."""
-    plantilla = leer_plantilla()
     version = hashlib.sha1(
         (FUENTE / "estilo.css").read_bytes()
         + (FUENTE / "app.js").read_bytes()
@@ -2159,13 +2189,7 @@ def construir_portada(
 """
     escribir(
         SALIDA / "index.html",
-        pintar_global(
-            plantilla,
-            version,
-            lateral,
-            contenido,
-            "Biblioteca técnica: módulos de sistemas, redes, datos, desarrollo y seguridad.",
-        ),
+        pintar_global(version, lateral, contenido),
     )
 
 

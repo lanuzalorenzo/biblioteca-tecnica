@@ -1,5 +1,5 @@
 /* Capa de marca · lanuzalorenzo.github.io
-   Versión 1.2.0. Archivo generado por identidad/extraer.py desde styles.css.
+   Versión 1.4.1. Archivo generado por identidad/extraer.py desde styles.css.
    No editar a mano: cambia styles.css, sube VERSION y regenera. */
 
 :root {
@@ -23,6 +23,7 @@
   --serif: Georgia, "Times New Roman", serif;
   --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
   --header-h: 78px;
+  /* Ancho del marco: crece con la ventana hasta 1440 px. */ --frame: 1440px;
 }
 
 * {
@@ -88,8 +89,8 @@ button {
   transform: translateY(0);
 }
 
-.section-wrap {
-  width: min(1180px, calc(100% - 80px));
+.frame {
+  width: min(var(--frame), calc(100% - 80px));
   margin-inline: auto;
 }
 
@@ -101,7 +102,7 @@ button {
   align-items: center;
   justify-content: space-between;
   height: var(--header-h);
-  padding: 0 max(40px, calc((100% - 1180px) / 2));
+  padding: 0 max(40px, calc((100% - var(--frame)) / 2));
   background: color-mix(in srgb, var(--paper) 92%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
   backdrop-filter: blur(14px);
@@ -173,6 +174,14 @@ button {
   background: var(--line);
   transform: translateY(-50%);
   content: "";
+}
+
+.site-nav-group:first-child {
+  padding-left: 0;
+}
+
+.site-nav-group:first-child::before {
+  content: none;
 }
 
 .menu-toggle {
@@ -247,7 +256,7 @@ button {
   align-items: center;
   gap: 20px;
   min-height: 82px;
-  padding: 0 max(40px, calc((100% - 1180px) / 2));
+  padding: 0 max(40px, calc((100% - var(--frame)) / 2));
   border-top: 1px solid var(--line);
 }
 
@@ -278,8 +287,8 @@ main > section[tabindex="-1"]:focus {
   :root {
     --header-h: 68px;
   }
-  .section-wrap {
-    width: min(100% - 48px, 680px);
+  .frame {
+    width: calc(100% - 48px);
   }
   .site-header {
     padding-inline: 24px;
@@ -360,7 +369,7 @@ main > section[tabindex="-1"]:focus {
   html {
     scroll-padding-top: 72px;
   }
-  .section-wrap {
+  .frame {
     width: calc(100% - 40px);
   }
   .site-header {
@@ -409,7 +418,7 @@ main > section[tabindex="-1"]:focus {
   .skip-link, .site-header, .site-footer {
     display: none !important;
   }
-  .section-wrap {
+  .frame {
     width: 100%;
   }
   a {
