@@ -43,7 +43,6 @@ FUENTE = SITIO / "sitio"
 sys.path.insert(0, str(SITIO / "_identidad"))
 from shell import Sitio  # noqa: E402
 
-REPO_SITIO = "https://github.com/lanuzalorenzo/biblioteca-tecnica"
 AUTOR = "Lorenzo Lanuza"
 TITULO_SITIO = f"Biblioteca técnica — {AUTOR}"
 DESCRIPCION_SITIO = (
@@ -1216,29 +1215,6 @@ def aplanar(nodo: Nodo, salida: list[Nodo]) -> list[Nodo]:
 # Construcción de páginas
 # --------------------------------------------------------------------------
 
-def nav_principal(raiz: str, pagina: str) -> str:
-    """Nav de la biblioteca: los mismos destinos y orden que la web personal."""
-    activo = (
-        ' aria-current="page"' if pagina == "index.html" else ' class="is-active"'
-    )
-    return f"""        <button class="nav-temario" type="button" data-abrir-temario aria-controls="lateral" aria-expanded="false">
-          Temario
-        </button>
-        <a href="https://lanuzalorenzo.github.io/#perfil">Perfil</a>
-        <a href="https://lanuzalorenzo.github.io/#experiencia">Experiencia</a>
-        <a href="https://lanuzalorenzo.github.io/#proyectos">Proyectos</a>
-        <div class="site-nav-group" role="group" aria-label="Proyectos, laboratorios y biblioteca">
-          <a href="https://lanuzalorenzo.github.io/portfolio.html">Portfolio de seguridad</a>
-          <a href="https://lanuzalorenzo.github.io/comicteca.html">Comicteca</a>
-          <a href="https://lanuzalorenzo.github.io/api.html">EcommerceApi</a>
-          <a href="https://lanuzalorenzo.github.io/ia.html">IA aplicada</a>
-          <a{activo} href="{raiz}/index.html">Biblioteca</a>
-        </div>
-        <div class="site-nav-group">
-          <a href="https://lanuzalorenzo.github.io/#contacto">Contacto</a>
-        </div>"""
-
-
 def migas(camino: list[Nodo], pagina: str, raiz: str) -> str:
     piezas = [f'<a href="{relativo("index.html", pagina)}">Biblioteca técnica</a>']
     for nodo in camino[1:-1]:
@@ -1277,6 +1253,7 @@ def cuerpo_pagina(
 
   <main class="contenido" id="contenido" tabindex="-1">
     <div class="lectura">
+      <button class="abrir-temario" type="button" data-abrir-temario aria-controls="lateral" aria-expanded="false">Temario</button>
       <nav class="migas" aria-label="Ruta">{migas_html}</nav>
       {cabecera_html}
       {contenido}
@@ -1310,8 +1287,6 @@ def sitio_pagina(raiz: str, version: str) -> Sitio:
         raiz=raiz,
         estilos=["_identidad/identidad.css", "_sitio/estilo.css"],
         version=version,
-        repo=REPO_SITIO,
-        nota=f"© 2026 {AUTOR}",
     )
 
 
@@ -1893,7 +1868,7 @@ def construir_fuente(
         return sitio_pagina(raiz, version).pagina(
             titulo=html.escape(titulo_html),
             descripcion=html.escape(DESCRIPCION_SITIO),
-            nav=nav_principal(raiz, pagina),
+            actual="biblioteca",
             cuerpo=cuerpo_pagina(
                 raiz,
                 lateral,
@@ -2032,7 +2007,7 @@ def pintar_global(version: str, lateral: str, contenido: str) -> str:
     return sitio_pagina(".", version).pagina(
         titulo=TITULO_SITIO,
         descripcion=html.escape(DESCRIPCION_SITIO),
-        nav=nav_principal(".", "index.html"),
+        actual="biblioteca",
         cuerpo=cuerpo_pagina(".", lateral, "", contenido, "", ""),
         atributos_cuerpo=' class="pagina-portada" data-raiz="." data-pagina="index.html"',
         antes_cabecera='    <div class="barra-lectura" aria-hidden="true"><span></span></div>',
