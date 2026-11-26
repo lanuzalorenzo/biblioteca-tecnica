@@ -19,6 +19,8 @@ Estas notas explican cómo se organiza una evaluación ofensiva profesional: qu�
 | [Documentar un hallazgo](documentar-un-hallazgo.md) | Anatomía del hallazgo, CVE, CWE, EPSS, informe y divulgación |
 | [Clasificar herramientas](clasificar-herramientas.md) | Criterios, monitorización y elección según la organización |
 | [Capas de internet](capas-de-internet.md) | ClearNet, Deep Web, darknets, Tor y límites legales |
+| [Comunicación inalámbrica](comunicacion-inalambrica.md) | Medio compartido, bandas, tramas 802.11 y secuencia de asociación |
+| [Protocolos de seguridad Wi-Fi](protocolos-de-seguridad-wifi.md) | WEP, TKIP, handshake de WPA2, PMKID y ataques conocidos |
 
 ## Límites de autorización y alcance
 

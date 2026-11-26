@@ -49,6 +49,8 @@ Los métodos de EAP más usados son **EAP-TLS**, con certificado en el cliente y
 - **WEP y TKIP están roídos** —uno por diseño, el otro por ataques prácticos—. Encontrar una red con WEP es un hallazgo, no una configuración.
 - **Ocultar el SSID no protege nada:** el nombre viaja en cada respuesta de los clientes y cualquier analizador lo ve. Filtra la falsa sensación de seguridad, no el acceso.
 
+El detalle ofensivo de estos protocolos y la captura de tráfico están en [Protocolos de seguridad Wi-Fi](../hacking-etico/protocolos-de-seguridad-wifi.md) y [Comunicación inalámbrica](../hacking-etico/comunicacion-inalambrica.md).
+
 ## El proxy
 
 Un proxy intermedio tiene dos usos distintos y conviene no confundirlos:
