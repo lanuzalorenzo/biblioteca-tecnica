@@ -61,6 +61,7 @@ python3 scripts/verificar.py
 - Todo cambio entra por rama y pull request, con `main` protegida y los checks obligatorios.
 - La línea base: permisos mínimos en cada workflow, Gitleaks sobre el historial completo y Dependabot para GitHub Actions, con auto-merge de parche y minor cuando los checks pasen.
 - Un lote de más de un archivo, o que toque reglas, CI, seguridad o publicación, pasa por el revisor de cambios antes de commitear.
+- El CI comprueba que `_identidad/VERSION` es la última etiqueta `identidad-v*` y falla si la copia está atrasada; el trabajo `identidad` abre la PR de actualización cada semana.
 
 ## Licencia
 
