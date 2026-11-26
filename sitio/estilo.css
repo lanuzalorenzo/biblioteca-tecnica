@@ -76,13 +76,16 @@ kbd {
 
 /* La cabecera y el pie no subrayan al pasar: el color ya marca el foco. */
 .site-header a:hover, .site-footer a:hover { text-decoration: none; }
-.nav-temario {
+.abrir-temario {
   display: none;
   align-items: center;
-  padding: 0;
-  border: 0;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0 0 20px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
   background: none;
-  color: var(--muted); font: inherit; font-size: 12px; font-weight: 650;
+  color: var(--ink); font: inherit; font-size: 13px; font-weight: 650;
   cursor: pointer;
 }
 
@@ -862,18 +865,10 @@ body { text-wrap: pretty; }
     content: ""; position: fixed; inset: var(--header-h) 0 0 0; z-index: 44;
     background: color-mix(in srgb, var(--surface-deep) 70%, transparent);
   }
-  .nav-temario { display: flex; height: var(--header-h); }
+  .abrir-temario { display: inline-flex; }
   .pasos { flex-direction: column; gap: 16px; }
   .pasos .paso-siguiente { margin-left: 0; text-align: left; }
   .prosa { font-size: 16px; }
-}
-
-@media (max-width: 850px) {
-  .nav-temario {
-    width: 100%; height: auto; min-height: 44px;
-    padding: 12px 0; border-bottom: 1px solid var(--line);
-    font-size: 13px;
-  }
 }
 
 @media (max-width: 620px) {
@@ -899,7 +894,7 @@ body { text-wrap: pretty; }
 }
 
 @media print {
-  .lateral, .toc, .barra-lectura, .pasos, .paleta, .chips-filtro { display: none !important; }
+  .lateral, .toc, .barra-lectura, .pasos, .paleta, .chips-filtro, .abrir-temario { display: none !important; }
   .marco {
     display: block; position: static; inset: auto; height: auto;
     overflow: visible; padding: 0; max-width: none;

@@ -155,16 +155,15 @@
     }
 
     if (botonTemario && lateral) {
-      // El temario es un cajón aparte: se abre desde el menú principal, que
-      // se cierra antes para no dejar dos paneles superpuestos.
+      // El temario es un cajón propio, abierto desde el botón «Temario» del
+      // contenido; al cerrarlo, el foco vuelve a ese botón.
       const plegarMenu = (devolverFoco) => {
         lateral.classList.remove("abierto");
         document.body.classList.remove("menu-abierto");
         botonTemario.setAttribute("aria-expanded", "false");
         if (devolverFoco) {
-          const toggle = $(".menu-toggle");
-          const visible = toggle && getComputedStyle(toggle).display !== "none";
-          (visible ? toggle : botonTemario).focus();
+          const visible = getComputedStyle(botonTemario).display !== "none";
+          (visible ? botonTemario : $(".menu-toggle"))?.focus();
         }
       };
       botonTemario.addEventListener("click", () => {

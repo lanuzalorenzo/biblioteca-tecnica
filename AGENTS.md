@@ -24,7 +24,7 @@ dist/                   salida generada; no se versiona
 
 La fuente es `contenido/`; no hay rutas del equipo ni etiquetas externas.
 
-El esqueleto de página —documento, cabecera y pie— sale de `_identidad/`; el visor solo aporta el cuerpo, los metadatos y los scripts. `sitio/` no lleva plantilla propia.
+El esqueleto de página —documento, cabecera, pie y navegación— sale de `_identidad/`; el visor solo aporta el cuerpo, los metadatos, la sección activa (`biblioteca`) y los scripts. `sitio/` no lleva plantilla propia ni enlaces de nav.
 
 ## Contenido
 
