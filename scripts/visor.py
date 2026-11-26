@@ -91,6 +91,7 @@ ICONOS_MODULO = {
     "gestion-de-apis": "codigo",
     "cache-y-entrega": "nube",
     "patrones": "documento",
+    "puesta-en-produccion-segura": "lupa",
 }
 
 # Se reemplazan por cada fuente durante el build.

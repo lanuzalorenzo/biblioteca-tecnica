@@ -16,7 +16,7 @@ Biblioteca personal de apuntes de informática: módulos de sistemas, redes, dat
 - **Contenedores:** 1 módulo y 14 notas.
 - **Testing .NET:** 1 módulo y 14 notas.
 
-En total, 34 módulos y 210 apuntes. Cada módulo es una carpeta de `contenido/` con su `README.md` y sus notas.
+En total, 35 módulos y 215 apuntes. Cada módulo es una carpeta de `contenido/` con su `README.md` y sus notas.
 
 Solo entra material propio y publicable. Quedan fuera los enunciados y las prácticas de los cursos, el seguimiento de entregas y los datos de acceso a las plataformas del centro. No se reproduce material de terceros: ni portadas, ni logotipos, ni avisos legales, ni datos del profesorado.
 
@@ -59,7 +59,7 @@ El sitio se publica con GitHub Pages desde el workflow `.github/workflows/sitio.
 python3 scripts/verificar.py
 ```
 
-Comprueba que no bajen de 34 módulos y 208 apuntes —hoy 12/58 de la base, 5/50 de Seguridad, 12/12 de Azure, 1/9 de Git, 1/12 de Angular, 1/41 de ASP.NET, 1/14 de contenedores y 1/14 de testing—, que la búsqueda encuentra un apunte, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona. El CI añade Gitleaks sobre el historial completo y la comprobación de enlaces relativos del repositorio y del HTML generado.
+Comprueba que no bajen de 34 módulos y 208 apuntes —hoy 12/58 de la base, 6/55 de Seguridad, 12/12 de Azure, 1/9 de Git, 1/12 de Angular, 1/41 de ASP.NET, 1/14 de contenedores y 1/14 de testing—, que la búsqueda encuentra un apunte, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona. El CI añade Gitleaks sobre el historial completo y la comprobación de enlaces relativos del repositorio y del HTML generado.
 
 ## Línea base
 
