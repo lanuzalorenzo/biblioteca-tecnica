@@ -17,12 +17,14 @@ contenido/<modulo>/     README, notas y recursos del módulo
 config/fuentes.toml     fuente única, presentación y categorías
 scripts/visor.py        build, servidor, vigilancia y composición
 scripts/verificar.py    verificación de módulos, búsqueda, enlaces y dist/
-sitio/                  plantilla, estilos propios, iconos y guion
+sitio/                  estilos propios, iconos y guion
 _identidad/             paquete de identidad consumido; no se retoca
 dist/                   salida generada; no se versiona
 ```
 
 La fuente es `contenido/`; no hay rutas del equipo ni etiquetas externas.
+
+El esqueleto de página —documento, cabecera y pie— sale de `_identidad/`; el visor solo aporta el cuerpo, los metadatos y los scripts. `sitio/` no lleva plantilla propia.
 
 ## Contenido
 
@@ -39,6 +41,7 @@ La fuente es `contenido/`; no hay rutas del equipo ni etiquetas externas.
 python3 scripts/visor.py build
 python3 scripts/visor.py serve [--puerto 8001] [--vigilar] [--abrir]
 python3 scripts/verificar.py
+scripts/actualizar-identidad.sh   # solo si hay que subir de versión el paquete
 ```
 
 ## Verificación
@@ -49,7 +52,7 @@ Antes de dar un lote por cerrado:
 python3 scripts/verificar.py
 ```
 
-`verificar.py` exige un mínimo de 34 módulos y 208 apuntes, que la búsqueda encuentre un apunte, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. El mínimo es del total: añadir módulos no obliga a tocar la configuración, y el desglose por grupo no lo comprueba el script. El CI añade Gitleaks sobre el historial completo y `check-links` sobre el repositorio —sin `sitio/`, que es plantilla— y sobre `dist/`. Si falla un conteo, no cambies el número: revisa el contenido.
+`verificar.py` exige un mínimo de 34 módulos y 208 apuntes, que la búsqueda encuentre un apunte, que `dist/` sea reproducible, que los enlaces internos resuelvan y que `dist/` no esté versionado. El mínimo es del total: añadir módulos no obliga a tocar la configuración, y el desglose por grupo no lo comprueba el script. El CI añade Gitleaks sobre el historial completo y `check-links` sobre el repositorio —sin `sitio/`, que no tiene HTML publicado— y sobre `dist/`. Si falla un conteo, no cambies el número: revisa el contenido.
 
 ## Publicación
 

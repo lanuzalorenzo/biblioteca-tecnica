@@ -98,15 +98,13 @@ kbd {
 .migas a:hover { color: var(--accent-hover); }
 .migas [aria-current] { color: var(--ink); }
 
-/* Marco de tres columnas: el mismo contenedor de 1180 px que usan la cabecera
-   y el pie del paquete de identidad, para que cambiar de sitio no mueva el eje
-   de la página. */
+/* Reparto de tres columnas dentro del marco común (`.frame`, del paquete de
+   identidad): aquí solo van las columnas; el ancho y los márgenes no se
+   redefinen. */
 .marco {
   display: grid;
   grid-template-columns: var(--ancho-lateral) minmax(0, 1fr) var(--ancho-toc);
   gap: 40px;
-  width: min(1180px, calc(100% - 80px));
-  margin-inline: auto;
   align-items: start;
 }
 
@@ -842,7 +840,6 @@ body { text-wrap: pretty; }
      cabecera no añada piezas antes que la web. */
   .marco {
     grid-template-columns: minmax(0, 1fr);
-    width: calc(100% - 48px);
   }
   body.pagina-portada .marco,
   body.sin-toc .marco { grid-template-columns: minmax(0, 1fr); }
@@ -880,7 +877,6 @@ body { text-wrap: pretty; }
 }
 
 @media (max-width: 620px) {
-  .marco { width: calc(100% - 40px); }
   .contenido { padding-top: 24px; }
 }
 
