@@ -2,7 +2,7 @@
 
 Una red sin cables no tiene puerta: la señal sale del edificio y llega a la calle, al portal de enfrente y al coche aparcado. Por eso, cuando alguien dice que su wifi es segura porque el nombre no aparece, la respuesta es que el nombre no es una cerradura. Lo que separa a un invitado de un empleado es el cifrado y la forma de autenticarse.
 
-Los cifrados, las tramas y los ataques habituales se explican en [El acceso a la red](../seguridad-y-alta-disponibilidad/acceso-a-la-red.md). Este apunte se queda con la configuración defendible: qué se exige, qué se separa y qué se revisa.
+Los cifrados, las tramas y los ataques habituales se explican en [El acceso a la red](../seguridad-y-alta-disponibilidad/acceso-a-la-red.md). El detalle ofensivo, con el handshake, PMKID y la captura, está en [Protocolos de seguridad Wi-Fi](../hacking-etico/protocolos-de-seguridad-wifi.md) y [Comunicación inalámbrica](../hacking-etico/comunicacion-inalambrica.md). Este apunte se queda con la configuración defendible: qué se exige, qué se separa y qué se revisa.
 
 ## El mínimo aceptable
 
