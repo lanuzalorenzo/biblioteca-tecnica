@@ -835,6 +835,10 @@ body { text-wrap: pretty; }
      su medida; por debajo, el documento usa las dos columnas del lateral. */
   .marco { grid-template-columns: var(--ancho-lateral) minmax(0, 1fr); }
   .toc { display: none; }
+  /* El anillo del hero tiene un radio fijo: por debajo de este ancho no cabe
+     y se corta, así que la portada pasa a una columna y el gráfico se retira. */
+  .portada-temario { grid-template-columns: minmax(0, 1fr); }
+  .hero-art { display: none; }
 }
 
 @media (max-width: 850px) {
