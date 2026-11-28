@@ -90,6 +90,7 @@ ICONOS_MODULO = {
     "cache-y-entrega": "nube",
     "patrones": "documento",
     "puesta-en-produccion-segura": "lupa",
+    "maui-android": "movil",
 }
 
 # Se reemplazan por cada fuente durante el build.
@@ -598,7 +599,7 @@ def limpiar_titulo(texto: str) -> str:
     limpio = re.sub(r"^\d{4}\.\s*", "", limpio)
     limpio = re.sub(rf"^{acronimos}\s*[.·—:-]\s*", "", limpio, flags=re.IGNORECASE)
     limpio = re.sub(r"\s+del\s+m[oó]dulo\s+50\d\d", "", limpio, flags=re.IGNORECASE)
-    limpio = re.sub(r"\s{2,}", " ", limpio).strip(" .·-—:")
+    limpio = re.sub(r"\s{2,}", " ", limpio).strip().rstrip(" .·-—:")
     return limpio or texto
 
 

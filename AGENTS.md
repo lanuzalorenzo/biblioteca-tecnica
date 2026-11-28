@@ -28,7 +28,7 @@ El esqueleto de página —documento, cabecera, pie y navegación— sale de `_i
 
 ## Contenido
 
-- Cada módulo vive en `contenido/<modulo>/` con su `README.md` y sus notas. Hoy hay módulos de sistemas, redes, datos, desarrollo, seguridad, empleo y Azure, con Git, Angular, ASP.NET, contenedores y testing; las prácticas y el material de curso sin adaptar quedan fuera.
+- Cada módulo vive en `contenido/<modulo>/` con su `README.md` y sus notas. Hoy hay módulos de sistemas, redes, datos, desarrollo, seguridad, empleo y Azure, con Git, Angular, ASP.NET, .NET MAUI, contenedores y testing; las prácticas y el material de curso sin adaptar quedan fuera.
 - No hay fuentes por curso: la única fuente es `contenido/` y la categoría la pone el visor en las tarjetas y en el lateral.
 - El material de curso que aún no está adaptado se queda fuera; entra módulo a módulo cuando esté cerrado.
 - Los prefijos numéricos de los módulos son internos: no se muestran en la navegación ni en las tarjetas.
