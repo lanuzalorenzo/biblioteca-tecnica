@@ -2,7 +2,7 @@
 
 # Biblioteca técnica
 
-Biblioteca personal de apuntes de informática: módulos de sistemas, redes, datos, desarrollo, seguridad, empleo y Azure, con notas de Git, Angular, ASP.NET, contenedores y testing que voy completando, convertidos en un sitio navegable con búsqueda, filtros por materia, migas y un árbol de módulos. El contenido lo escribo yo; el visor lo convierte a HTML estático sin red, sin CDN y sin telemetría.
+Biblioteca personal de apuntes de informática: módulos de sistemas, redes, datos, desarrollo, seguridad, empleo y Azure, con notas de Git, Angular, ASP.NET, .NET MAUI, contenedores y testing que voy completando, convertidos en un sitio navegable con búsqueda, filtros por materia, migas y un árbol de módulos. El contenido lo escribo yo; el visor lo convierte a HTML estático sin red, sin CDN y sin telemetría.
 
 **Sitio:** <https://lanuzalorenzo.github.io/biblioteca-tecnica/>.
 
@@ -15,8 +15,9 @@ Biblioteca personal de apuntes de informática: módulos de sistemas, redes, dat
 - **ASP.NET Core MVC:** 1 módulo y 41 notas.
 - **Contenedores:** 1 módulo y 14 notas.
 - **Testing .NET:** 1 módulo y 14 notas.
+- **.NET MAUI:** 1 módulo y 5 notas.
 
-En total, 35 módulos y 215 apuntes. Cada módulo es una carpeta de `contenido/` con su `README.md` y sus notas.
+En total, 36 módulos y 220 apuntes. Cada módulo es una carpeta de `contenido/` con su `README.md` y sus notas.
 
 Solo entra material propio y publicable. Quedan fuera los enunciados y las prácticas de los cursos, el seguimiento de entregas y los datos de acceso a las plataformas del centro. No se reproduce material de terceros: ni portadas, ni logotipos, ni avisos legales, ni datos del profesorado.
 
@@ -59,7 +60,7 @@ El sitio se publica con GitHub Pages desde el workflow `.github/workflows/sitio.
 python3 scripts/verificar.py
 ```
 
-Comprueba que no bajen de 34 módulos y 208 apuntes —hoy 12/58 de la base, 6/55 de Seguridad, 12/12 de Azure, 1/9 de Git, 1/12 de Angular, 1/41 de ASP.NET, 1/14 de contenedores y 1/14 de testing—, que la búsqueda encuentra un apunte, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona. El CI añade Gitleaks sobre el historial completo y la comprobación de enlaces relativos del repositorio y del HTML generado.
+Comprueba que no bajen de 34 módulos y 208 apuntes —hoy 12/58 de la base, 6/55 de Seguridad, 12/12 de Azure, 1/9 de Git, 1/12 de Angular, 1/41 de ASP.NET, 1/5 de .NET MAUI, 1/14 de contenedores y 1/14 de testing—, que la búsqueda encuentra un apunte, que `dist/` se regenera igual, que los enlaces internos resuelven y que `dist/` no se versiona. El CI añade Gitleaks sobre el historial completo y la comprobación de enlaces relativos del repositorio y del HTML generado.
 
 ## Línea base
 
