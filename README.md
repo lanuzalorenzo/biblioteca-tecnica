@@ -9,6 +9,7 @@ Biblioteca personal de apuntes de informática: módulos de sistemas, redes, dat
 ## Contenido
 
 - **12 módulos y 58 apuntes** de sistemas, redes, datos, desarrollo, seguridad y empleo.
+- **Seguridad:** 6 módulos y 55 apuntes.
 - **Azure:** 12 módulos y 12 notas.
 - **Git:** 1 módulo y 9 notas.
 - **Angular:** 1 módulo y 12 notas.

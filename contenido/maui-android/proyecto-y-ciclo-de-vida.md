@@ -8,13 +8,14 @@ La estructura de referencia separa el código portable del código de plataforma
 
 | Proyecto | Marco | Responsabilidad |
 |---|---|---|
-| `Comicteca.Core` | `net10.0` | Dominio, contratos, servicios, DTO y reglas |
+| `Comicteca.Client` | `net10.0` | DTO, rutas y validación compartidos con la web |
+| `Comicteca.App.Core` | `net10.0` | Dominio, contratos, servicios y reglas del cliente |
 | `Comicteca.App` | `net10.0-android` | Arranque, XAML, navegación, permisos y plataforma |
-| `Comicteca.Core.Tests` | `net10.0` | Pruebas unitarias e integración con servidor falso |
+| `Comicteca.App.Core.Tests` | `net10.0` | Pruebas unitarias e integración con servidor falso |
 
-`Core` es una biblioteca `net10.0` con `Nullable` y avisos como errores. No referencia MAUI ni Android: declara lo que necesita mediante interfaces —un almacén de sesión, un reloj, un cliente HTTP, un registro de trazas— y la app aporta las implementaciones. Esa frontera permite compilar y probar la mayor parte del código en Linux.
+`Comicteca.App.Core` es una biblioteca `net10.0` con `Nullable` y avisos como errores. No referencia MAUI ni Android: declara lo que necesita mediante interfaces —un almacén de sesión, un reloj, un cliente HTTP, un registro de trazas— y la app aporta las implementaciones. `Comicteca.Client` guarda el contrato compartido y tampoco depende de Android. Esa frontera permite compilar y probar la mayor parte del código en Linux.
 
-El proyecto Android referencia el anterior y añade lo propio del cliente:
+El proyecto Android referencia `App.Core`, que a su vez referencia `Client`, y añade lo propio del cliente:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -29,7 +30,7 @@ El proyecto Android referencia el anterior y añade lo propio del cliente:
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Comicteca.Core\Comicteca.Core.csproj" />
+    <ProjectReference Include="..\Comicteca.App.Core\Comicteca.App.Core.csproj" />
   </ItemGroup>
 </Project>
 ```
@@ -163,7 +164,7 @@ Para elegir un archivo se usa el selector del sistema, que no exige permiso de a
 
 ## Lista de comprobación
 
-- ¿`Core` compila sin MAUI y sin Android?
+- ¿`App.Core` compila sin MAUI y sin Android?
 - ¿`CreateMauiApp` termina rápido y sin red?
 - ¿La pantalla inicial muestra algo antes de la primera respuesta?
 - ¿El estado sobrevive a la muerte del proceso?

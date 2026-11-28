@@ -40,7 +40,7 @@ El archivo y sus contraseñas **no entran en el repositorio**, ni siquiera en un
 - Limitar quién puede firmar y dejar constancia de cada build distribuido.
 - Añadir `*.jks`, `*.keystore` y los archivos de credenciales al `.gitignore` y comprobar con Gitleaks que no se han colado.
 
-Si la clave se pierde, no se puede publicar una actualización que sustituya a la instalada: hay que desinstalar, perdiendo los datos locales, o cambiar el `ApplicationId` y empezar de cero. Si se filtra, cualquiera puede firmar un APK con la misma identidad; la respuesta es revocar la confianza del servidor, no solo cambiar la contraseña.
+Si la clave se pierde, no se puede publicar una actualización que sustituya a la instalada: hay que desinstalar, perdiendo los datos locales, o cambiar el `ApplicationId` y empezar de cero. Si se filtra, cualquiera puede firmar un APK con la misma identidad; la respuesta es rotar la clave de firma o cambiar el `ApplicationId` para asumir una identidad nueva, y revocar las sesiones y los tokens del servidor. El servidor no puede retirar por sí solo la confianza que Android deposita en una firma.
 
 ## Construir el APK firmado
 

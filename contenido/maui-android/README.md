@@ -4,18 +4,14 @@
 
 Estas notas describen una base para un cliente Android fino: una biblioteca portable con el dominio y los servicios, un proyecto Android que arranca, pide permisos y muestra XAML, una autenticación nativa con MSAL y PKCE, un APK firmado que se entrega por un canal privado y un reparto de pruebas entre Linux y el dispositivo. El ejemplo de referencia es el cliente Android de [Comicteca](https://github.com/lanuzalorenzo/comicteca), que se está construyendo.
 
-## Estado: Parcial
-
-Este módulo está **Parcial**, no Validado. La base se apoya en documentación pública y en decisiones de arquitectura; la aplicación de Comicteca aún no está terminada y no hay un APK probado, medidas de rendimiento ni resultados de una batería de pruebas que se puedan presentar como evidencia. Lo que aquí se afirma sobre el marco y sobre Android se contrasta con su documentación; lo que depende del caso concreto se marca como pendiente.
-
-Pasará a Validado cuando el cliente esté cerrado y probado en un dispositivo, y esta biblioteca pueda enlazar el caso práctico con resultados comprobados.
+> **Estado:** Parcial (2026-11-28). La base se apoya en documentación pública y decisiones de arquitectura; la aplicación de Comicteca sigue en construcción y no hay un APK probado, medidas de rendimiento ni resultados que presentar.
 
 ## Contenido
 
 | Nota | Qué cubre |
 |---|---|
 | [Qué es y cuándo no usarlo](que-es-y-cuando-no-usarlo.md) | Aportación de MAUI, comparación con TWA, PWA y Blazor Hybrid, y coste de mantener un cliente nativo |
-| [Proyecto y ciclo de vida](proyecto-y-ciclo-de-vida.md) | Solución con Core portable y app Android fina, arranque, configuración, permisos y ciclo de vida |
+| [Proyecto y ciclo de vida](proyecto-y-ciclo-de-vida.md) | Solución con App.Core portable y app Android fina, arranque, configuración, permisos y ciclo de vida |
 | [Seguridad del cliente](seguridad-del-cliente.md) | MSAL con PKCE y navegador del sistema, `SecureStorage`, cierre de sesión, manifiesto, `FLAG_SECURE`, R8 y registros |
 | [Firma y distribución](firma-y-distribucion.md) | Almacén de claves fuera de Git, APK firmado, instalación y canal privado sin Google Play |
 | [Arquitectura y pruebas](arquitectura-y-pruebas.md) | Qué se prueba en Linux, qué exige emulador o móvil, cobertura y observabilidad del cliente |
@@ -44,6 +40,8 @@ La base cubre el armazón; el módulo se completará con:
 - **Observabilidad a fondo:** registro estructurado, informes de fallos, consentimiento, retención y alertas.
 - **Rendimiento y tamaño:** arranque en frío, listas, imágenes, memoria y efecto del recorte.
 - **El caso práctico de Comicteca** cuando la app esté validada, con decisiones y resultados comprobados en lugar de intenciones.
+
+El módulo pasará a Validado cuando el cliente esté cerrado y probado en un dispositivo, y esta biblioteca pueda enlazar el caso práctico con resultados comprobados.
 
 ## Cómo se leen
 
