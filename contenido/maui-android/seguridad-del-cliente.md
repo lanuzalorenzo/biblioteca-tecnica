@@ -49,22 +49,20 @@ catch (MsalUiRequiredException)
 
 `WithUseEmbeddedWebView(false)` no es un detalle estético. Un WebView embebido lo controla la aplicación, puede recibir credenciales y no comparte la sesión del navegador; el flujo nativo exige el navegador del sistema o el broker. Tampoco se implementa el protocolo a mano: MSAL resuelve PKCE, la validación del estado, la renovación y los errores del proveedor.
 
-Los *scopes* se piden por lo que la API necesita, no por costumbre. Un token de acceso debe durar lo que dure la operación; el de actualización se guarda con más cuidado porque permite obtener nuevos accesos.
+Los *scopes* se piden por lo que la API necesita. La duración del token de acceso la fija el proveedor de identidad: la app no la negocia ni la alarga. MSAL renueva en silencio cuando corresponde y pide interacción cuando el proveedor la exige.
 
 ## Dónde se guarda la sesión
 
-`SecureStorage` de MAUI guarda valores pequeños cifrados con una clave del Keystore de Android. Es el sitio para un token de actualización o para un identificador de sesión propio, no para una base de datos ni para un archivo de varios megabytes.
+`SecureStorage` de MAUI guarda valores pequeños cifrados con una clave del Keystore de Android. Es el sitio para un identificador de sesión propio o un valor pequeño, no para un token de acceso ni para un refresh token: MSAL no expone este último y no se debe extraer.
 
 ```csharp
-await SecureStorage.Default.SetAsync("refresh_token", token);
-var token = await SecureStorage.Default.GetAsync("refresh_token");
+await SecureStorage.Default.SetAsync("session_id", sessionId);
+var sessionId = await SecureStorage.Default.GetAsync("session_id");
 ```
 
 El almacén puede fallar. Una restauración desde otra copia, un cambio de clave o una actualización del sistema pueden dejar el valor ilegible. El código debe tratar ese fallo como «no hay sesión»: borra el resto, navega al acceso y vuelve a empezar. No se reintenta en bucle ni se muestra la excepción al usuario.
 
-La caché de MSAL vive en memoria por defecto. Para no pedir credenciales en cada arranque hay que persistirla de forma cifrada, con una clave protegida por el Keystore y un tamaño acotado. Lo que no se hace es escribir el token en `Preferences`, en un archivo de texto, en `localStorage` de un WebView o en un log. Si la caché persistida es grande, se guarda en un archivo cifrado y la clave en `SecureStorage`; si es pequeña, el propio `SecureStorage` puede contenerla.
-
-Los *scopes* se piden por lo que la API necesita, no por costumbre. Un token de acceso debe durar lo que dure la operación; el de actualización se guarda con más cuidado porque permite obtener nuevos accesos.
+MSAL mantiene la caché de tokens y, en los destinos móviles de MAUI, la serialización viene configurada por defecto. Si se necesita controlarla, se usa el serializador de la plataforma (`TokenCacheHelper.EnableSerialization` en el ejemplo de MSAL, o el equivalente) con un almacén cifrado y un tamaño acotado. Lo que no se hace es guardar un refresh token suelto ni escribir la caché en `Preferences`, en un archivo de texto, en `localStorage` de un WebView o en un log.
 
 ## Cierre de sesión
 
