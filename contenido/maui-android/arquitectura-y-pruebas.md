@@ -2,18 +2,18 @@
 
 Un cliente móvil se prueba en dos mundos que no se parecen. En Linux se ejecuta la lógica, se simulan respuestas y se comprueba el contrato con la API en segundos. En un emulador o en un móvil se ejecuta la app real, con permisos, ciclo de vida, almacenamiento y pantalla. Pretender cubrir el segundo con el primero produce una falsa confianza; renunciar al primero porque «es una app» convierte cada prueba en manual y lenta.
 
-La arquitectura de la solución decide cuánto cae en cada lado. Si el dominio y los servicios no conocen MAUI, la mayor parte se prueba en Linux. Si la lógica vive en el *code-behind* de una página, casi todo exige un dispositivo. El cliente Android de Comicteca está en construcción; lo que sigue es el reparto de pruebas y los límites que hay que asumir, no un informe de resultados.
+La arquitectura de la solución decide cuánto cae en cada lado. Si el dominio y los servicios no conocen MAUI, la mayor parte se prueba en Linux. Si la lógica vive en el *code-behind* de una página, casi todo exige un dispositivo. El cliente Android de Comicteca es el caso de referencia; lo que sigue es el reparto de pruebas y los límites que hay que asumir.
 
 ## La frontera que hace testeable el cliente
 
-La regla es sencilla: el código que se puede contar sin mirar la pantalla no depende de MAUI. `Core` define el dominio y los contratos; la app implementa lo específico de Android.
+La regla es sencilla: el código que se puede contar sin mirar la pantalla no depende de MAUI. `App.Core` define el dominio y los contratos; la app implementa lo específico de Android.
 
 | Capa | Dónde vive | Cómo se prueba |
 |---|---|---|
-| Dominio, casos de uso, validación | `Core` (`net10.0`) | Unitarias en Linux |
-| Cliente HTTP, serialización, errores | `Core` | Unitarias con handler falso e integración con servidor local |
-| Caché y cola de operaciones | `Core` con una abstracción de almacenamiento | Unitarias con almacén en memoria |
-| ViewModels | `Core` o biblioteca `net10.0` | Unitarias, si no usan tipos de MAUI |
+| Dominio, casos de uso, validación | `App.Core` (`net10.0`) | Unitarias en Linux |
+| Cliente HTTP, serialización, errores | `App.Core` | Unitarias con handler falso e integración con servidor local |
+| Caché y cola de operaciones | `App.Core` con una abstracción de almacenamiento | Unitarias con almacén en memoria |
+| ViewModels | `App.Core` o biblioteca `net10.0` | Unitarias, si no usan tipos de MAUI |
 | Navegación, páginas, XAML | App Android | Emulador o dispositivo |
 | Permisos, ciclo de vida, Keystore | App Android | Emulador o dispositivo |
 | Firma, instalación, actualización | APK | Dispositivo real |
@@ -24,7 +24,7 @@ Lo que no se hace es duplicar la lógica para poder probarla. Si una regla solo 
 
 ## Qué se prueba en Linux
 
-El proyecto de pruebas referencia `Core` y se ejecuta con `dotnet test` en cualquier equipo con el SDK de .NET 10. No necesita Android SDK, emulador ni dispositivo. Ahí entran:
+El proyecto de pruebas referencia `App.Core` y se ejecuta con `dotnet test` en cualquier equipo con el SDK de .NET 10. No necesita Android SDK, emulador ni dispositivo. Ahí entran:
 
 - **Reglas de negocio.** Cálculos, validaciones, estados de una descarga, decisiones de caché.
 - **Serialización y contratos.** Que un JSON real de la API se deserialice con los campos esperados y que un cambio de nombre no pase inadvertido.
@@ -55,10 +55,10 @@ public async Task Listar_ConServicioNoDisponible_DevuelveLaCopiaLocal()
 {
     using var cliente = new HttpClient(
         new RespuestaFija(HttpStatusCode.ServiceUnavailable, "{}"))
-    {
-        BaseAddress = new Uri("https://api.example")
-    };
-    var servicio = new ComicService(cliente, new CacheEnMemoria(3));
+    { BaseAddress = new Uri("https://api.example") };
+    var cache = new CacheEnMemoria(capacidad: 3);
+    cache.Guardar(new[] { new Comic("A-1"), new Comic("A-2"), new Comic("A-3") });
+    var servicio = new ComicService(cliente, cache);
 
     Assert.Equal(3, (await servicio.ListarAsync()).Count);
 }
@@ -87,7 +87,7 @@ El servidor se detiene al terminar la prueba. No es la API de producción: es un
 
 ## Qué exige emulador o móvil
 
-El APK se puede compilar en Linux si están la carga de trabajo de Android, el SDK y un JDK compatible. Ejecutarlo con interfaz exige un emulador con aceleración por hardware o un dispositivo conectado. Lo que no se puede comprobar en una prueba de `Core`:
+El APK se puede compilar en Linux si están la carga de trabajo de Android, el SDK y un JDK compatible. Ejecutarlo con interfaz exige un emulador con aceleración por hardware o un dispositivo conectado. Lo que no se puede comprobar en una prueba de `App.Core`:
 
 - **Ciclo de vida.** Girar la pantalla, cambiar de tema, volver desde segundo plano, matar el proceso y restaurar.
 - **Permisos.** Conceder, denegar y revocar notificaciones o cámara; volver a pedir; explicar el rechazo.
@@ -103,19 +103,19 @@ El emulador cubre la mayoría de los casos funcionales y permite automatizar. El
 
 ### Pruebas de interfaz y de humo
 
-La automatización de interfaz se reserva para los caminos que un fallo dejaría inutilizables: abrir, iniciar sesión, ver la lista, abrir un cómic, cerrar sesión y volver a entrar. Appium o el paquete de pruebas de UI de MAUI, si el proyecto lo adopta, permiten escribir esos recorridos; su coste es alto y su estabilidad, menor que la de una prueba unitaria.
+La automatización de interfaz se reserva para los caminos que un fallo dejaría inutilizables: abrir, iniciar sesión, ver la lista, abrir un cómic, cerrar sesión y volver a entrar. Appium permite escribir esos recorridos; su coste es alto y su estabilidad, menor que la de una prueba unitaria.
 
 Una prueba de interfaz que depende de un texto, una animación o una espera fija se rompe sin que haya un fallo real. Se usan identificadores estables, esperas por condición y pocos recorridos. El resto se cubre con una lista de humo manual ejecutada antes de cada entrega, con pasos y resultado esperado. La lista también es documentación: dice qué se considera «funciona».
 
 ## Cobertura y sus límites
 
-La cobertura se mide sobre `Core`, que es donde vive la lógica. Coverlet recoge líneas y ramas:
+La cobertura se mide sobre `App.Core`, que es donde vive la lógica. Coverlet recoge líneas y ramas:
 
 ```bash
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
-Se excluyen del cálculo el código generado, las páginas XAML, los adaptadores de plataforma y el arranque, porque una prueba en Linux no los ejecuta. Un umbral acordado para `Core` evita que la cifra baje sin que nadie lo note; no se persigue el 100 %, que suele producir pruebas de getters y setters sin valor.
+Se excluyen del cálculo el código generado, las páginas XAML, los adaptadores de plataforma y el arranque, porque una prueba en Linux no los ejecuta. Un umbral acordado para `App.Core` evita que la cifra baje sin que nadie lo note; no se persigue el 100 %, que suele producir pruebas de getters y setters sin valor.
 
 La cobertura no dice si la app se ve bien, si el ciclo de vida guarda el estado o si un permiso se pide en el momento correcto. Tampoco detecta una prueba que ejecuta código sin afirmar nada. Para eso están la revisión, las pruebas de mutación —si el proyecto las adopta— y la prueba manual en el dispositivo.
 
@@ -151,7 +151,7 @@ Un reparto razonable de trabajos:
 
 | Trabajo | Dónde | Qué ejecuta |
 |---|---|---|
-| `core` | Linux | `dotnet test` de `Core` y de integración con servidor falso |
+| `core` | Linux | `dotnet test` de `App.Core` y de integración con servidor falso |
 | `android` | Linux | Carga de trabajo, SDK y JDK; `dotnet build -f net10.0-android -c Release` |
 | `humo` | Emulador o dispositivo | Recorridos críticos, programados o antes de una entrega |
 | `firma` | Equipo del propietario o CI restringido | `dotnet publish` firmado y verificación del APK |
@@ -166,7 +166,7 @@ Este módulo es una base, no el tratado completo. Falta:
 - **`HttpClient` con resiliencia.** Tiempos, reintentos con espera, cortocircuito, idempotencia y tratamiento de la red intermitente.
 - **Observabilidad a fondo.** Exportadores, informes de fallos, consentimiento, retención y alertas.
 - **Rendimiento y tamaño.** Arranque en frío, listas largas, imágenes, memoria y recorte.
-- **El caso de Comicteca cuando la app esté validada.** Entonces se podrán describir decisiones y resultados comprobados; hoy no hay APK probado ni cifras que presentar.
+- **El caso de Comicteca cuando la app esté terminada y probada.** Entonces se podrán describir decisiones y resultados comprobados.
 
 ## Lista de comprobación
 
@@ -175,6 +175,6 @@ Este módulo es una base, no el tratado completo. Falta:
 - ¿Los errores del cliente HTTP tienen pruebas con respuestas fijas?
 - ¿Hay una prueba de contrato contra un servidor local?
 - ¿Los recorridos críticos tienen una lista de humo en dispositivo?
-- ¿La cobertura se mide en `Core` y se interpreta con sus límites?
+- ¿La cobertura se mide en `App.Core` y se interpreta con sus límites?
 - ¿El cliente registra fallos y correlación sin datos sensibles?
 - ¿La versión de `Release` se prueba con el recorte activo?

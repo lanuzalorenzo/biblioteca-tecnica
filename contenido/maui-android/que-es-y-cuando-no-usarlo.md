@@ -26,14 +26,15 @@ Eso no convierte a MAUI en una bala de plata. Un control nativo sigue necesitand
 La estructura que mejor envejece separa lo que se puede probar en cualquier equipo de lo que necesita Android:
 
 ```
-Comicteca.Core/        net10.0          dominio, contratos, servicios, DTO
-Comicteca.App/         net10.0-android  arranque, XAML, permisos, plataforma
-Comicteca.Core.Tests/  net10.0          unitarias e integración con servidor falso
+Comicteca.Client/          net10.0          DTO, rutas y validación compartidos
+Comicteca.App.Core/        net10.0          dominio, contratos, servicios, lógica
+Comicteca.App/             net10.0-android  arranque, XAML, permisos, plataforma
+Comicteca.App.Core.Tests/  net10.0          unitarias e integración con servidor falso
 ```
 
-`Core` no referencia MAUI ni Android. Describe qué necesita —un almacén de sesión, un reloj, un cliente HTTP— mediante interfaces, y la aplicación Android aporta las implementaciones. Esa frontera es la que permite ejecutar la mayor parte de las pruebas en Linux y la que evita que un detalle de la pantalla se cuele en la lógica de negocio.
+`Comicteca.Client` y `Comicteca.App.Core` no referencian MAUI ni Android. `Client` contiene el contrato que comparten la web y la app; `App.Core` describe lo que necesita mediante interfaces —un almacén de sesión, un reloj, un cliente HTTP— y la aplicación Android aporta las implementaciones. Esa frontera es la que permite ejecutar la mayor parte de las pruebas en Linux y la que evita que un detalle de la pantalla se cuele en la lógica de negocio.
 
-La app Android queda fina: arranca, compone dependencias, pide permisos, muestra XAML y traduce eventos del sistema. Todo lo que se pueda contar sin mirar la pantalla pertenece a `Core`.
+La app Android queda fina: arranca, compone dependencias, pide permisos, muestra XAML y traduce eventos del sistema. Todo lo que se pueda contar sin mirar la pantalla pertenece a `Client` o a `App.Core`.
 
 ## Cuándo no usarlo
 
@@ -79,7 +80,7 @@ Un cliente nativo no se termina cuando compila. Mantenerlo implica:
 
 ## El caso de Comicteca
 
-Comicteca es una aplicación de biblioteca de cómics con un repositorio público en <https://github.com/lanuzalorenzo/comicteca>. El cliente Android se está construyendo; esta biblioteca recoge la base técnica del módulo, no un informe de resultados. La decisión de mantener un cliente nativo se justifica si la lectura sin conexión, el almacenamiento local y la integración con el sistema son parte del producto; si el objetivo fuera solo consultar el catálogo, una PWA cubriría lo mismo con menos piezas.
+Comicteca es una aplicación de biblioteca de cómics con un repositorio público en <https://github.com/lanuzalorenzo/comicteca>. El módulo recoge la base técnica para un cliente Android; la decisión de mantener un cliente nativo se justifica si la lectura sin conexión, el almacenamiento local y la integración con el sistema son parte del producto. Si el objetivo fuera solo consultar el catálogo, una PWA cubriría lo mismo con menos piezas.
 
 ## Lista de decisión
 
